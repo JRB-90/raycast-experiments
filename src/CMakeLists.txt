@@ -11,7 +11,7 @@ add_executable(CRayCaster
 	scene.c
     render.h
 	render.c
-)
+ "math.h" "math.c")
 
 target_include_directories(CRayCaster PUBLIC
 	$ENV{SDL2_INCLUDE}

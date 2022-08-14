@@ -26,6 +26,7 @@ int main(int argc, char* argv[])
     printf("Window initialising data...\n");
 
     InitDefaultScene(&scene);
+    scene.player = CreatePlayer(CRAY_SCREEN_WIDTH / 2.0, CRAY_SCREEN_HEIGHT / 2.0, 0.0);
     inputState = CreateInputState();
 
     printf("Data initialised\n");

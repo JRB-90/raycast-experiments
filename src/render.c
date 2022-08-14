@@ -1,5 +1,7 @@
 #include "render.h"
 #include "SDL.h"
+#include "crayconsts.h"
+#include "math.h"
 
 void RenderPlayer(const Display* display, const Player* player);
 
@@ -40,17 +42,50 @@ void RenderPlayer(const Display* display, const Player* player)
         HandleError("Failed to set draw color");
     }
     
+    Vertex offsetPoint = CalculateOffsetPoint(player->frame, PLAYER_ARROW_SIZE);
+
     res =
         SDL_RenderDrawLineF(
             display->renderer, 
-            player->x, 
-            player->y,
-            player->x,
-            player->y + 50
+            player->frame.x, 
+            player->frame.y,
+            player->frame.x + offsetPoint.x,
+            player->frame.y + offsetPoint.y
         );
 
     if (res)
     {
         HandleError("Failed to draw line");
+    }
+
+    res =
+        SDL_SetRenderDrawColor(
+            display->renderer,
+            255,
+            255,
+            255,
+            255
+        );
+
+    if (res)
+    {
+        HandleError("Failed to set draw color");
+    }
+
+    SDL_Rect rect;
+    rect.x = player->frame.x - (PLAYER_BASE_SIZE / 2.0);
+    rect.y = player->frame.y - (PLAYER_BASE_SIZE / 2.0);
+    rect.w = PLAYER_BASE_SIZE;
+    rect.h = PLAYER_BASE_SIZE;
+
+    res =
+        SDL_RenderFillRect(
+            display->renderer,
+            &rect
+        );
+
+    if (res)
+    {
+        HandleError("Failed to draw rectangle");
     }
 }

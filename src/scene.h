@@ -3,12 +3,11 @@
 
 #include "display.h"
 #include "input.h"
+#include "math.h"
 
 // Data types
 struct Player {
-	double x;
-	double y;
-	double theta;
+	Frame frame;
 	Color color;
 };
 
