@@ -4,16 +4,16 @@
 #include "SDL.h"
 #include "crayconsts.h"
 #include "display.h"
+#include "scene.h"
 #include "input.h"
-
-// Functions defs
-void HandleError(const char* errorMessage);
+#include "render.h"
 
 // Main function
 int main(int argc, char* argv[])
 {
     Display display;
-    InputState inputState = CreateInputState();
+    Scene scene;
+    InputState inputState;
 
 	printf("Initialising window...\n");
 
@@ -23,6 +23,12 @@ int main(int argc, char* argv[])
     }
 
     printf("Window initialised\n");
+    printf("Window initialising data...\n");
+
+    InitDefaultScene(&scene);
+    inputState = CreateInputState();
+
+    printf("Data initialised\n");
     printf("Starting main loop...\n");
     
     bool isRunning = true;
@@ -51,7 +57,8 @@ int main(int argc, char* argv[])
             printf("Frame delta: %llu\n", delta);
 
             // Update scene
-            // Render scene
+            
+            RenderScene(&display, &scene);
 
             previousTicks = currentTicks;
         }
@@ -61,13 +68,4 @@ int main(int argc, char* argv[])
     DestroyDisplay(&display);
 
 	return EXIT_SUCCESS;
-}
-
-// Function bodies
-void HandleError(const char* errorMessage)
-{
-    fprintf(stderr, "\033[0;31m");
-    fprintf(stderr, "Error: %s\n", errorMessage);
-    int c = getchar();
-    exit(EXIT_FAILURE);
 }

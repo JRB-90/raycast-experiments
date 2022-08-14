@@ -1,5 +1,4 @@
 #include "input.h"
-
 #include "SDL.h"
 
 void UpdatePlayerControls(InputState* state, SDL_Event* e);

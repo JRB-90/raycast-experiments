@@ -6,7 +6,11 @@ add_executable(CRayCaster
 	display.c
     input.h 
 	input.c
-)
+    scene.h
+	scene.c
+    render.h
+	render.c
+ "utils.c")
 
 target_include_directories(CRayCaster PUBLIC
 	$ENV{SDL2_INCLUDE}

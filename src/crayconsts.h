@@ -1,5 +1,5 @@
-#ifndef _CRAY_CONSTS_H
-#define _CRAY_CONSTS_H
+#ifndef _CRAY_CONSTS_H_
+#define _CRAY_CONSTS_H_
 
 // Constants for project
 
@@ -10,4 +10,4 @@ static const int CRAY_SCREEN_WIDTH = 640;
 static const int CRAY_SCREEN_HEIGHT = 480;
 static const int CRAY_SCREEN_BPP = 32;
 
-#endif // !_CRAY_CONSTS_H
+#endif // !_CRAY_CONSTS_H_
