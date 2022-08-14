@@ -2,22 +2,18 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "SDL.h"
-#include "display.h"
 #include "crayconsts.h"
+#include "display.h"
+#include "input.h"
 
-// Functions bodies
-void HandleError(const char* errorMessage)
-{
-    fprintf(stderr, "\033[0;31m");
-    fprintf(stderr, "Error: %s\n", errorMessage);
-    int c = getchar();
-    exit(EXIT_FAILURE);
-}
+// Functions defs
+void HandleError(const char* errorMessage);
 
 // Main function
 int main(int argc, char* argv[])
 {
     Display display;
+    InputState inputState = CreateInputState();
 
 	printf("Initialising window...\n");
 
@@ -28,20 +24,36 @@ int main(int argc, char* argv[])
 
     printf("Window initialised\n");
     printf("Starting main loop...\n");
-
+    
     bool isRunning = true;
+    double period = 1.0 / (double)CRAY_FPS;
+    uint64_t currentTicks = SDL_GetTicks64();
+    uint64_t previousTicks = currentTicks;
+    uint64_t targetInterval = (uint64_t)(period * 1000.0);
+    uint64_t delta;
+
     while (isRunning)
     {
-        SDL_Event e;
+        currentTicks = SDL_GetTicks64();
+        delta = currentTicks - previousTicks;
 
-        while (SDL_PollEvent(&e))
+        UpdateInputState(&inputState);
+
+        if (inputState.quit)
         {
-            if (e.type == SDL_QUIT)
-            {
-                printf("Received QUIT event from SDL\n");
-                isRunning = false;
-                break;
-            }
+            printf("Received QUIT event from SDL\n");
+            isRunning = false;
+            continue;
+        }
+
+        if (delta > targetInterval)
+        {
+            printf("Frame delta: %llu\n", delta);
+
+            // Update scene
+            // Render scene
+
+            previousTicks = currentTicks;
         }
     }
 
@@ -49,4 +61,13 @@ int main(int argc, char* argv[])
     DestroyDisplay(&display);
 
 	return EXIT_SUCCESS;
+}
+
+// Function bodies
+void HandleError(const char* errorMessage)
+{
+    fprintf(stderr, "\033[0;31m");
+    fprintf(stderr, "Error: %s\n", errorMessage);
+    int c = getchar();
+    exit(EXIT_FAILURE);
 }

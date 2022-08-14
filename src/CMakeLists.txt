@@ -4,6 +4,8 @@ add_executable(CRayCaster
 	main.c
     display.h
 	display.c
+    input.h 
+	input.c
 )
 
 target_include_directories(CRayCaster PUBLIC
