@@ -8,35 +8,49 @@ void RenderScene(const Display* display, const Scene* scene)
     Color clearColor = CreateColor();
     ClearScreen(display, clearColor);
     RenderPlayer(display, &scene->player);
-    SDL_UpdateWindowSurface(display->window);
+    SDL_RenderPresent(display->renderer);
 }
 
 void ClearScreen(const Display* display, Color color)
 {
-    if (SDL_MUSTLOCK(display->surface))
+    if (SDL_SetRenderDrawColor(display->renderer, color.r, color.g, color.b, color.a))
     {
-        SDL_LockSurface(display->surface);
+        HandleError("Failed to set draw color");
     }
 
-    int res =
-        SDL_FillRect(
-            display->surface,
-            NULL,
-            SDL_MapRGB(
-                display->surface->format,
-                color.r,
-                color.g,
-                color.b
-            )
-        );
-
-    if (res)
+    if (SDL_RenderClear(display->renderer))
     {
-        HandleError("Failed to clear screen");
+        HandleError("Failed to clear renderer");
     }
 }
 
 void RenderPlayer(const Display* display, const Player* player)
 {
-    // TODO
+    int res =
+        SDL_SetRenderDrawColor(
+            display->renderer,
+            player->color.r,
+            player->color.g,
+            player->color.b,
+            player->color.a
+        );
+
+    if (res)
+    {
+        HandleError("Failed to set draw color");
+    }
+    
+    res =
+        SDL_RenderDrawLineF(
+            display->renderer, 
+            player->x, 
+            player->y,
+            player->x,
+            player->y + 50
+        );
+
+    if (res)
+    {
+        HandleError("Failed to draw line");
+    }
 }

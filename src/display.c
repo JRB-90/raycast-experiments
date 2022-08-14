@@ -59,9 +59,9 @@ int CreateDisplay(Display* display, const char* title, int width, int height)
         return CRAY_FAILURE;
     }
 
-    display->surface = SDL_GetWindowSurface(display->window);
+    display->renderer = SDL_CreateRenderer(display->window, -1, 0);
 
-    if (display->surface == NULL)
+    if (display->renderer == NULL)
     {
         return CRAY_FAILURE;
     }
@@ -71,7 +71,7 @@ int CreateDisplay(Display* display, const char* title, int width, int height)
 
 void DestroyDisplay(Display* display)
 {
-    SDL_FreeSurface(display->surface);
+    SDL_DestroyRenderer(display->renderer);
     SDL_DestroyWindow(display->window);
     SDL_Quit();
 }

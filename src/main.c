@@ -56,8 +56,7 @@ int main(int argc, char* argv[])
         {
             printf("Frame delta: %llu\n", delta);
 
-            // Update scene
-            
+            UpdatePlayerPosition(&scene, inputState);
             RenderScene(&display, &scene);
 
             previousTicks = currentTicks;

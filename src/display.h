@@ -13,7 +13,7 @@ struct Color {
 
 struct Display {
     SDL_Window* window;
-    SDL_Surface* surface;
+    SDL_Renderer* renderer;
     int width;
     int height;
 };
