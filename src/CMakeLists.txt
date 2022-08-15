@@ -11,19 +11,24 @@ add_executable(CRayCaster
 	scene.c
     render.h
 	render.c
- "math.h" "math.c")
+    math.h
+	math.c
+)
 
 target_include_directories(CRayCaster PUBLIC
+	"../lib"
 	$ENV{SDL2_INCLUDE}
 )
 
 target_link_directories(CRayCaster PUBLIC
+	"../lib"
 	$ENV{SDL2_LIB}
 )
 
 target_link_libraries(CRayCaster PRIVATE
 	SDL2
 	SDL2main
+	dlist
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

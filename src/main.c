@@ -8,6 +8,8 @@
 #include "input.h"
 #include "render.h"
 
+#include "dlist/dlist.h"
+
 // Main function
 int main(int argc, char* argv[])
 {
