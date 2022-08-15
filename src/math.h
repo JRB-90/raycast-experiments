@@ -2,26 +2,21 @@
 #define _MATH_H_
 
 // Data types
-struct Vertex {
+typedef struct Vertex {
 	double x;
 	double y;
-};
+} Vertex;
 
-struct Frame {
+typedef struct Frame {
 	double x;
 	double y;
 	double theta;
-};
+} Frame;
 
-struct Line {
+typedef struct Line {
 	struct Vertex p1;
 	struct Vertex p2;
-};
-
-// Typedefs
-typedef struct Vertex Vertex;
-typedef struct Frame Frame;
-typedef struct Line Line;
+} Line;
 
 // Function defs
 extern Vertex CreateDefaultVertex();

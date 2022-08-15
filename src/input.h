@@ -3,16 +3,16 @@
 
 #include <stdbool.h>
 
-struct InputState {
+// Data types
+typedef struct InputState {
 	bool quit;
 	bool forwards;
 	bool backwards;
 	bool right;
 	bool left;
-};
+} InputState;
 
-typedef struct InputState InputState;
-
+// Functions definitions
 extern InputState CreateInputState();
 extern void UpdateInputState(InputState* state);
 

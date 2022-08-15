@@ -6,18 +6,14 @@
 #include "math.h"
 
 // Data types
-struct Player {
+typedef struct Player {
 	Frame frame;
 	Color color;
-};
+} Player;
 
-struct Scene {
-	struct Player player;
-};
-
-// Typedefs
-typedef struct Player Player;
-typedef struct Scene Scene;
+typedef struct Scene {
+	Player player;
+} Scene;
 
 // Function defs
 extern Player CreateDefaultPlayer();
