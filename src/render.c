@@ -11,7 +11,7 @@ void RenderWalls(
     Color intersectColor
 );
 void RenderPlayer(
-    const Display* display, 
+    const Display* display,
     const Player* player
 );
 
