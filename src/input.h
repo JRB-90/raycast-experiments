@@ -14,6 +14,6 @@ typedef struct InputState {
 
 // Functions definitions
 extern InputState DefaultInputState();
-extern void UpdateInputState(InputState* state);
+extern void UpdateInputState(InputState* const state);
 
 #endif // !_INPUT_H_

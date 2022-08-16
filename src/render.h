@@ -5,7 +5,7 @@
 #include "display.h"
 
 // Function defs
-extern void RenderScene(const Display* display, const Scene* scene);
-extern void ClearScreen(const Display* display, Color color);
+extern void RenderScene(const Display display, const Scene* const scene);
+extern void ClearScreen(const Display display, Color color);
 
 #endif // !_RENDER_H_

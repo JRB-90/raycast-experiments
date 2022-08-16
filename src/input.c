@@ -1,7 +1,7 @@
 #include "input.h"
 #include "SDL.h"
 
-void UpdatePlayerControls(InputState* state, SDL_Event* e);
+void UpdatePlayerControls(InputState* const state, SDL_Event* e);
 
 InputState DefaultInputState()
 {
@@ -15,7 +15,7 @@ InputState DefaultInputState()
     return inputState;
 }
 
-void UpdateInputState(InputState* state)
+void UpdateInputState(InputState* const state)
 {
     SDL_Event e;
 
@@ -34,7 +34,7 @@ void UpdateInputState(InputState* state)
     }
 }
 
-void UpdatePlayerControls(InputState* state, SDL_Event* e)
+void UpdatePlayerControls(InputState* const state, SDL_Event* e)
 {
     if (e->type == SDL_KEYDOWN)
     {

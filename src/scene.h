@@ -20,6 +20,6 @@ typedef struct Scene {
 // Function defs
 extern Player CreateDefaultPlayer();
 extern Scene CreateDefaultScene();
-extern void UpdatePlayerPosition(Scene* scene, InputState inputState);
+extern void UpdatePlayerPosition(Scene* const scene, InputState inputState);
 
 #endif // !_SCENE_H_

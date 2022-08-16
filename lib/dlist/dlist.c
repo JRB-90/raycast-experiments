@@ -13,7 +13,7 @@ LList CreateLinkedList()
 	return list;
 }
 
-void ClearLinkedList(LList * const list)
+void ClearLinkedList(LList* const list)
 {
 	LLNode* current = list->head;
 
@@ -28,7 +28,7 @@ void ClearLinkedList(LList * const list)
 	}
 }
 
-void PushLLNode(LList * const list, void* data)
+void PushLLNode(LList* const list, void* data)
 {
 	LLNode* tail = list->tail;
 	LLNode* newNode = (LLNode*)malloc(sizeof(LLNode));
@@ -48,7 +48,7 @@ void PushLLNode(LList * const list, void* data)
 	list->tail = newNode;
 }
 
-void* PopLLNode(LList * const list)
+void* PopLLNode(LList* const list)
 {
 	if (list->head == NULL)
 	{
@@ -82,7 +82,7 @@ void* PopLLNode(LList * const list)
 	return data;
 }
 
-void* LLAt(LList * const list, uint32_t index)
+void* LLAt(LList* const list, uint32_t index)
 {
 	if (index + 1 > list->size)
 	{
@@ -111,7 +111,7 @@ DLList CreateDoubleLinkedList()
 	return list;
 }
 
-void ClearDoubleLinkedList(DLList * const list)
+void ClearDoubleLinkedList(DLList* const list)
 {
 	DLLNode* current = list->head;
 
@@ -126,7 +126,7 @@ void ClearDoubleLinkedList(DLList * const list)
 	}
 }
 
-void PushDLLNode(DLList * const list, void* data)
+void PushDLLNode(DLList* const list, void* data)
 {
 	DLLNode* tail = list->tail;
 	DLLNode* newNode = (DLLNode*)malloc(sizeof(DLLNode));
@@ -148,7 +148,7 @@ void PushDLLNode(DLList * const list, void* data)
 	list->tail = newNode;
 }
 
-void* PopDLLNode(DLList * const list)
+void* PopDLLNode(DLList* const list)
 {
 	if (list->head == NULL)
 	{
@@ -177,7 +177,7 @@ void* PopDLLNode(DLList * const list)
 	return data;
 }
 
-void* DLLAt(DLList * const list, uint32_t index)
+void* DLLAt(DLList* const list, uint32_t index)
 {
 	if (index + 1 > list->size)
 	{

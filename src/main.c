@@ -77,14 +77,14 @@ int main(int argc, char* argv[])
             printf("Frame delta: %llu\n", delta);
 
             UpdatePlayerPosition(&scene, inputState);
-            RenderScene(&display, &scene);
+            RenderScene(display, &scene);
 
             previousTicks = currentTicks;
         }
     }
 
     printf("Closing down...\n");
-    CleanupDisplay(&display);
+    CleanupDisplay(display);
 
 	return EXIT_SUCCESS;
 }

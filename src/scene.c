@@ -23,7 +23,7 @@ Scene CreateDefaultScene()
 	return scene;
 }
 
-void UpdatePlayerPosition(Scene* scene, InputState inputState)
+void UpdatePlayerPosition(Scene* const scene, InputState inputState)
 {
 	if (inputState.forwards)
 	{

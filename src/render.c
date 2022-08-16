@@ -5,17 +5,17 @@
 #include "craymath.h"
 
 void RenderWalls(
-    const Display* display, 
-    const Scene* scene,
+    const Display display, 
+    const Scene* const scene,
     Color wallColor, 
     Color intersectColor
 );
 void RenderPlayer(
-    const Display* display,
-    const Player* player
+    const Display display,
+    const Player* const player
 );
 
-void RenderScene(const Display* display, const Scene* scene)
+void RenderScene(const Display display, const Scene* const scene)
 {
     Color clearColor = CreateColorRGB(0, 0, 0);
     Color wallColor = CreateColorRGB(255, 255, 255);
@@ -24,14 +24,14 @@ void RenderScene(const Display* display, const Scene* scene)
     ClearScreen(display, clearColor);
     RenderWalls(display, scene, wallColor, intersectColor);
     RenderPlayer(display, &scene->player);
-    SDL_RenderPresent(display->renderer);
+    SDL_RenderPresent(display.renderer);
 }
 
-void ClearScreen(const Display* display, Color color)
+void ClearScreen(const Display display, Color color)
 {
     int res =
         SDL_SetRenderDrawColor(
-            display->renderer,
+            display.renderer,
             color.r,
             color.g,
             color.b,
@@ -40,13 +40,13 @@ void ClearScreen(const Display* display, Color color)
 
     assert(res == 0);
 
-    res = SDL_RenderClear(display->renderer);
+    res = SDL_RenderClear(display.renderer);
     assert(res == 0);
 }
 
 void RenderWalls(
-    const Display* display, 
-    const Scene* scene, 
+    const Display display, 
+    const Scene* const scene, 
     Color wallColor, 
     Color intersectColor)
 {
@@ -57,7 +57,7 @@ void RenderWalls(
 
     int res =
         SDL_SetRenderDrawColor(
-            display->renderer,
+            display.renderer,
             wallColor.r,
             wallColor.g,
             wallColor.b,
@@ -72,7 +72,7 @@ void RenderWalls(
 
         res =
             SDL_RenderDrawLineF(
-                display->renderer,
+                display.renderer,
                 line->p1.x,
                 line->p1.y,
                 line->p2.x,
@@ -83,11 +83,11 @@ void RenderWalls(
     }
 }
 
-void RenderPlayer(const Display* display, const Player* player)
+void RenderPlayer(const Display display, const Player* const player)
 {
     int res =
         SDL_SetRenderDrawColor(
-            display->renderer,
+            display.renderer,
             player->color.r,
             player->color.g,
             player->color.b,
@@ -104,7 +104,7 @@ void RenderPlayer(const Display* display, const Player* player)
 
     res =
         SDL_RenderDrawLineF(
-            display->renderer, 
+            display.renderer, 
             player->frame.position.x,
             player->frame.position.y,
             player->frame.position.x + offsetPoint.x,
@@ -115,7 +115,7 @@ void RenderPlayer(const Display* display, const Player* player)
 
     res =
         SDL_SetRenderDrawColor(
-            display->renderer,
+            display.renderer,
             0,
             0,
             255,
@@ -132,7 +132,7 @@ void RenderPlayer(const Display* display, const Player* player)
 
     res =
         SDL_RenderFillRect(
-            display->renderer,
+            display.renderer,
             &rect
         );
 

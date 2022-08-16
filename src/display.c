@@ -41,7 +41,7 @@ Color CreateColorARGB(uint8_t a, uint8_t r, uint8_t g, uint8_t b)
     return color;
 }
 
-Display CreateDisplay(const char* title, int width, int height)
+Display CreateDisplay(const char* const title, int width, int height)
 {
     Display display =
     {
@@ -71,9 +71,9 @@ Display CreateDisplay(const char* title, int width, int height)
     return display;
 }
 
-void CleanupDisplay(Display* display)
+void CleanupDisplay(Display display)
 {
-    SDL_DestroyRenderer(display->renderer);
-    SDL_DestroyWindow(display->window);
+    SDL_DestroyRenderer(display.renderer);
+    SDL_DestroyWindow(display.window);
     SDL_Quit();
 }
