@@ -26,13 +26,13 @@ typedef struct DLList {
 	uint32_t size;
 } DLList;
 
-extern LList* CreateLinkedList();
+extern LList CreateLinkedList();
 extern void DestroyLinkedList(LList* list);
 extern void PushLLNode(LList* list, void* data);
 extern void* PopLLNode(LList* list);
 extern void* LLAt(LList* list, uint32_t index);
 
-extern DLList* CreateDoubleLinkedList();
+extern DLList CreateDoubleLinkedList();
 extern void DestroyDoubleLinkedList(DLList* list);
 extern void PushDLLNode(DLList* list, void* data);
 extern void* PopDLLNode(DLList* list);

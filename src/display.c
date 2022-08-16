@@ -1,50 +1,59 @@
 #include "display.h"
+#include <assert.h>
 #include "crayconsts.h"
 
 Color CreateColor()
 {
-    Color color;
-    color.a = 255;
-    color.r = 0;
-    color.g = 0;
-    color.b = 0;
+    Color color =
+    {
+        .a = 255,
+        .r = 0,
+        .g = 0,
+        .b = 0
+    };
 
     return color;
 }
 
 Color CreateColorRGB(uint8_t r, uint8_t g, uint8_t b)
 {
-    Color color;
-    color.a = 255;
-    color.r = r;
-    color.g = g;
-    color.b = b;
+    Color color =
+    {
+        .a = 255,
+        .r = r,
+        .g = g,
+        .b = b
+    };
 
     return color;
 }
 
 Color CreateColorARGB(uint8_t a, uint8_t r, uint8_t g, uint8_t b)
 {
-    Color color;
-    color.a = a;
-    color.r = r;
-    color.g = g;
-    color.b = b;
+    Color color =
+    {
+        .a = a,
+        .r = r,
+        .g = g,
+        .b = b
+    };
 
     return color;
 }
 
-int CreateDisplay(Display* display, const char* title, int width, int height)
+Display CreateDisplay(const char* title, int width, int height)
 {
-    if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
+    Display display =
     {
-        return CRAY_FAILURE;
-    }
+        .width = width,
+        .height = height,
+        .window = NULL,
+        .renderer = NULL
+    };
 
-	display->width = width;
-	display->height = height;
-	
-	display->window =
+    assert(SDL_Init(SDL_INIT_EVERYTHING) == 0);
+
+	display.window =
         SDL_CreateWindow(
             title,
             SDL_WINDOWPOS_CENTERED,
@@ -54,22 +63,15 @@ int CreateDisplay(Display* display, const char* title, int width, int height)
             SDL_WINDOW_SHOWN
         );
 
-    if (display->window == NULL)
-    {
-        return CRAY_FAILURE;
-    }
+    assert(display.window != NULL);
 
-    display->renderer = SDL_CreateRenderer(display->window, -1, 0);
+    display.renderer = SDL_CreateRenderer(display.window, -1, 0);
+    assert(display.renderer != NULL);
 
-    if (display->renderer == NULL)
-    {
-        return CRAY_FAILURE;
-    }
-
-	return CRAY_SUCCESS;
+    return display;
 }
 
-void DestroyDisplay(Display* display)
+void CleanupDisplay(Display* display)
 {
     SDL_DestroyRenderer(display->renderer);
     SDL_DestroyWindow(display->window);

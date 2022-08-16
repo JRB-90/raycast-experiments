@@ -3,23 +3,23 @@
 
 #include "display.h"
 #include "input.h"
-#include "math.h"
+#include "craymath.h"
+#include "dlist/dlist.h"
 
 // Data types
 typedef struct Player {
-	Frame frame;
+	Frame2D frame;
 	Color color;
 } Player;
 
 typedef struct Scene {
 	Player player;
+	DLList walls;
 } Scene;
 
 // Function defs
 extern Player CreateDefaultPlayer();
-extern Player CreatePlayer(double x, double y, double theta);
-extern Player CreatePlayerWithColor(double x, double y, double theta, Color color);
-extern void InitDefaultScene(Scene* scene);
+extern Scene CreateDefaultScene();
 extern void UpdatePlayerPosition(Scene* scene, InputState inputState);
 
 #endif // !_SCENE_H_

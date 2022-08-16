@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.8)
 
 add_executable(CRayCaster
 	main.c
-    utils.c
+    
     display.h
 	display.c
     input.h 
@@ -11,8 +11,8 @@ add_executable(CRayCaster
 	scene.c
     render.h
 	render.c
-    math.h
-	math.c
+    craymath.h
+	craymath.c
 )
 
 target_include_directories(CRayCaster PUBLIC

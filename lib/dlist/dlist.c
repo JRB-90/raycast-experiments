@@ -1,12 +1,16 @@
 #include "dlist.h"
 #include <stdlib.h>
 
-LList* CreateLinkedList()
+LList CreateLinkedList()
 {
-	LList* list = (LList*)malloc(sizeof(LList));
-	list->head = NULL;
-	list->tail = NULL;
-	list->size = 0;
+	LList list =
+	{
+		.head = NULL,
+		.tail = NULL,
+		.size = 0
+	};
+
+	return list;
 }
 
 void DestroyLinkedList(LList* list)
@@ -82,7 +86,7 @@ void* PopLLNode(LList* list)
 
 void* LLAt(LList* list, uint32_t index)
 {
-	if (index + 1 >= list->size)
+	if (index + 1 > list->size)
 	{
 		return NULL;
 	}
@@ -97,12 +101,16 @@ void* LLAt(LList* list, uint32_t index)
 	return node->data;
 }
 
-DLList* CreateDoubleLinkedList()
+DLList CreateDoubleLinkedList()
 {
-	DLList* list = (DLList*)malloc(sizeof(DLList));
-	list->head = NULL;
-	list->tail = NULL;
-	list->size = 0;
+	DLList list =
+	{
+		.head = NULL,
+		.tail = NULL,
+		.size = 0
+	};
+
+	return list;
 }
 
 void DestroyDoubleLinkedList(DLList* list)
@@ -175,7 +183,7 @@ void* PopDLLNode(DLList* list)
 
 void* DLLAt(DLList* list, uint32_t index)
 {
-	if (index + 1 >= list->size)
+	if (index + 1 > list->size)
 	{
 		return NULL;
 	}

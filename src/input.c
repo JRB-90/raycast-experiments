@@ -3,7 +3,7 @@
 
 void UpdatePlayerControls(InputState* state, SDL_Event* e);
 
-InputState CreateInputState()
+InputState DefaultInputState()
 {
     InputState inputState;
     inputState.quit = false;

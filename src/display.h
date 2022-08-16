@@ -21,7 +21,7 @@ typedef struct Display {
 extern Color CreateColor();
 extern Color CreateColorRGB(uint8_t r, uint8_t g, uint8_t b);
 extern Color CreateColorARGB(uint8_t a, uint8_t r, uint8_t g, uint8_t b);
-extern int CreateDisplay(Display* display, const char* title, int width, int height);
-extern void DestroyDisplay(Display* display);
+extern Display CreateDisplay(const char* title, int width, int height);
+extern void CleanupDisplay(Display* display);
 
 #endif // !_DISPLAY_H_

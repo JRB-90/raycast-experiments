@@ -7,33 +7,50 @@
 #include "scene.h"
 #include "input.h"
 #include "render.h"
-
 #include "dlist/dlist.h"
+#include "craymath.h"
 
-// Main function
+// Entry point
 int main(int argc, char* argv[])
 {
-    Display display;
-    Scene scene;
-    InputState inputState;
-
 	printf("Initialising window...\n");
 
-    if (CreateDisplay(&display, "C Raycaster", CRAY_SCREEN_WIDTH, CRAY_SCREEN_HEIGHT))
-    {
-        HandleError("Failed to initialise window...");
-    }
+    Display display =
+        CreateDisplay(
+            "C Raycaster",
+            CRAY_SCREEN_WIDTH,
+            CRAY_SCREEN_HEIGHT
+        );
 
     printf("Window initialised\n");
     printf("Window initialising data...\n");
 
-    InitDefaultScene(&scene);
-    scene.player = CreatePlayer(CRAY_SCREEN_WIDTH / 2.0, CRAY_SCREEN_HEIGHT / 2.0, 0.0);
-    inputState = CreateInputState();
+    int halfWidth = CRAY_SCREEN_WIDTH / 2.0;
+    int halfHeight = CRAY_SCREEN_HEIGHT / 2.0;
 
+    Scene scene = CreateDefaultScene();
+    scene.player.frame.position.x = halfWidth;
+    scene.player.frame.position.y = halfHeight;
+
+    Point2D p1 = { .x = halfWidth - 100, .y = halfHeight + 100 };
+    Point2D p2 = { .x = halfWidth - 100, .y = halfHeight - 100 };
+    Point2D p3 = { .x = halfWidth + 100, .y = halfHeight - 100 };
+    Point2D p4 = { .x = halfWidth + 100, .y = halfHeight + 100 };
+
+    LineSegment2D L1 = { .p1 = p1, .p2 = p2 };
+    LineSegment2D L2 = { .p1 = p2, .p2 = p3 };
+    LineSegment2D L3 = { .p1 = p3, .p2 = p4 };
+    LineSegment2D L4 = { .p1 = p4, .p2 = p1 };
+
+    PushDLLNode(&scene.walls, &L1);
+    PushDLLNode(&scene.walls, &L2);
+    PushDLLNode(&scene.walls, &L3);
+    PushDLLNode(&scene.walls, &L4);
+    
     printf("Data initialised\n");
     printf("Starting main loop...\n");
     
+    InputState inputState = DefaultInputState();
     bool isRunning = true;
     double period = 1.0 / (double)CRAY_FPS;
     uint64_t currentTicks = SDL_GetTicks64();
@@ -67,7 +84,7 @@ int main(int argc, char* argv[])
     }
 
     printf("Closing down...\n");
-    DestroyDisplay(&display);
+    CleanupDisplay(&display);
 
 	return EXIT_SUCCESS;
 }

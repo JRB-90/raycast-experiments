@@ -13,7 +13,7 @@ typedef struct InputState {
 } InputState;
 
 // Functions definitions
-extern InputState CreateInputState();
+extern InputState DefaultInputState();
 extern void UpdateInputState(InputState* state);
 
 #endif // !_INPUT_H_
