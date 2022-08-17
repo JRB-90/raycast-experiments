@@ -14,6 +14,11 @@ double ToDeg(double rad)
 	return (rad * 180.0) / M_PI;
 }
 
+double Point2DLength(const Point2D point)
+{
+	return sqrt((point.x * point.x) + (point.y * point.y));
+}
+
 Point2D Vec2DToPoint2D(const Vector2D vector)
 {
 	Point2D point =
@@ -161,19 +166,20 @@ Vector2D FindLookVector(Vector2D worldForward, double theta)
 {
 	double radTheta = ToRad(theta);
 
-	Vector2D forwardVector =
+	Vector2D lookVector =
 	{
-		.x = (worldForward.x * cos(theta)) - (worldForward.y * sin(theta)),
-		.y = (worldForward.y * cos(theta)) + (worldForward.x * sin(theta))
+		.x = (worldForward.x * cos(radTheta)) - (worldForward.y * sin(radTheta)),
+		.y = (worldForward.y * cos(radTheta)) + (worldForward.x * sin(radTheta))
 	};
 
-	return Vec2DNormalise(forwardVector);
+	return Vec2DNormalise(lookVector);
 }
 
 bool DoesRayInterectLine(
 	const Point2D rayOrigin, 
 	const Vector2D rayDirection, 
 	const LineSegment2D lineSegment,
+	double* const distanceToLine,
 	Point2D* const intersectionPoint)
 {
 	Vector2D dirNorm = Vec2DNormalise(rayDirection);
@@ -194,6 +200,7 @@ bool DoesRayInterectLine(
 	if (t1 >= 0.0 &&
 		(t2 >= 0.0 && t2 <= 1.0))
 	{
+		*distanceToLine = t1;
 		Vector2D vecToIntersection = Vec2DMul(dirNorm, t1);
 		Point2D intersect = AddVec2DToPoint2D(rayOrigin, vecToIntersection);
 		intersectionPoint->x = intersect.x;

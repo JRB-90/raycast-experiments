@@ -1,41 +1,40 @@
 #include "render.h"
 #include <assert.h>
+#include <stdio.h>
 #include "SDL.h"
 #include "crayconsts.h"
 #include "craymath.h"
 
-void RenderWalls(
-    const Display display, 
-    const Scene scene,
-    const Color wallColor,
-    const Color intersectColor
-);
-void RenderPlayer(
-    const Display display,
-    const Scene scene
-);
+#define MAX_INTERSECTIONS 10
+
+void RenderWalls(const Display display, const Scene scene);
+void RenderPlayer(const Display display, const Scene scene);
+void RenderProjection(const Display display, const Scene scene);
+void RenderRay(const Display display, const Scene scene, const Vector2D ray);
 
 void RenderScene(const Display display, const Scene scene)
 {
-    Color clearColor = CreateColorRGB(0, 0, 0);
-    Color wallColor = CreateColorRGB(255, 255, 255);
-    Color intersectColor = CreateColorRGB(0, 255, 0);
+    uint64_t start = SDL_GetTicks64();
 
-    ClearScreen(display, clearColor);
-    RenderWalls(display, scene, wallColor, intersectColor);
+    ClearScreen(display, scene);
+    RenderWalls(display, scene);
+    RenderProjection(display, scene);
     RenderPlayer(display, scene);
     SDL_RenderPresent(display.renderer);
+
+    uint64_t timeTaken = SDL_GetTicks64() - start;
+    printf("Rendering time: %llums\n", timeTaken);
 }
 
-void ClearScreen(const Display display, Color color)
+void ClearScreen(const Display display, const Scene scene)
 {
     int res =
         SDL_SetRenderDrawColor(
             display.renderer,
-            color.r,
-            color.g,
-            color.b,
-            color.a
+            scene.colors.clearCol.r,
+            scene.colors.clearCol.g,
+            scene.colors.clearCol.b,
+            scene.colors.clearCol.a
         );
 
     assert(res == 0);
@@ -44,11 +43,7 @@ void ClearScreen(const Display display, Color color)
     assert(res == 0);
 }
 
-void RenderWalls(
-    const Display display, 
-    const Scene scene, 
-    Color wallColor, 
-    Color intersectColor)
+void RenderWalls(const Display display, const Scene scene)
 {
     if (scene.walls.size < 1)
     {
@@ -58,10 +53,10 @@ void RenderWalls(
     int res =
         SDL_SetRenderDrawColor(
             display.renderer,
-            wallColor.r,
-            wallColor.g,
-            wallColor.b,
-            wallColor.a
+            scene.colors.wallCol.r,
+            scene.colors.wallCol.g,
+            scene.colors.wallCol.b,
+            scene.colors.wallCol.a
         );
 
     assert(res == 0);
@@ -88,56 +83,21 @@ void RenderPlayer(const Display display, const Scene scene)
     int res =
         SDL_SetRenderDrawColor(
             display.renderer,
-            scene.player.color.r,
-            scene.player.color.g,
-            scene.player.color.b,
-            scene.player.color.a
+            scene.colors.playerCol.r,
+            scene.colors.playerCol.g,
+            scene.colors.playerCol.b,
+            scene.colors.playerCol.a
         );
 
     assert(res == 0);
     
-    Vector2D worldForward = { .x = 0.0, .y = -1.0 };
-    Vector2D lookDir = 
-        FindLookVector(
-            worldForward, 
-            scene.player.frame.theta
-        );
-
-    lookDir = Vec2DNormalise(lookDir);
-
-    Point2D offsetPoint =
-        AddVec2DToPoint2D(
-            scene.player.frame.position,
-            Vec2DMul(lookDir, PLAYER_ARROW_SIZE)
-        );
-
-    res =
-        SDL_RenderDrawLineF(
-            display.renderer,
-            scene.player.frame.position.x,
-            scene.player.frame.position.y,
-            offsetPoint.x,
-            offsetPoint.y
-        );
-
-    assert(res == 0);
-
-    res =
-        SDL_SetRenderDrawColor(
-            display.renderer,
-            0,
-            0,
-            255,
-            255
-        );
-
-    assert(res == 0);
-
-    SDL_Rect rect;
-    rect.x = scene.player.frame.position.x - (PLAYER_BASE_SIZE / 2.0);
-    rect.y = scene.player.frame.position.y - (PLAYER_BASE_SIZE / 2.0);
-    rect.w = PLAYER_BASE_SIZE;
-    rect.h = PLAYER_BASE_SIZE;
+    SDL_Rect rect =
+    {
+        .x = scene.player.frame.position.x - (PLAYER_BASE_SIZE / 2.0),
+        .y = scene.player.frame.position.y - (PLAYER_BASE_SIZE / 2.0),
+        .w = PLAYER_BASE_SIZE,
+        .h = PLAYER_BASE_SIZE
+    };
 
     res =
         SDL_RenderFillRect(
@@ -146,50 +106,129 @@ void RenderPlayer(const Display display, const Scene scene)
         );
 
     assert(res == 0);
+}
 
+void RenderProjection(const Display display, const Scene scene)
+{
+    Vector2D worldForward = { .x = 0.0, .y = -1.0 };
+    int widthIncrements = 9;
+    double angleInterval = (scene.player.fov * 2.0) / ((double)(widthIncrements - 1));
+    double startAngle = scene.player.frame.theta - scene.player.fov;
+
+    for (int i = 0; i < widthIncrements; i++)
+    {
+        double theta = startAngle + (i * angleInterval);
+        
+        Vector2D lookDir =
+            FindLookVector(
+                worldForward,
+                theta
+            );
+
+        RenderRay(
+            display,
+            scene,
+            Vec2DNormalise(lookDir)
+        );
+    }
+}
+
+void RenderRay(const Display display, const Scene scene, const Vector2D ray)
+{
+    int pointIndex = 0;
+    double intersectionDistances[MAX_INTERSECTIONS];
+    Point2D intersectedPoints[MAX_INTERSECTIONS];
     DLLNode* current = scene.walls.head;
 
     while (current != NULL)
     {
         const LineSegment2D* const line = (LineSegment2D*)current->data;
         Point2D intersectionPoint;
+        double distanceToLine;
 
         bool doesIntersect =
             DoesRayInterectLine(
                 scene.player.frame.position,
-                lookDir,
+                ray,
                 *line,
+                &distanceToLine,
                 &intersectionPoint
             );
 
         if (doesIntersect)
         {
-            res =
-                SDL_SetRenderDrawColor(
-                    display.renderer,
-                    0,
-                    255,
-                    0,
-                    255
-                );
+            intersectionDistances[pointIndex] = distanceToLine;
+            intersectedPoints[pointIndex] = intersectionPoint;
+            pointIndex++;
 
-            assert(res == 0);
-
-            SDL_Rect rect;
-            rect.x = intersectionPoint.x - 2;
-            rect.y = intersectionPoint.y - 2;
-            rect.w = 4;
-            rect.h = 4;
-
-            res =
-                SDL_RenderFillRect(
-                    display.renderer,
-                    &rect
-                );
-
-            assert(res == 0);
+            if (pointIndex >= MAX_INTERSECTIONS)
+            {
+                break;
+            }
         }
 
         current = current->next;
     }
+
+    if (pointIndex == 0)
+    {
+        return;
+    }
+
+    int shortestIndex = 0;
+    for (int i = 0; i < pointIndex; i++)
+    {
+        if (intersectionDistances[i] <
+            intersectionDistances[shortestIndex])
+        {
+            shortestIndex = i;
+        }
+    }
+
+    int res =
+        SDL_SetRenderDrawColor(
+            display.renderer,
+            scene.colors.rayCol.r,
+            scene.colors.rayCol.g,
+            scene.colors.rayCol.b,
+            scene.colors.rayCol.a
+        );
+
+    assert(res == 0);
+
+    res =
+        SDL_RenderDrawLineF(
+            display.renderer,
+            scene.player.frame.position.x,
+            scene.player.frame.position.y,
+            intersectedPoints[shortestIndex].x,
+            intersectedPoints[shortestIndex].y
+        );
+
+    assert(res == 0);
+
+    res =
+        SDL_SetRenderDrawColor(
+            display.renderer,
+            scene.colors.intersectCol.r,
+            scene.colors.intersectCol.g,
+            scene.colors.intersectCol.b,
+            scene.colors.intersectCol.a
+        );
+
+    assert(res == 0);
+
+    SDL_Rect rect;
+    rect.x = intersectedPoints[shortestIndex].x - 2;
+    rect.y = intersectedPoints[shortestIndex].y - 2;
+    rect.w = 4;
+    rect.h = 4;
+
+    res =
+        SDL_RenderFillRect(
+            display.renderer,
+            &rect
+        );
+
+    assert(res == 0);
 }

@@ -6,7 +6,7 @@ Player CreateDefaultPlayer()
 	Player player =
 	{
 		.frame = CreateFrame2D(0.0, 0.0, 0.0),
-		.color = CreateColorRGB(255, 0, 0)
+		45.0
 	};
 
 	return player;
@@ -17,7 +17,15 @@ Scene CreateDefaultScene()
 	Scene scene =
 	{
 		.player = CreateDefaultPlayer(),
-		.walls = CreateDoubleLinkedList()
+		.walls = CreateDoubleLinkedList(),
+		.colors =
+		{
+			.clearCol = CreateColorRGB(0, 0, 0),
+			.wallCol = CreateColorRGB(255, 255, 255),
+			.playerCol = CreateColorRGB(0, 0, 255),
+			.rayCol = CreateColorRGB(255, 0, 0),
+			.intersectCol = CreateColorRGB(0, 255, 0)
+		}
 	};
 
 	return scene;
@@ -57,7 +65,7 @@ void UpdatePlayerPosition(Scene* const scene, InputState inputState)
 		scene->player.frame.position =
 			AddVec2DToPoint2D(
 				scene->player.frame.position,
-				Vec2DMul(lookDir, TRANS_SPEED)
+				Vec2DMul(lookDir, -TRANS_SPEED)
 			);
 	}
 

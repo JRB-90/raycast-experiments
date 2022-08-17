@@ -12,6 +12,6 @@ static const int CRAY_SCREEN_BPP = 32;
 static const double PLAYER_ARROW_SIZE = 25.0;
 static const double PLAYER_BASE_SIZE = 6.0;
 static const double TRANS_SPEED = 2.0;
-static const double ROT_SPEED = 0.05;
+static const double ROT_SPEED = 2.0;
 
 #endif // !_CRAY_CONSTS_H_

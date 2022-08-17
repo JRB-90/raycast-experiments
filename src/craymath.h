@@ -27,6 +27,7 @@ typedef struct Frame2D {
 // Function defs
 extern double ToRad(double deg);
 extern double ToDeg(double rad);
+extern double Point2DLength(const Point2D vector);
 extern Point2D Vec2DToPoint2D(const Vector2D vector);
 extern Point2D AddPoint2Ds(const Point2D p1, const Point2D p2);
 extern Point2D SubPoint2Ds(const Point2D p1, const Point2D p2);
@@ -47,6 +48,7 @@ extern bool DoesRayInterectLine(
 	const Point2D rayOrigin, 
 	const Vector2D rayDirection, 
 	const LineSegment2D lineSegment,
+	double* const distanceToLine,
 	Point2D* const intersectionPoint
 );
 

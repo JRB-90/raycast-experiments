@@ -9,12 +9,21 @@
 // Data types
 typedef struct Player {
 	Frame2D frame;
-	Color color;
+	double fov;
 } Player;
+
+typedef struct SceneColors {
+	Color clearCol;
+	Color wallCol;
+	Color playerCol;
+	Color rayCol;
+	Color intersectCol;
+} SceneColors;
 
 typedef struct Scene {
 	Player player;
 	DLList walls;
+	SceneColors colors;
 } Scene;
 
 // Function defs

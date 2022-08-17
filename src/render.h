@@ -6,6 +6,6 @@
 
 // Function defs
 extern void RenderScene(const Display display, const Scene scene);
-extern void ClearScreen(const Display display, const Color color);
+extern void ClearScreen(const Display display, const Scene scene);
 
 #endif // !_RENDER_H_
