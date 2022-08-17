@@ -1,6 +1,18 @@
+#define _USE_MATH_DEFINES
+
 #include "craymath.h"
 #include <math.h>
 #include <assert.h>
+
+double ToRad(double deg)
+{
+	return (deg * M_PI) / 180.0;
+}
+
+double ToDeg(double rad)
+{
+	return (rad * 180.0) / M_PI;
+}
 
 Point2D Vec2DToPoint2D(const Vector2D vector)
 {
@@ -98,6 +110,28 @@ Vector2D Point2DToVec2D(const Point2D point)
 	return vector;
 }
 
+Vector2D Vec2DMul(const Vector2D vector, double scalar)
+{
+	Vector2D resultantVector =
+	{
+		.x = vector.x * scalar,
+		.y = vector.y * scalar
+	};
+
+	return resultantVector;
+}
+
+Vector2D Vec2DDiv(const Vector2D vector, double scalar)
+{
+	Vector2D resultantVector =
+	{
+		.x = vector.x / scalar,
+		.y = vector.y / scalar
+	};
+
+	return resultantVector;
+}
+
 double Vec2DCross(const Vector2D v1, const Vector2D v2)
 {
 	return (v1.x * v2.y) - (v1.y * v2.x);
@@ -123,55 +157,50 @@ Frame2D CreateFrame2D(double x, double y, double theta)
 	return frame;
 }
 
-Point2D CalculateOffsetPoint2D(Frame2D frame, double offset)
+Vector2D FindLookVector(Vector2D worldForward, double theta)
 {
-	Point2D offsetPoint;
-	double x = 0.0;
-	double y = -offset;
-	offsetPoint.x = (x * cos(frame.theta)) - (y * sin(frame.theta));
-	offsetPoint.y = (y * cos(frame.theta)) + (x * sin(frame.theta));
-	
-	return offsetPoint;
+	double radTheta = ToRad(theta);
+
+	Vector2D forwardVector =
+	{
+		.x = (worldForward.x * cos(theta)) - (worldForward.y * sin(theta)),
+		.y = (worldForward.y * cos(theta)) + (worldForward.x * sin(theta))
+	};
+
+	return Vec2DNormalise(forwardVector);
 }
 
-bool DoesVecInterectLine(const Vector2D vector, const LineSegment2D line)
+bool DoesRayInterectLine(
+	const Point2D rayOrigin, 
+	const Vector2D rayDirection, 
+	const LineSegment2D lineSegment,
+	Point2D* const intersectionPoint)
 {
-	
+	Vector2D dirNorm = Vec2DNormalise(rayDirection);
+	Vector2D v1 = Vec2DBetween(lineSegment.p1, rayOrigin);
+	Vector2D v2 = Vec2DBetween(lineSegment.p1, lineSegment.p2);
+	Vector2D v3 = { .x = -dirNorm.y, .y = dirNorm.x };
+
+	double dot = Vec2DDot(v2, v3);
+
+	if (fabs(dot) < 0.000001)
+	{
+		return false;
+	}
+
+	double t1 = Vec2DCross(v2, v1) / dot;
+	double t2 = Vec2DDot(v1, v3) / dot;
+
+	if (t1 >= 0.0 &&
+		(t2 >= 0.0 && t2 <= 1.0))
+	{
+		Vector2D vecToIntersection = Vec2DMul(dirNorm, t1);
+		Point2D intersect = AddVec2DToPoint2D(rayOrigin, vecToIntersection);
+		intersectionPoint->x = intersect.x;
+		intersectionPoint->y = intersect.y;
+
+		return true;
+	}
 
 	return false;
 }
-
-
-
-
-
-//bool CalculateIntersection(Line l1, Line l2, Vertex* interection)
-//{
-//	double s1_x = l1.p2.x - l1.p1.x;
-//	double s1_y = l1.p2.y - l1.p1.y;
-//	double s2_x = l2.p2.x - l2.p1.x;
-//	double s2_y = l2.p2.y - l2.p1.y;
-//
-//	double denom = -s2_x * s1_y + s1_x * s2_y;
-//
-//	if (denom == 0.0)
-//	{
-//		return false;
-//	}
-//
-//	double s = (-s1_y * (l1.p1.x - l2.p1.x) + s1_x * (l1.p1.y - l2.p1.y)) / denom;
-//	double t = (s2_x * (l1.p1.y - l2.p1.y) - s2_y * (l1.p1.x - l2.p1.x)) / denom;
-//
-//	if (s >= 0 &&
-//		s <= 1 &&
-//		t >= 0 &&
-//		t <= 1)
-//	{
-//		interection->x = l1.p1.x + (t * s1_x);
-//		interection->y = l1.p1.y + (t * s1_y);
-//
-//		return true;
-//	}
-//
-//	return false;
-//}

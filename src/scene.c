@@ -27,26 +27,38 @@ void UpdatePlayerPosition(Scene* const scene, InputState inputState)
 {
 	if (inputState.forwards)
 	{
-		Point2D offset = 
-			CalculateOffsetPoint2D(
-				scene->player.frame, 
-				TRANS_SPEED
+		Vector2D worldForward = { .x = 0.0, .y = -1.0 };
+		Vector2D lookDir =
+			FindLookVector(
+				worldForward,
+				scene->player.frame.theta
 			);
 
-		scene->player.frame.position.x += offset.x;
-		scene->player.frame.position.y += offset.y;
+		lookDir = Vec2DNormalise(lookDir);
+
+		scene->player.frame.position =
+			AddVec2DToPoint2D(
+				scene->player.frame.position,
+				Vec2DMul(lookDir, TRANS_SPEED)
+			);
 	}
 
 	if (inputState.backwards)
 	{
-		Point2D offset = 
-			CalculateOffsetPoint2D(
-				scene->player.frame, 
-				-TRANS_SPEED
+		Vector2D worldForward = { .x = 0.0, .y = -1.0 };
+		Vector2D lookDir =
+			FindLookVector(
+				worldForward,
+				scene->player.frame.theta
 			);
 
-		scene->player.frame.position.x += offset.x;
-		scene->player.frame.position.y += offset.y;
+		lookDir = Vec2DNormalise(lookDir);
+
+		scene->player.frame.position =
+			AddVec2DToPoint2D(
+				scene->player.frame.position,
+				Vec2DMul(lookDir, TRANS_SPEED)
+			);
 	}
 
 	if (inputState.right)

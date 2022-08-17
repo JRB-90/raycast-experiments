@@ -1,5 +1,5 @@
-#ifndef _MATH_H_
-#define _MATH_H_
+#ifndef _CRAYMATH_H_
+#define _CRAYMATH_H_
 
 #include <stdbool.h>
 
@@ -25,6 +25,8 @@ typedef struct Frame2D {
 } Frame2D;
 
 // Function defs
+extern double ToRad(double deg);
+extern double ToDeg(double rad);
 extern Point2D Vec2DToPoint2D(const Vector2D vector);
 extern Point2D AddPoint2Ds(const Point2D p1, const Point2D p2);
 extern Point2D SubPoint2Ds(const Point2D p1, const Point2D p2);
@@ -34,11 +36,18 @@ extern double Vec2DLength(const Vector2D vector);
 extern Vector2D Vec2DNormalise(const Vector2D vector);
 extern Vector2D Vec2DBetween(const Point2D p1, const Point2D p2);
 extern Vector2D Point2DToVec2D(const Point2D point);
+extern Vector2D Vec2DMul(const Vector2D vector, double scalar);
+extern Vector2D Vec2DDiv(const Vector2D vector, double scalar);
 extern double Vec2DCross(const Vector2D v1, const Vector2D v2);
 extern double Vec2DDot(const Vector2D v1, const Vector2D v2);
 extern Frame2D CreateFrame2D(double x, double y, double theta);
 
-extern Point2D CalculateOffsetPoint2D(Frame2D frame, double offset);
-extern bool DoesVecInterectLine(const Vector2D vector, const LineSegment2D line);
+extern Vector2D FindLookVector(Vector2D worldForward, double theta);
+extern bool DoesRayInterectLine(
+	const Point2D rayOrigin, 
+	const Vector2D rayDirection, 
+	const LineSegment2D lineSegment,
+	Point2D* const intersectionPoint
+);
 
-#endif // !_MATH_H_
+#endif // !_CRAYMATH_H_

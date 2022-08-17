@@ -6,16 +6,16 @@
 
 void RenderWalls(
     const Display display, 
-    const Scene* const scene,
-    Color wallColor, 
-    Color intersectColor
+    const Scene scene,
+    const Color wallColor,
+    const Color intersectColor
 );
 void RenderPlayer(
     const Display display,
-    const Player* const player
+    const Scene scene
 );
 
-void RenderScene(const Display display, const Scene* const scene)
+void RenderScene(const Display display, const Scene scene)
 {
     Color clearColor = CreateColorRGB(0, 0, 0);
     Color wallColor = CreateColorRGB(255, 255, 255);
@@ -23,7 +23,7 @@ void RenderScene(const Display display, const Scene* const scene)
 
     ClearScreen(display, clearColor);
     RenderWalls(display, scene, wallColor, intersectColor);
-    RenderPlayer(display, &scene->player);
+    RenderPlayer(display, scene);
     SDL_RenderPresent(display.renderer);
 }
 
@@ -46,11 +46,11 @@ void ClearScreen(const Display display, Color color)
 
 void RenderWalls(
     const Display display, 
-    const Scene* const scene, 
+    const Scene scene, 
     Color wallColor, 
     Color intersectColor)
 {
-    if (scene->walls.size < 1)
+    if (scene.walls.size < 1)
     {
         return;
     }
@@ -66,9 +66,9 @@ void RenderWalls(
 
     assert(res == 0);
 
-    for (int i = 0; i < scene->walls.size; i++)
+    for (int i = 0; i < scene.walls.size; i++)
     {
-        LineSegment2D* line = DLLAt(&scene->walls, i);
+        LineSegment2D* line = DLLAt(&scene.walls, i);
 
         res =
             SDL_RenderDrawLineF(
@@ -83,32 +83,41 @@ void RenderWalls(
     }
 }
 
-void RenderPlayer(const Display display, const Player* const player)
+void RenderPlayer(const Display display, const Scene scene)
 {
     int res =
         SDL_SetRenderDrawColor(
             display.renderer,
-            player->color.r,
-            player->color.g,
-            player->color.b,
-            player->color.a
+            scene.player.color.r,
+            scene.player.color.g,
+            scene.player.color.b,
+            scene.player.color.a
         );
 
     assert(res == 0);
     
-    Point2D offsetPoint = 
-        CalculateOffsetPoint2D(
-            player->frame, 
-            PLAYER_ARROW_SIZE
+    Vector2D worldForward = { .x = 0.0, .y = -1.0 };
+    Vector2D lookDir = 
+        FindLookVector(
+            worldForward, 
+            scene.player.frame.theta
+        );
+
+    lookDir = Vec2DNormalise(lookDir);
+
+    Point2D offsetPoint =
+        AddVec2DToPoint2D(
+            scene.player.frame.position,
+            Vec2DMul(lookDir, PLAYER_ARROW_SIZE)
         );
 
     res =
         SDL_RenderDrawLineF(
-            display.renderer, 
-            player->frame.position.x,
-            player->frame.position.y,
-            player->frame.position.x + offsetPoint.x,
-            player->frame.position.y + offsetPoint.y
+            display.renderer,
+            scene.player.frame.position.x,
+            scene.player.frame.position.y,
+            offsetPoint.x,
+            offsetPoint.y
         );
 
     assert(res == 0);
@@ -125,8 +134,8 @@ void RenderPlayer(const Display display, const Player* const player)
     assert(res == 0);
 
     SDL_Rect rect;
-    rect.x = player->frame.position.x - (PLAYER_BASE_SIZE / 2.0);
-    rect.y = player->frame.position.y - (PLAYER_BASE_SIZE / 2.0);
+    rect.x = scene.player.frame.position.x - (PLAYER_BASE_SIZE / 2.0);
+    rect.y = scene.player.frame.position.y - (PLAYER_BASE_SIZE / 2.0);
     rect.w = PLAYER_BASE_SIZE;
     rect.h = PLAYER_BASE_SIZE;
 
@@ -137,4 +146,50 @@ void RenderPlayer(const Display display, const Player* const player)
         );
 
     assert(res == 0);
+
+    DLLNode* current = scene.walls.head;
+
+    while (current != NULL)
+    {
+        const LineSegment2D* const line = (LineSegment2D*)current->data;
+        Point2D intersectionPoint;
+
+        bool doesIntersect =
+            DoesRayInterectLine(
+                scene.player.frame.position,
+                lookDir,
+                *line,
+                &intersectionPoint
+            );
+
+        if (doesIntersect)
+        {
+            res =
+                SDL_SetRenderDrawColor(
+                    display.renderer,
+                    0,
+                    255,
+                    0,
+                    255
+                );
+
+            assert(res == 0);
+
+            SDL_Rect rect;
+            rect.x = intersectionPoint.x - 2;
+            rect.y = intersectionPoint.y - 2;
+            rect.w = 4;
+            rect.h = 4;
+
+            res =
+                SDL_RenderFillRect(
+                    display.renderer,
+                    &rect
+                );
+
+            assert(res == 0);
+        }
+
+        current = current->next;
+    }
 }
