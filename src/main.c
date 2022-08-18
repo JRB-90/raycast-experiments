@@ -43,18 +43,35 @@ int main(int argc, char* argv[])
     PushDLLNode(&scene.walls, &L3);
     PushDLLNode(&scene.walls, &L4);
 
-    DisplayTile tile =
+    DisplayTile tile1 =
     {
         .tileType = StaticScene,
-        .borderColor = CreateColorRGB(255, 0, 0),
+        .borderColor = CreateColorRGB(255, 255, 0),
         .position =
         {
-            .x = 100.0,
-            .y = 100.0,
-            .w = 100.0,
-            .h = 100.0
+            .x = 40.0,
+            .y = 120.0,
+            .w = 240.0,
+            .h = 240.0
         }
     };
+
+    DisplayTile tile2 =
+    {
+        .tileType = StaticPlayer,
+        .borderColor = CreateColorRGB(0, 255, 255),
+        .position =
+        {
+            .x = 360.0,
+            .y = 120.0,
+            .w = 240.0,
+            .h = 240.0
+        }
+    };
+
+    DisplayTile tiles[2];
+    tiles[0] = tile1;
+    tiles[1] = tile2;
     
     printf("Data initialised\n");
     printf("Starting main loop...\n");
@@ -87,7 +104,7 @@ int main(int argc, char* argv[])
 
             UpdatePlayerPosition(&scene, inputState);
 
-            scene.camera =
+            /*scene.camera =
             (Frame2D) {
                 .position =
                 {
@@ -96,18 +113,20 @@ int main(int argc, char* argv[])
                 },
                 .theta = 0.0
             };
-            RenderScene(display, scene);
+            RenderScene(display, scene);*/
 
-            /*scene.camera = 
+            scene.camera = 
             (Frame2D) {
                 .position =
                 {
-                    .x = tile.position.x + (tile.position.w / 2),
-                    .y = tile.position.y + (tile.position.h / 2)
+                    .x = (tile1.position.w / 2),
+                    .y = (tile1.position.h / 2)
                 },
                 .theta = 0.0
-            };*/
-            //RenderTile(display, scene, tile);
+            };
+            //RenderTile(display, scene, tile1);
+            //RenderTile(display, scene, tile2);
+            RenderTiles(display, scene, tiles, 2);
 
             previousTicks = currentTicks;
         }

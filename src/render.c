@@ -8,6 +8,8 @@
 
 #define MAX_INTERSECTIONS 10
 
+void RenderTileInternal(const Display display, const Scene scene, const DisplayTile tile);
+void RenderSceneInternal(const Display display, const Scene scene);
 void RenderWalls(const Display display, const Scene scene);
 void RenderPlayer(const Display display, const Scene scene);
 void RenderProjection(const Display display, const Scene scene);
@@ -44,11 +46,67 @@ void RenderScreenSpaceRectangle(
     bool fill
 );
 
-void RenderTile(const Display display, const Scene scene, const DisplayTile tile)
+void RenderTiles(
+    const Display display, 
+    const Scene scene, 
+    const DisplayTile tiles[], 
+    int count)
 {
+    uint64_t start = SDL_GetTicks64();
+
     ClearScreen(display, scene);
+
+    for (int i = 0; i < count; i++)
+    {
+        RenderTileInternal(
+            display,
+            scene,
+            tiles[i]
+        );
+    }
+
+    SDL_RenderPresent(display.renderer);
+
+    uint64_t timeTaken = SDL_GetTicks64() - start;
+    printf("Rendering time: %llums\n", timeTaken);
+}
+
+void RenderTile(
+    const Display display, 
+    const Scene scene, 
+    const DisplayTile tile)
+{
+    uint64_t start = SDL_GetTicks64();
+
+    ClearScreen(display, scene);
+
+    RenderTileInternal(
+        display,
+        scene,
+        tile
+    );
+
+    SDL_RenderPresent(display.renderer);
+
+    uint64_t timeTaken = SDL_GetTicks64() - start;
+    printf("Rendering time: %llums\n", timeTaken);
+}
+
+void RenderScene(const Display display, const Scene scene)
+{
+    uint64_t start = SDL_GetTicks64();
+    RenderSceneInternal(display, scene);
+    uint64_t timeTaken = SDL_GetTicks64() - start;
+    printf("Rendering time: %llums\n", timeTaken);
+}
+
+void RenderTileInternal(
+    const Display display,
+    const Scene scene,
+    const DisplayTile tile)
+{
     SDL_RenderSetViewport(display.renderer, &tile.position);
-    RenderScene(display, scene);
+    RenderSceneInternal(display, scene);
     SDL_RenderSetViewport(display.renderer, NULL);
 
     RenderScreenSpaceRectangle(
@@ -57,22 +115,13 @@ void RenderTile(const Display display, const Scene scene, const DisplayTile tile
         &tile.position,
         false
     );
-
-    SDL_RenderPresent(display.renderer);
 }
 
-void RenderScene(const Display display, const Scene scene)
+void RenderSceneInternal(const Display display, const Scene scene)
 {
-    uint64_t start = SDL_GetTicks64();
-
-    ClearScreen(display, scene);
     RenderWalls(display, scene);
     RenderProjection(display, scene);
     RenderPlayer(display, scene);
-    SDL_RenderPresent(display.renderer);
-
-    uint64_t timeTaken = SDL_GetTicks64() - start;
-    printf("Rendering time: %llums\n", timeTaken);
 }
 
 void ClearScreen(const Display display, const Scene scene)

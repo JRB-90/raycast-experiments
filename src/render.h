@@ -5,6 +5,13 @@
 #include "display.h"
 
 // Function defs
+extern void RenderTiles(
+	const Display display,
+	const Scene scene,
+	const DisplayTile tiles[],
+	int count
+);
+
 extern void RenderTile(
 	const Display display, 
 	const Scene scene,
