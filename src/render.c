@@ -12,6 +12,20 @@ void RenderPlayer(const Display display, const Scene scene);
 void RenderProjection(const Display display, const Scene scene);
 void RenderRay(const Display display, const Scene scene, const Vector2D ray);
 
+void RenderLine(
+    const Display* const display,
+    const Color* const color,
+    const double x1,
+    const double y1,
+    const double x2,
+    const double y2
+);
+void RenderRectangle(
+    const Display* const display,
+    const Color* const color,
+    const SDL_Rect* const area
+);
+
 void RenderScene(const Display display, const Scene scene)
 {
     uint64_t start = SDL_GetTicks64();
@@ -40,6 +54,7 @@ void ClearScreen(const Display display, const Scene scene)
     assert(res == 0);
 
     res = SDL_RenderClear(display.renderer);
+
     assert(res == 0);
 }
 
@@ -50,47 +65,23 @@ void RenderWalls(const Display display, const Scene scene)
         return;
     }
 
-    int res =
-        SDL_SetRenderDrawColor(
-            display.renderer,
-            scene.colors.wallCol.r,
-            scene.colors.wallCol.g,
-            scene.colors.wallCol.b,
-            scene.colors.wallCol.a
-        );
-
-    assert(res == 0);
-
     for (int i = 0; i < scene.walls.size; i++)
     {
         LineSegment2D* line = DLLAt(&scene.walls, i);
 
-        res =
-            SDL_RenderDrawLineF(
-                display.renderer,
-                line->p1.x,
-                line->p1.y,
-                line->p2.x,
-                line->p2.y
-            );
-
-        assert(res == 0);
+        RenderLine(
+            &display,
+            &scene.colors.wallCol,
+            line->p1.x,
+            line->p1.y,
+            line->p2.x,
+            line->p2.y
+        );
     }
 }
 
 void RenderPlayer(const Display display, const Scene scene)
 {
-    int res =
-        SDL_SetRenderDrawColor(
-            display.renderer,
-            scene.colors.playerCol.r,
-            scene.colors.playerCol.g,
-            scene.colors.playerCol.b,
-            scene.colors.playerCol.a
-        );
-
-    assert(res == 0);
-    
     SDL_Rect rect =
     {
         .x = scene.player.frame.position.x - (PLAYER_BASE_SIZE / 2.0),
@@ -99,13 +90,11 @@ void RenderPlayer(const Display display, const Scene scene)
         .h = PLAYER_BASE_SIZE
     };
 
-    res =
-        SDL_RenderFillRect(
-            display.renderer,
-            &rect
-        );
-
-    assert(res == 0);
+    RenderRectangle(
+        &display,
+        &scene.colors.playerCol,
+        &rect
+    );
 }
 
 void RenderProjection(const Display display, const Scene scene)
@@ -185,38 +174,14 @@ void RenderRay(const Display display, const Scene scene, const Vector2D ray)
         }
     }
 
-    int res =
-        SDL_SetRenderDrawColor(
-            display.renderer,
-            scene.colors.rayCol.r,
-            scene.colors.rayCol.g,
-            scene.colors.rayCol.b,
-            scene.colors.rayCol.a
-        );
-
-    assert(res == 0);
-
-    res =
-        SDL_RenderDrawLineF(
-            display.renderer,
-            scene.player.frame.position.x,
-            scene.player.frame.position.y,
-            intersectedPoints[shortestIndex].x,
-            intersectedPoints[shortestIndex].y
-        );
-
-    assert(res == 0);
-
-    res =
-        SDL_SetRenderDrawColor(
-            display.renderer,
-            scene.colors.intersectCol.r,
-            scene.colors.intersectCol.g,
-            scene.colors.intersectCol.b,
-            scene.colors.intersectCol.a
-        );
-
-    assert(res == 0);
+    RenderLine(
+        &display,
+        &scene.colors.rayCol,
+        scene.player.frame.position.x,
+        scene.player.frame.position.y,
+        intersectedPoints[shortestIndex].x,
+        intersectedPoints[shortestIndex].y
+    );
 
     SDL_Rect rect;
     rect.x = intersectedPoints[shortestIndex].x - 2;
@@ -224,10 +189,64 @@ void RenderRay(const Display display, const Scene scene, const Vector2D ray)
     rect.w = 4;
     rect.h = 4;
 
+    RenderRectangle(
+        &display,
+        &scene.colors.intersectCol,
+        &rect
+    );
+}
+
+void RenderLine(
+    const Display* const display,
+    const Color* const color,
+    const double x1,
+    const double y1,
+    const double x2,
+    const double y2)
+{
+    int res =
+        SDL_SetRenderDrawColor(
+            display->renderer,
+            color->r,
+            color->g,
+            color->b,
+            color->a
+        );
+
+    assert(res == 0);
+
+    res =
+        SDL_RenderDrawLineF(
+            display->renderer,
+            x1,
+            y1,
+            x2,
+            y2
+        );
+
+    assert(res == 0);
+}
+
+void RenderRectangle(
+    const Display* const display,
+    const Color* const color,
+    const SDL_Rect* const area)
+{
+    int res =
+        SDL_SetRenderDrawColor(
+            display->renderer,
+            color->r,
+            color->g,
+            color->b,
+            color->a
+        );
+
+    assert(res == 0);
+
     res =
         SDL_RenderFillRect(
-            display.renderer,
-            &rect
+            display->renderer,
+            area
         );
 
     assert(res == 0);
