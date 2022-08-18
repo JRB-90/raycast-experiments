@@ -8,13 +8,43 @@
 
 #define MAX_INTERSECTIONS 10
 
-void RenderTileInternal(const Display display, const Scene scene, const DisplayTile tile);
-void RenderSceneInternal(const Display display, const Scene scene);
-void RenderWalls(const Display display, const Scene scene);
-void RenderPlayer(const Display display, const Scene scene);
-void RenderProjection(const Display display, const Scene scene);
-void RenderRay(const Display display, const Scene scene, const Vector2D ray);
-
+// Private function defs
+Frame2D CalculateTileCameraPosition(
+    const Scene scene,
+    const DisplayTile tile
+);
+void RenderTileInternal(
+    const Display display, 
+    const Scene scene, 
+    const Frame2D cameraFrame, 
+    const DisplayTile tile
+);
+void RenderSceneInternal(
+    const Display display, 
+    const Scene scene, 
+    const Frame2D cameraFrame
+);
+void RenderWalls(
+    const Display display, 
+    const Scene scene, 
+    const Frame2D cameraFrame
+);
+void RenderPlayer(
+    const Display display, 
+    const Scene scene, 
+    const Frame2D cameraFrame
+);
+void RenderProjection(
+    const Display display, 
+    const Scene scene, 
+    const Frame2D cameraFrame
+);
+void RenderRay(
+    const Display display, 
+    const Scene scene,
+    const Frame2D cameraFrame,
+    const Vector2D ray
+);
 void RenderCameraSpaceLine(
     const Frame2D* const cameraFrame,
     const Display* const display,
@@ -46,6 +76,7 @@ void RenderScreenSpaceRectangle(
     bool fill
 );
 
+// Public function bodies
 void RenderTiles(
     const Display display, 
     const Scene scene, 
@@ -58,9 +89,12 @@ void RenderTiles(
 
     for (int i = 0; i < count; i++)
     {
+        
+
         RenderTileInternal(
             display,
             scene,
+            CalculateTileCameraPosition(scene, tiles[i]),
             tiles[i]
         );
     }
@@ -72,8 +106,8 @@ void RenderTiles(
 }
 
 void RenderTile(
-    const Display display, 
-    const Scene scene, 
+    const Display display,
+    const Scene scene,
     const DisplayTile tile)
 {
     uint64_t start = SDL_GetTicks64();
@@ -83,6 +117,7 @@ void RenderTile(
     RenderTileInternal(
         display,
         scene,
+        CalculateTileCameraPosition(scene, tile),
         tile
     );
 
@@ -92,21 +127,74 @@ void RenderTile(
     printf("Rendering time: %llums\n", timeTaken);
 }
 
-void RenderScene(const Display display, const Scene scene)
+void RenderScene(
+    const Display display, 
+    const Scene scene)
 {
     uint64_t start = SDL_GetTicks64();
-    RenderSceneInternal(display, scene);
+    RenderSceneInternal(display, scene, scene.camera);
     uint64_t timeTaken = SDL_GetTicks64() - start;
     printf("Rendering time: %llums\n", timeTaken);
+}
+
+// Private function bodies
+Frame2D CalculateTileCameraPosition(
+    const Scene scene, 
+    const DisplayTile tile)
+{
+    Frame2D cameraFrame;
+
+    if (tile.tileType == StaticScene)
+    {
+        cameraFrame =
+        (Frame2D){
+            .position =
+            {
+                .x = (tile.position.w / 2),
+                .y = (tile.position.h / 2)
+            },
+            .theta = 0.0
+        };
+    }
+    else if (tile.tileType == StaticPlayer)
+    {
+        double x = -scene.player.frame.position.x + (tile.position.w / 2);
+        double y = -scene.player.frame.position.y + (tile.position.h / 2);
+
+        cameraFrame =
+        (Frame2D){
+            .position =
+            {
+                .x = x,
+                .y = y
+            },
+            .theta = scene.player.frame.theta // TODO need to do something with theta...
+        };
+    }
+    else
+    {
+        cameraFrame =
+        (Frame2D){
+            .position =
+            {
+                .x = 0.0,
+                .y = 0.0
+            },
+            .theta = 0.0
+        };
+    }
+
+    return cameraFrame;
 }
 
 void RenderTileInternal(
     const Display display,
     const Scene scene,
+    const Frame2D cameraFrame,
     const DisplayTile tile)
 {
     SDL_RenderSetViewport(display.renderer, &tile.position);
-    RenderSceneInternal(display, scene);
+    RenderSceneInternal(display, scene, cameraFrame);
     SDL_RenderSetViewport(display.renderer, NULL);
 
     RenderScreenSpaceRectangle(
@@ -117,14 +205,19 @@ void RenderTileInternal(
     );
 }
 
-void RenderSceneInternal(const Display display, const Scene scene)
+void RenderSceneInternal(
+    const Display display, 
+    const Scene scene,
+    const Frame2D cameraFrame)
 {
-    RenderWalls(display, scene);
-    RenderProjection(display, scene);
-    RenderPlayer(display, scene);
+    RenderProjection(display, scene, cameraFrame);
+    RenderWalls(display, scene, cameraFrame);
+    RenderPlayer(display, scene, cameraFrame);
 }
 
-void ClearScreen(const Display display, const Scene scene)
+void ClearScreen(
+    const Display display, 
+    const Scene scene)
 {
     int res =
         SDL_SetRenderDrawColor(
@@ -142,7 +235,10 @@ void ClearScreen(const Display display, const Scene scene)
     assert(res == 0);
 }
 
-void RenderWalls(const Display display, const Scene scene)
+void RenderWalls(
+    const Display display, 
+    const Scene scene, 
+    const Frame2D cameraFrame)
 {
     if (scene.walls.size < 1)
     {
@@ -154,7 +250,7 @@ void RenderWalls(const Display display, const Scene scene)
         LineSegment2D* line = DLLAt(&scene.walls, i);
 
         RenderCameraSpaceLine(
-            &scene.camera,
+            &cameraFrame,
             &display,
             &scene.colors.wallCol,
             line->p1.x,
@@ -165,7 +261,10 @@ void RenderWalls(const Display display, const Scene scene)
     }
 }
 
-void RenderPlayer(const Display display, const Scene scene)
+void RenderPlayer(
+    const Display display, 
+    const Scene scene, 
+    const Frame2D cameraFrame)
 {
     SDL_Rect rect =
     {
@@ -176,7 +275,7 @@ void RenderPlayer(const Display display, const Scene scene)
     };
 
     RenderCameraSpaceRectangle(
-        &scene.camera,
+        &cameraFrame,
         &display,
         &scene.colors.playerCol,
         &rect,
@@ -184,7 +283,10 @@ void RenderPlayer(const Display display, const Scene scene)
     );
 }
 
-void RenderProjection(const Display display, const Scene scene)
+void RenderProjection(
+    const Display display, 
+    const Scene scene, 
+    const Frame2D cameraFrame)
 {
     Vector2D worldForward = { .x = 0.0, .y = -1.0 };
     int widthIncrements = 9;
@@ -204,12 +306,17 @@ void RenderProjection(const Display display, const Scene scene)
         RenderRay(
             display,
             scene,
+            cameraFrame,
             Vec2DNormalise(lookDir)
         );
     }
 }
 
-void RenderRay(const Display display, const Scene scene, const Vector2D ray)
+void RenderRay(
+    const Display display, 
+    const Scene scene, 
+    const Frame2D cameraFrame, 
+    const Vector2D ray)
 {
     int pointIndex = 0;
     double intersectionDistances[MAX_INTERSECTIONS];
@@ -262,7 +369,7 @@ void RenderRay(const Display display, const Scene scene, const Vector2D ray)
     }
 
     RenderCameraSpaceLine(
-        &scene.camera,
+        &cameraFrame,
         &display,
         &scene.colors.rayCol,
         scene.player.frame.position.x,
@@ -271,7 +378,9 @@ void RenderRay(const Display display, const Scene scene, const Vector2D ray)
         intersectedPoints[shortestIndex].y
     );
 
-    SDL_Rect rect;
+    // TODO - Fix the below code...
+
+    /*SDL_Rect rect;
     rect.x = intersectedPoints[shortestIndex].x - 2;
     rect.y = intersectedPoints[shortestIndex].y - 2;
     rect.w = 4;
@@ -283,7 +392,7 @@ void RenderRay(const Display display, const Scene scene, const Vector2D ray)
         &scene.colors.intersectCol,
         &rect,
         true
-    );
+    );*/
 }
 
 void RenderCameraSpaceLine(
