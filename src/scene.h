@@ -22,6 +22,7 @@ typedef struct SceneColors {
 
 typedef struct Scene {
 	Player player;
+	Frame2D camera;
 	DLList walls;
 	SceneColors colors;
 } Scene;

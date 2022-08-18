@@ -1,6 +1,7 @@
 #include "render.h"
 #include <assert.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include "SDL.h"
 #include "crayconsts.h"
 #include "craymath.h"
@@ -12,7 +13,8 @@ void RenderPlayer(const Display display, const Scene scene);
 void RenderProjection(const Display display, const Scene scene);
 void RenderRay(const Display display, const Scene scene, const Vector2D ray);
 
-void RenderLine(
+void RenderCameraSpaceLine(
+    const Frame2D* const cameraFrame,
     const Display* const display,
     const Color* const color,
     const double x1,
@@ -20,11 +22,44 @@ void RenderLine(
     const double x2,
     const double y2
 );
-void RenderRectangle(
+void RenderScreenSpaceLine(
     const Display* const display,
     const Color* const color,
-    const SDL_Rect* const area
+    const double x1,
+    const double y1,
+    const double x2,
+    const double y2
 );
+void RenderCameraSpaceRectangle(
+    const Frame2D* const cameraFrame,
+    const Display* const display,
+    const Color* const color,
+    const SDL_Rect* const area,
+    bool fill
+);
+void RenderScreenSpaceRectangle(
+    const Display* const display,
+    const Color* const color,
+    const SDL_Rect* const area,
+    bool fill
+);
+
+void RenderTile(const Display display, const Scene scene, const DisplayTile tile)
+{
+    ClearScreen(display, scene);
+    SDL_RenderSetViewport(display.renderer, &tile.position);
+    RenderScene(display, scene);
+    SDL_RenderSetViewport(display.renderer, NULL);
+
+    RenderScreenSpaceRectangle(
+        &display,
+        &tile.borderColor,
+        &tile.position,
+        false
+    );
+
+    SDL_RenderPresent(display.renderer);
+}
 
 void RenderScene(const Display display, const Scene scene)
 {
@@ -69,7 +104,8 @@ void RenderWalls(const Display display, const Scene scene)
     {
         LineSegment2D* line = DLLAt(&scene.walls, i);
 
-        RenderLine(
+        RenderCameraSpaceLine(
+            &scene.camera,
             &display,
             &scene.colors.wallCol,
             line->p1.x,
@@ -90,10 +126,12 @@ void RenderPlayer(const Display display, const Scene scene)
         .h = PLAYER_BASE_SIZE
     };
 
-    RenderRectangle(
+    RenderCameraSpaceRectangle(
+        &scene.camera,
         &display,
         &scene.colors.playerCol,
-        &rect
+        &rect,
+        true
     );
 }
 
@@ -174,7 +212,8 @@ void RenderRay(const Display display, const Scene scene, const Vector2D ray)
         }
     }
 
-    RenderLine(
+    RenderCameraSpaceLine(
+        &scene.camera,
         &display,
         &scene.colors.rayCol,
         scene.player.frame.position.x,
@@ -189,14 +228,34 @@ void RenderRay(const Display display, const Scene scene, const Vector2D ray)
     rect.w = 4;
     rect.h = 4;
 
-    RenderRectangle(
+    RenderCameraSpaceRectangle(
+        &scene.camera,
         &display,
         &scene.colors.intersectCol,
-        &rect
+        &rect,
+        true
     );
 }
 
-void RenderLine(
+void RenderCameraSpaceLine(
+    const Frame2D* const cameraFrame, 
+    const Display* const display, 
+    const Color* const color, 
+    const double x1, 
+    const double y1, 
+    const double x2, 
+    const double y2)
+{
+    RenderScreenSpaceLine(
+        display, color,
+        x1 + cameraFrame->position.x,
+        y1 + cameraFrame->position.y,
+        x2 + cameraFrame->position.x,
+        y2 + cameraFrame->position.y
+    );
+}
+
+void RenderScreenSpaceLine(
     const Display* const display,
     const Color* const color,
     const double x1,
@@ -227,10 +286,34 @@ void RenderLine(
     assert(res == 0);
 }
 
-void RenderRectangle(
+void RenderCameraSpaceRectangle(
+    const Frame2D* const cameraFrame, 
+    const Display* const display, 
+    const Color* const color, 
+    const SDL_Rect* const area, 
+    bool fill)
+{
+    SDL_Rect cameraSpaceRect =
+    {
+        .x = area->x + cameraFrame->position.x,
+        .y = area->y + cameraFrame->position.y,
+        .w = area->w,
+        .h = area->h
+    };
+
+    RenderScreenSpaceRectangle(
+        display,
+        color,
+        &cameraSpaceRect,
+        fill
+    );
+}
+
+void RenderScreenSpaceRectangle(
     const Display* const display,
     const Color* const color,
-    const SDL_Rect* const area)
+    const SDL_Rect* const area,
+    bool fill)
 {
     int res =
         SDL_SetRenderDrawColor(
@@ -243,11 +326,32 @@ void RenderRectangle(
 
     assert(res == 0);
 
-    res =
-        SDL_RenderFillRect(
-            display->renderer,
-            area
-        );
+    if (fill)
+    {
+        res =
+            SDL_RenderFillRect(
+                display->renderer,
+                area
+            );
 
-    assert(res == 0);
+        assert(res == 0);
+    }
+    else
+    {
+        SDL_FPoint points[5];
+        points[0] = (SDL_FPoint){ .x = area->x, .y = area->y };
+        points[1] = (SDL_FPoint){ .x = area->x + area->w, .y = area->y };
+        points[2] = (SDL_FPoint){ .x = area->x + area->w, .y = area->y + area->h };
+        points[3] = (SDL_FPoint){ .x = area->x, .y = area->y + area->h };
+        points[4] = (SDL_FPoint){ .x = area->x, .y = area->y };
+
+        res =
+            SDL_RenderDrawLinesF(
+                display->renderer,
+                points,
+                5
+            );
+
+        assert(res == 0);
+    }
 }

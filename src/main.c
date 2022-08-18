@@ -25,17 +25,13 @@ int main(int argc, char* argv[])
     printf("Window initialised\n");
     printf("Window initialising data...\n");
 
-    int halfWidth = CRAY_SCREEN_WIDTH / 2.0;
-    int halfHeight = CRAY_SCREEN_HEIGHT / 2.0;
-
     Scene scene = CreateDefaultScene();
-    scene.player.frame.position.x = halfWidth;
-    scene.player.frame.position.y = halfHeight;
 
-    Point2D p1 = { .x = halfWidth - 100, .y = halfHeight + 100 };
-    Point2D p2 = { .x = halfWidth - 100, .y = halfHeight - 100 };
-    Point2D p3 = { .x = halfWidth + 100, .y = halfHeight - 100 };
-    Point2D p4 = { .x = halfWidth + 100, .y = halfHeight + 100 };
+    double size = 100.0;
+    Point2D p1 = { .x = -size, .y =  size };
+    Point2D p2 = { .x = -size, .y = -size };
+    Point2D p3 = { .x =  size, .y = -size };
+    Point2D p4 = { .x =  size, .y =  size };
 
     LineSegment2D L1 = { .p1 = p1, .p2 = p2 };
     LineSegment2D L2 = { .p1 = p2, .p2 = p3 };
@@ -46,6 +42,19 @@ int main(int argc, char* argv[])
     PushDLLNode(&scene.walls, &L2);
     PushDLLNode(&scene.walls, &L3);
     PushDLLNode(&scene.walls, &L4);
+
+    DisplayTile tile =
+    {
+        .tileType = StaticScene,
+        .borderColor = CreateColorRGB(255, 0, 0),
+        .position =
+        {
+            .x = 100.0,
+            .y = 100.0,
+            .w = 100.0,
+            .h = 100.0
+        }
+    };
     
     printf("Data initialised\n");
     printf("Starting main loop...\n");
@@ -77,7 +86,28 @@ int main(int argc, char* argv[])
             printf("Frame delta: %llu\n", delta);
 
             UpdatePlayerPosition(&scene, inputState);
+
+            scene.camera =
+            (Frame2D) {
+                .position =
+                {
+                    .x = CRAY_SCREEN_WIDTH / 2,
+                    .y = CRAY_SCREEN_HEIGHT / 2
+                },
+                .theta = 0.0
+            };
             RenderScene(display, scene);
+
+            /*scene.camera = 
+            (Frame2D) {
+                .position =
+                {
+                    .x = tile.position.x + (tile.position.w / 2),
+                    .y = tile.position.y + (tile.position.h / 2)
+                },
+                .theta = 0.0
+            };*/
+            //RenderTile(display, scene, tile);
 
             previousTicks = currentTicks;
         }
