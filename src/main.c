@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 
     Scene scene = CreateDefaultScene();
 
-    double size = 100.0;
+    double size = 80.0;
     double hsize = size / 2.0;
 
     Point2D p1 = { .x = -size, .y = -hsize };
@@ -57,35 +57,49 @@ int main(int argc, char* argv[])
     PushDLLNode(&scene.walls, &L7);
     PushDLLNode(&scene.walls, &L8);
 
-    DisplayTile tile1 =
+    DisplayTile staticSceneTile =
     {
         .tileType = StaticScene,
         .borderColor = CreateColorRGB(255, 255, 0),
         .position =
         {
             .x = 40.0,
-            .y = 120.0,
-            .w = 240.0,
-            .h = 240.0
+            .y = 250.0,
+            .w = 200.0,
+            .h = 200.0
         }
     };
 
-    DisplayTile tile2 =
+    DisplayTile staticPlayerTile =
     {
         .tileType = StaticPlayer,
         .borderColor = CreateColorRGB(0, 255, 255),
         .position =
         {
             .x = 360.0,
-            .y = 120.0,
-            .w = 240.0,
-            .h = 240.0
+            .y = 250.0,
+            .w = 200.0,
+            .h = 200.0
         }
     };
 
-    DisplayTile tiles[2];
-    tiles[0] = tile1;
-    tiles[1] = tile2;
+    DisplayTile firstPersonTile =
+    {
+        .tileType = FirstPerson,
+        .borderColor = CreateColorRGB(255, 0, 255),
+        .position =
+        {
+            .x = 170.0,
+            .y = 30.0,
+            .w = 300.0,
+            .h = 200.0
+        }
+    };
+
+    DisplayTile tiles[3];
+    tiles[0] = staticSceneTile;
+    tiles[1] = staticPlayerTile;
+    tiles[2] = firstPersonTile;
     
     printf("Data initialised\n");
     printf("Starting main loop...\n");
@@ -118,6 +132,13 @@ int main(int argc, char* argv[])
 
             UpdatePlayerPosition(&scene, inputState);
 
+            printf(
+                "Player: %f, %f, %f\n",
+                scene.player.frame.position.x,
+                scene.player.frame.position.y,
+                scene.player.frame.theta
+            );
+
             /*scene.camera =
             (Frame2D) {
                 .position =
@@ -133,7 +154,7 @@ int main(int argc, char* argv[])
             //RenderTile(display, scene, tile1);
             //RenderTile(display, scene, tile2);
             
-            RenderTiles(display, scene, tiles, 2);
+            RenderTiles(display, scene, tiles, 3);
 
             previousTicks = currentTicks;
         }

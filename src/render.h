@@ -11,14 +11,17 @@ extern void RenderTiles(
 	const DisplayTile tiles[],
 	int count
 );
-
 extern void RenderTile(
 	const Display display, 
 	const Scene scene,
 	const DisplayTile tile 
 );
-extern void RenderScene(
+extern void RenderSceneTopDown(
 	const Display display, 
+	const Scene scene
+);
+extern void RenderSceneFirstPerson(
+	const Display display,
 	const Scene scene
 );
 extern void ClearScreen(
