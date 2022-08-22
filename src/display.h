@@ -18,6 +18,18 @@ typedef struct Display {
     int height;
 } Display;
 
+typedef enum TileType {
+    StaticScene,
+    StaticPlayer,
+    FirstPerson
+} TileType;
+
+typedef struct DisplayTile {
+    SDL_Rect position;
+    TileType tileType;
+    Color borderColor;
+} DisplayTile;
+
 extern Color CreateColor();
 extern Color CreateColorRGB(uint8_t r, uint8_t g, uint8_t b);
 extern Color CreateColorARGB(uint8_t a, uint8_t r, uint8_t g, uint8_t b);

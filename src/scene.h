@@ -15,6 +15,8 @@ typedef struct Player {
 typedef struct SceneColors {
 	Color clearCol;
 	Color wallCol;
+	Color floorCol;
+	Color ceilingColor;
 	Color playerCol;
 	Color rayCol;
 	Color intersectCol;
@@ -22,6 +24,7 @@ typedef struct SceneColors {
 
 typedef struct Scene {
 	Player player;
+	Frame2D camera;
 	DLList walls;
 	SceneColors colors;
 } Scene;
