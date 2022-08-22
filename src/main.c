@@ -154,7 +154,7 @@ int main(int argc, char* argv[])
             //RenderTile(display, scene, tile1);
             //RenderTile(display, scene, tile2);
             
-            RenderTiles(display, scene, tiles, 3);
+            RenderTiles(&display, &scene, tiles, 3);
 
             previousTicks = currentTicks;
         }

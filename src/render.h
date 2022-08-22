@@ -6,27 +6,27 @@
 
 // Function defs
 extern void RenderTiles(
-	const Display display,
-	const Scene scene,
+	const Display* const display,
+	const Scene* const scene,
 	const DisplayTile tiles[],
 	int count
 );
 extern void RenderTile(
-	const Display display, 
-	const Scene scene,
-	const DisplayTile tile 
+	const Display* const display,
+	const Scene* const scene,
+	const DisplayTile* const tile
 );
 extern void RenderSceneTopDown(
-	const Display display, 
-	const Scene scene
+	const Display* const display,
+	const Scene* const scene
 );
 extern void RenderSceneFirstPerson(
-	const Display display,
-	const Scene scene
+	const Display* const display,
+	const Scene* const scene
 );
 extern void ClearScreen(
-	const Display display, 
-	const Scene scene
+	const Display* const display,
+	const Scene* const scene
 );
 
 #endif // !_RENDER_H_
