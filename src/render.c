@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <float.h>
 #include "SDL.h"
 #include "crayconsts.h"
 #include "craymath.h"
@@ -277,17 +278,16 @@ void RenderSceneFirstPersonInternal(
     const int width,
     const int height)
 {
-    int pointIndex = 0;
-    double intersectionDistances[MAX_INTERSECTIONS];
-    Point2D intersectedPoints[MAX_INTERSECTIONS];
-    LineSegment2D* nearestLine = NULL;
-
     Vector2D worldForward = { .x = 0.0, .y = -1.0 };
     double angleInterval = (scene.player.fov * 2.0) / ((double)(width - 1));
     double startAngle = scene.player.frame.theta - scene.player.fov;
 
     for (int i = 0; i < width; i++)
     {
+        LineSegment2D* nearestWall = NULL;
+        double distanceToWall = DBL_MAX;
+        Point2D wallIntersection;
+
         double theta = startAngle + ((double)i * angleInterval);
 
         Vector2D lookDir =
@@ -296,7 +296,8 @@ void RenderSceneFirstPersonInternal(
                 theta
             );
 
-        pointIndex = 0;
+        lookDir = Vec2DNormalise(lookDir);
+
         DLLNode* current = scene.walls.head;
 
         while (current != NULL)
@@ -308,7 +309,7 @@ void RenderSceneFirstPersonInternal(
             bool doesIntersect =
                 DoesRayInterectLine(
                     scene.player.frame.position,
-                    Vec2DNormalise(lookDir),
+                    lookDir,
                     *line,
                     &distanceToLine,
                     &intersectionPoint
@@ -316,45 +317,49 @@ void RenderSceneFirstPersonInternal(
 
             if (doesIntersect)
             {
-                intersectionDistances[pointIndex] = distanceToLine;
-                intersectedPoints[pointIndex] = intersectionPoint;
-                pointIndex++;
-
-                if (pointIndex >= MAX_INTERSECTIONS)
+                if (distanceToLine < distanceToWall)
                 {
-                    break;
+                    nearestWall = line;
+                    distanceToWall = distanceToLine;
+                    wallIntersection = intersectionPoint;
                 }
             }
 
             current = current->next;
         }
 
-        if (pointIndex == 0)
+        if (nearestWall == NULL)
         {
             return;
         }
 
-        int shortestIndex = 0;
-        for (int j = 0; j < pointIndex; j++)
-        {
-            if (intersectionDistances[j] <
-                intersectionDistances[shortestIndex])
-            {
-                shortestIndex = j;
-            }
-        }
+        Vector2D wallVector = 
+            Vec2DNormalise(
+                Vec2DBetween(nearestWall->p1, nearestWall->p2)
+            );
 
-        // TODO - Need to calculate the angle with wall
-        double angleWithWall = 0.0;
+        double angleWithWall = 
+            Vec2DDot(
+                lookDir,
+                Vec2DNormalise(Vec2DBetween(nearestWall->p1, nearestWall->p2))
+            );
+
+        angleWithWall = 1.0 - (fabs(angleWithWall) / 2.0);
 
         RenderVerticalWallStrip(
             display,
             scene,
             i,
             height,
-            intersectionDistances[shortestIndex],
+            distanceToWall,
             angleWithWall
         );
+
+        if (theta > 0.0)
+        {
+            int temp = 0;
+            temp++;
+        }
     }
 }
 
@@ -366,29 +371,40 @@ void RenderVerticalWallStrip(
     const double distanceToWall,
     const double angleWithWall)
 {
-    const double WALL_HEIGHT = 2000.0;
     double h = tan(ToRad(scene.player.fov)) * distanceToWall;
     double wallHeightPixels = WALL_HEIGHT / h;
     double wallStartY = (height / 2.0) - (wallHeightPixels / 2.0);
     double wallEndY = (height / 2.0) + (wallHeightPixels / 2.0);
 
-    const double MAX_DIST = 200.0;
-
-    if (distanceToWall > MAX_DIST)
-    {
-        return;
-    }
-
-    double colorFactor = distanceToWall / MAX_DIST;
-    uint8_t color = (uint8_t)(255.0 / colorFactor);
-
     int res =
         SDL_SetRenderDrawColor(
             display.renderer,
-            //color,
-            255,
-            0,
-            0,
+            scene.colors.ceilingColor.r,
+            scene.colors.ceilingColor.g,
+            scene.colors.ceilingColor.b,
+            255
+        );
+
+    assert(res == 0);
+
+    for (int i = 0; i < wallStartY; i++)
+    {
+        res =
+            SDL_RenderDrawPoint(
+                display.renderer,
+                xPosition,
+                i
+            );
+
+        assert(res == 0);
+    }
+
+    res =
+        SDL_SetRenderDrawColor(
+            display.renderer,
+            scene.colors.wallCol.r * angleWithWall,
+            scene.colors.wallCol.g * angleWithWall,
+            scene.colors.wallCol.b * angleWithWall,
             255
         );
 
@@ -396,7 +412,29 @@ void RenderVerticalWallStrip(
 
     for (int i = wallStartY; i < wallEndY; i++)
     {
-        // Put pixel
+        res =
+            SDL_RenderDrawPoint(
+                display.renderer,
+                xPosition,
+                i
+            );
+
+        assert(res == 0);
+    }
+
+    res =
+        SDL_SetRenderDrawColor(
+            display.renderer,
+            scene.colors.floorCol.r,
+            scene.colors.floorCol.g,
+            scene.colors.floorCol.b,
+            255
+        );
+
+    assert(res == 0);
+
+    for (int i = wallEndY; i < height; i++)
+    {
         res =
             SDL_RenderDrawPoint(
                 display.renderer,
@@ -511,9 +549,9 @@ void RenderRayTopDown(
     const Frame2D cameraFrame, 
     const Vector2D ray)
 {
-    int pointIndex = 0;
-    double intersectionDistances[MAX_INTERSECTIONS];
-    Point2D intersectedPoints[MAX_INTERSECTIONS];
+    LineSegment2D* nearestWall = NULL;
+    double distanceToWall = DBL_MAX;
+    Point2D wallIntersection;
     DLLNode* current = scene.walls.head;
 
     while (current != NULL)
@@ -533,32 +571,20 @@ void RenderRayTopDown(
 
         if (doesIntersect)
         {
-            intersectionDistances[pointIndex] = distanceToLine;
-            intersectedPoints[pointIndex] = intersectionPoint;
-            pointIndex++;
-
-            if (pointIndex >= MAX_INTERSECTIONS)
+            if (distanceToLine < distanceToWall)
             {
-                break;
+                nearestWall = line;
+                distanceToWall = distanceToLine;
+                wallIntersection = intersectionPoint;
             }
         }
 
         current = current->next;
     }
 
-    if (pointIndex == 0)
+    if (nearestWall == 0)
     {
         return;
-    }
-
-    int shortestIndex = 0;
-    for (int i = 0; i < pointIndex; i++)
-    {
-        if (intersectionDistances[i] <
-            intersectionDistances[shortestIndex])
-        {
-            shortestIndex = i;
-        }
     }
 
     RenderCameraSpaceLine(
@@ -567,13 +593,13 @@ void RenderRayTopDown(
         &scene.colors.rayCol,
         scene.player.frame.position.x,
         scene.player.frame.position.y,
-        intersectedPoints[shortestIndex].x,
-        intersectedPoints[shortestIndex].y
+        wallIntersection.x,
+        wallIntersection.y
     );
 
     SDL_Rect rect;
-    rect.x = intersectedPoints[shortestIndex].x - 2;
-    rect.y = intersectedPoints[shortestIndex].y - 2;
+    rect.x = wallIntersection.x - 2;
+    rect.y = wallIntersection.y - 2;
     rect.w = 4;
     rect.h = 4;
 

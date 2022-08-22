@@ -6,7 +6,7 @@ Player CreateDefaultPlayer()
 	Player player =
 	{
 		.frame = CreateFrame2D(0.0, 0.0, 0.0),
-		45.0
+		30.0
 	};
 
 	return player;
@@ -22,6 +22,8 @@ Scene CreateDefaultScene()
 		{
 			.clearCol = CreateColorRGB(0, 0, 0),
 			.wallCol = CreateColorRGB(255, 255, 255),
+			.floorCol = CreateColorRGB(52, 52, 52),
+			.ceilingColor = CreateColorRGB(52, 52, 128),
 			.playerCol = CreateColorRGB(0, 0, 255),
 			.rayCol = CreateColorRGB(255, 0, 0),
 			.intersectCol = CreateColorRGB(0, 255, 0)
