@@ -1,6 +1,13 @@
 cmake_minimum_required(VERSION 3.8)
 
+SET(SDL2_DIR $ENV{SDL2_DIR})
+
 find_package(SDL2 REQUIRED)
+
+include_directories(CRayCaster PUBLIC
+	"../lib"
+	${SDL2_INCLUDE_DIRS}
+)
 
 add_executable(CRayCaster
 	main.c
@@ -17,14 +24,9 @@ add_executable(CRayCaster
 	craymath.c
 )
 
-target_include_directories(CRayCaster PUBLIC
-	"../lib"
-	$ENV{SDL2_INCLUDE_DIRS}
-)
-
 target_link_directories(CRayCaster PUBLIC
 	"../lib"
-	$ENV{SDL2_LIBRARIES}
+	${SDL2_LIBRARIES}
 )
 
 target_link_libraries(CRayCaster PRIVATE
