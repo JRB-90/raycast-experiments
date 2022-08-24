@@ -164,7 +164,12 @@ void RenderSceneTopDown(
     const Scene* const scene)
 {
     uint64_t start = SDL_GetTicks64();
+
+    SDL_RenderSetViewport(display->renderer, NULL);
+    ClearScreen(display, scene);
     RenderSceneTopDownInternal(display, scene, &scene->camera);
+    SDL_RenderPresent(display->renderer);
+
     uint64_t timeTaken = SDL_GetTicks64() - start;
     printf("Rendering time: %llums\n", timeTaken);
 }
@@ -174,14 +179,17 @@ void RenderSceneFirstPerson(
     const Scene* const scene)
 {
     uint64_t start = SDL_GetTicks64();
+
+    SDL_RenderSetViewport(display->renderer, NULL);
+    ClearScreen(display, scene);
     RenderSceneFirstPersonInternal(
         display,
         scene,
-        0,
-        0,
         display->width,
         display->height
     );
+    SDL_RenderPresent(display->renderer);
+
     uint64_t timeTaken = SDL_GetTicks64() - start;
     printf("Rendering time: %llums\n", timeTaken);
 }
@@ -346,6 +354,15 @@ void RenderSceneFirstPersonInternal(
 
         if (nearestWall == NULL)
         {
+            RenderVerticalWallStrip(
+                display,
+                scene,
+                i,
+                height,
+                0.0,
+                0.0
+            );
+
             return;
         }
 
@@ -370,12 +387,6 @@ void RenderSceneFirstPersonInternal(
             distanceToWall,
             angleWithWall
         );
-
-        if (theta > 0.0)
-        {
-            int temp = 0;
-            temp++;
-        }
     }
 }
 

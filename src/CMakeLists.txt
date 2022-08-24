@@ -1,4 +1,6 @@
-cmake_minimum_required (VERSION 3.8)
+cmake_minimum_required(VERSION 3.8)
+
+find_package(SDL2 REQUIRED)
 
 add_executable(CRayCaster
 	main.c
@@ -17,12 +19,12 @@ add_executable(CRayCaster
 
 target_include_directories(CRayCaster PUBLIC
 	"../lib"
-	$ENV{SDL2_INCLUDE}
+	$ENV{SDL2_INCLUDE_DIRS}
 )
 
 target_link_directories(CRayCaster PUBLIC
 	"../lib"
-	$ENV{SDL2_LIB}
+	$ENV{SDL2_LIBRARIES}
 )
 
 target_link_libraries(CRayCaster PRIVATE

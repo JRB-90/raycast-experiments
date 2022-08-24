@@ -139,20 +139,23 @@ int main(int argc, char* argv[])
                 scene.player.frame.theta
             );
 
-            /*scene.camera =
-            (Frame2D) {
-                .position =
-                {
-                    .x = CRAY_SCREEN_WIDTH / 2,
-                    .y = CRAY_SCREEN_HEIGHT / 2
-                },
-                .theta = 0.0
-            };
-            RenderScene(display, scene);*/
+            //scene.camera =
+            //(Frame2D) {
+            //    .position =
+            //    {
+            //        .x = CRAY_SCREEN_WIDTH / 2,
+            //        .y = CRAY_SCREEN_HEIGHT / 2
+            //    },
+            //    .theta = 0.0
+            //};
+            ////RenderSceneTopDown(&display, &scene);
+            //RenderSceneFirstPerson(&display, &scene);
+
 
             
             //RenderTile(display, scene, tile1);
             //RenderTile(display, scene, tile2);
+            //RenderTile(display, scene, tile3);
             
             RenderTiles(&display, &scene, tiles, 3);
 
