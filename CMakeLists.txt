@@ -4,5 +4,4 @@ project(CRayCaster)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
-add_subdirectory("lib/dlist")
-add_subdirectory("src")
+add_subdirectory("src/cray")

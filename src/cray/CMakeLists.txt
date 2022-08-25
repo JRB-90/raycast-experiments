@@ -5,16 +5,16 @@ SET(SDL2_DIR $ENV{SDL2_DIR})
 find_package(SDL2 REQUIRED)
 
 include_directories(CRayCaster PUBLIC
-	"../lib"
 	${SDL2_INCLUDE_DIRS}
 )
 
 add_executable(CRayCaster
 	main.c
-    
+	dlist.h
+	dlist.c
     display.h
 	display.c
-    input.h 
+    input.h
 	input.c
     scene.h
 	scene.c
@@ -24,15 +24,8 @@ add_executable(CRayCaster
 	craymath.c
 )
 
-target_link_directories(CRayCaster PUBLIC
-	"../lib"
-	${SDL2_LIBRARIES}
-)
-
 target_link_libraries(CRayCaster PRIVATE
-	SDL2
-	SDL2main
-	dlist
+	${SDL2_LIBRARIES}
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

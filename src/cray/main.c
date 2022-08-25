@@ -7,7 +7,7 @@
 #include "scene.h"
 #include "input.h"
 #include "render.h"
-#include "dlist/dlist.h"
+#include "dlist.h"
 #include "craymath.h"
 
 // Entry point
