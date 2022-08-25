@@ -364,7 +364,7 @@ void RenderSceneFirstPersonInternal(
                 0.0
             );
 
-            return;
+            continue;
         }
 
         Vector2D wallVector = 
