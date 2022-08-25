@@ -6,6 +6,7 @@
 #include "SDL.h"
 #include "crayconsts.h"
 #include "craymath.h"
+#include "time.h"
 
 #pragma region Private Function Definitions
 
@@ -112,7 +113,7 @@ void RenderTiles(
     const DisplayTile tiles[],
     int count)
 {
-    uint64_t start = SDL_GetTicks64();
+    uint64_t start = GetTicks();
 
     ClearScreen(display, scene);
 
@@ -131,8 +132,8 @@ void RenderTiles(
 
     SDL_RenderPresent(display->renderer);
 
-    uint64_t timeTaken = SDL_GetTicks64() - start;
-    printf("Rendering time: %llums\n", timeTaken);
+    uint64_t timeTaken = GetTicks() - start;
+    printf("Rendering time: %f ms\n", GetTimeInMS(timeTaken));
 }
 
 void RenderTile(
@@ -140,7 +141,7 @@ void RenderTile(
     const Scene* const scene,
     const DisplayTile* const tile)
 {
-    uint64_t start = SDL_GetTicks64();
+    uint64_t start = GetTicks();
 
     ClearScreen(display, scene);
 
@@ -155,30 +156,30 @@ void RenderTile(
 
     SDL_RenderPresent(display->renderer);
 
-    uint64_t timeTaken = SDL_GetTicks64() - start;
-    printf("Rendering time: %llums\n", timeTaken);
+    uint64_t timeTaken = GetTicks() - start;
+    printf("Rendering time: %f ms\n", GetTimeInMS(timeTaken));
 }
 
 void RenderSceneTopDown(
     const Display* const display,
     const Scene* const scene)
 {
-    uint64_t start = SDL_GetTicks64();
+    uint64_t start = GetTicks();
 
     SDL_RenderSetViewport(display->renderer, NULL);
     ClearScreen(display, scene);
     RenderSceneTopDownInternal(display, scene, &scene->camera);
     SDL_RenderPresent(display->renderer);
 
-    uint64_t timeTaken = SDL_GetTicks64() - start;
-    printf("Rendering time: %llums\n", timeTaken);
+    uint64_t timeTaken = GetTicks() - start;
+    printf("Rendering time: %f ms\n", GetTimeInMS(timeTaken));
 }
 
 void RenderSceneFirstPerson(
     const Display* const display,
     const Scene* const scene)
 {
-    uint64_t start = SDL_GetTicks64();
+    uint64_t start = GetTicks();
 
     SDL_RenderSetViewport(display->renderer, NULL);
     ClearScreen(display, scene);
@@ -190,8 +191,8 @@ void RenderSceneFirstPerson(
     );
     SDL_RenderPresent(display->renderer);
 
-    uint64_t timeTaken = SDL_GetTicks64() - start;
-    printf("Rendering time: %llums\n", timeTaken);
+    uint64_t timeTaken = GetTicks() - start;
+    printf("Rendering time: %f ms\n", GetTimeInMS(timeTaken));
 }
 
 #pragma endregion

@@ -21,6 +21,8 @@ add_library(cray
 	render.c
     craymath.h
 	craymath.c
+	time.h
+    time.c
 )
 
 target_link_libraries(cray PRIVATE
