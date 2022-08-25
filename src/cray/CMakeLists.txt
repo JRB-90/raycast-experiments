@@ -4,12 +4,11 @@ SET(SDL2_DIR $ENV{SDL2_DIR})
 
 find_package(SDL2 REQUIRED)
 
-include_directories(CRayCaster PUBLIC
+include_directories(cray PUBLIC
 	${SDL2_INCLUDE_DIRS}
 )
 
-add_executable(CRayCaster
-	main.c
+add_library(cray
 	dlist.h
 	dlist.c
     display.h
@@ -24,12 +23,11 @@ add_executable(CRayCaster
 	craymath.c
 )
 
-target_link_libraries(CRayCaster PRIVATE
+target_link_libraries(cray PRIVATE
 	${SDL2_LIBRARIES}
-	m
-	dl
+	${MATH_LIBS}
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET CRayCaster PROPERTY C_STANDARD 11)
+  set_property(TARGET cray PROPERTY C_STANDARD 11)
 endif()
