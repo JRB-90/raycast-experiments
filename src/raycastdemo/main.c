@@ -7,7 +7,7 @@
 #include "scene.h"
 #include "input.h"
 #include "render.h"
-#include "dlist/dlist.h"
+#include "dlist.h"
 #include "craymath.h"
 
 // Entry point
@@ -128,6 +128,8 @@ int main(int argc, char* argv[])
 
         if (delta > targetInterval)
         {
+            printf("\033[2J");
+            printf("\033[H");
             printf("Frame delta: %llu\n", delta);
 
             UpdatePlayerPosition(&scene, inputState);
@@ -139,7 +141,7 @@ int main(int argc, char* argv[])
                 scene.player.frame.theta
             );
 
-            /*scene.camera =
+            scene.camera =
             (Frame2D) {
                 .position =
                 {
@@ -148,18 +150,21 @@ int main(int argc, char* argv[])
                 },
                 .theta = 0.0
             };
-            RenderScene(display, scene);*/
+            //RenderSceneTopDown(&display, &scene);
+            RenderSceneFirstPerson(&display, &scene);
+
 
             
             //RenderTile(display, scene, tile1);
-            //RenderTile(display, scene, tile2);
+
+
             
-            RenderTiles(display, scene, tiles, 3);
+            //RenderTiles(&display, &scene, tiles, 3);
 
             previousTicks = currentTicks;
         }
     }
-
+    
     printf("Closing down...\n");
     CleanupDisplay(display);
 

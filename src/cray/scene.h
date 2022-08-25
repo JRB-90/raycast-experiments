@@ -4,7 +4,7 @@
 #include "display.h"
 #include "input.h"
 #include "craymath.h"
-#include "dlist/dlist.h"
+#include "dlist.h"
 
 // Data types
 typedef struct Player {
