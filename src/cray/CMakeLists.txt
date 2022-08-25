@@ -26,6 +26,8 @@ add_executable(CRayCaster
 
 target_link_libraries(CRayCaster PRIVATE
 	${SDL2_LIBRARIES}
+	m
+	dl
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
