@@ -399,8 +399,14 @@ void RenderVerticalWallStrip(
     const double distanceToWall,
     const double angleWithWall)
 {
-    double h = tan(ToRad(scene->player.fov)) * distanceToWall;
-    double wallHeightPixels = WALL_HEIGHT / h;
+    double wallHeightPixels = 0.0;
+
+    if (distanceToWall > 0.0)
+    {
+        double h = tan(ToRad(scene->player.fov)) * distanceToWall;
+        wallHeightPixels = WALL_HEIGHT / h;
+    }
+    
     double wallStartY = (height / 2.0) - (wallHeightPixels / 2.0);
     double wallEndY = (height / 2.0) + (wallHeightPixels / 2.0);
 
