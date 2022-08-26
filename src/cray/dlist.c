@@ -91,7 +91,7 @@ void* LLAt(LList* const list, uint32_t index)
 	
 	LLNode* node = list->head;
 
-	for (int i = 0; i < index; i++)
+	for (uint32_t i = 0; i < index; i++)
 	{
 		node = node->next;
 	}
@@ -186,7 +186,7 @@ void* DLLAt(DLList* const list, uint32_t index)
 
 	DLLNode* node = list->head;
 
-	for (int i = 0; i < index; i++)
+	for (uint32_t i = 0; i < index; i++)
 	{
 		node = node->next;
 	}

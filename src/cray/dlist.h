@@ -5,7 +5,7 @@
 
 typedef struct LLNode {
 	void* data;
-	struct SLNode* next;
+	struct LLNode* next;
 } LLNode;
 
 typedef struct LList {

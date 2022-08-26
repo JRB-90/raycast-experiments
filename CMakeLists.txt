@@ -9,5 +9,12 @@ if (UNIX)
 	set(MATH_LIBS m dl)
 endif(UNIX)
 
+if (MSVC)
+    #add_compile_options(/W3 /WX)
+else()
+    #add_compile_options(-Wall -Wextra -pedantic -Werror)
+    #add_compile_options(-pg)
+endif()
+
 add_subdirectory("src/cray")
 add_subdirectory("src/raycastdemo")

@@ -63,10 +63,10 @@ int main(int argc, char* argv[])
         .borderColor = CreateColorRGB(255, 255, 0),
         .position =
         {
-            .x = 40.0,
-            .y = 250.0,
-            .w = 200.0,
-            .h = 200.0
+            .x = 40,
+            .y = 250,
+            .w = 200,
+            .h = 200
         }
     };
 
@@ -76,10 +76,10 @@ int main(int argc, char* argv[])
         .borderColor = CreateColorRGB(0, 255, 255),
         .position =
         {
-            .x = 360.0,
-            .y = 250.0,
-            .w = 200.0,
-            .h = 200.0
+            .x = 360,
+            .y = 250,
+            .w = 200,
+            .h = 200
         }
     };
 
@@ -89,17 +89,19 @@ int main(int argc, char* argv[])
         .borderColor = CreateColorRGB(255, 0, 255),
         .position =
         {
-            .x = 170.0,
-            .y = 30.0,
-            .w = 300.0,
-            .h = 200.0
+            .x = 170,
+            .y = 30,
+            .w = 300,
+            .h = 200
         }
     };
 
-    DisplayTile tiles[3];
-    tiles[0] = staticSceneTile;
-    tiles[1] = staticPlayerTile;
-    tiles[2] = firstPersonTile;
+    DisplayTile tiles[3] =
+    {
+        staticSceneTile,
+        staticPlayerTile,
+        firstPersonTile
+    };
     
     printf("Data initialised\n");
     printf("Starting main loop...\n");

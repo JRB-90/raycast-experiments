@@ -221,8 +221,8 @@ Frame2D CalculateTileCameraPosition(
     else if (tile->tileType == StaticPlayer)
     {
         // TODO - Need to somehow figure out how to make camera right?
-        double x = (tile->position.w / 2);
-        double y = (tile->position.h / 2);
+        double x = (tile->position.w / 2.0);
+        double y = (tile->position.h / 2.0);
 
         cameraFrame =
         (Frame2D){
@@ -367,11 +367,6 @@ void RenderSceneFirstPersonInternal(
             continue;
         }
 
-        Vector2D wallVector = 
-            Vec2DNormalise(
-                Vec2DBetween(nearestWall->p1, nearestWall->p2)
-            );
-
         double angleWithWall = 
             Vec2DDot(
                 lookDir,
@@ -407,8 +402,8 @@ void RenderVerticalWallStrip(
         wallHeightPixels = WALL_HEIGHT / h;
     }
     
-    double wallStartY = (height / 2.0) - (wallHeightPixels / 2.0);
-    double wallEndY = (height / 2.0) + (wallHeightPixels / 2.0);
+    int wallStartY = (int)((height / 2.0) - (wallHeightPixels / 2.0));
+    int wallEndY = (int)((height / 2.0) + (wallHeightPixels / 2.0));
 
     int res =
         SDL_SetRenderDrawColor(
@@ -436,9 +431,9 @@ void RenderVerticalWallStrip(
     res =
         SDL_SetRenderDrawColor(
             display->renderer,
-            scene->colors.wallCol.r * angleWithWall,
-            scene->colors.wallCol.g * angleWithWall,
-            scene->colors.wallCol.b * angleWithWall,
+            (uint8_t)(scene->colors.wallCol.r * angleWithWall),
+            (uint8_t)(scene->colors.wallCol.g * angleWithWall),
+            (uint8_t)(scene->colors.wallCol.b * angleWithWall),
             255
         );
 
@@ -510,9 +505,9 @@ void RenderWallsTopDown(
         return;
     }
 
-    for (int i = 0; i < scene->walls.size; i++)
+    for (uint32_t i = 0; i < scene->walls.size; i++)
     {
-        LineSegment2D* line = DLLAt(&scene->walls, i);
+        LineSegment2D* line = DLLAt((DLList* const)&scene->walls, i);
 
         RenderCameraSpaceLine(
             display,
@@ -534,10 +529,10 @@ void RenderPlayerTopDown(
 {
     SDL_Rect rect =
     {
-        .x = scene->player.frame.position.x - (PLAYER_BASE_SIZE / 2.0),
-        .y = scene->player.frame.position.y - (PLAYER_BASE_SIZE / 2.0),
-        .w = PLAYER_BASE_SIZE,
-        .h = PLAYER_BASE_SIZE
+        .x = (int)(scene->player.frame.position.x - (PLAYER_BASE_SIZE / 2.0)),
+        .y = (int)(scene->player.frame.position.y - (PLAYER_BASE_SIZE / 2.0)),
+        .w = (int)PLAYER_BASE_SIZE,
+        .h = (int)PLAYER_BASE_SIZE
     };
 
     RenderCameraSpaceRectangle(
@@ -587,7 +582,7 @@ void RenderRayTopDown(
     const Frame2D* const cameraFrame,
     const Vector2D* const ray)
 {
-    LineSegment2D* nearestWall = NULL;
+    const LineSegment2D* nearestWall = NULL;
     double distanceToWall = DBL_MAX;
     Point2D wallIntersection;
     DLLNode* current = scene->walls.head;
@@ -636,11 +631,13 @@ void RenderRayTopDown(
         wallIntersection.y
     );
 
-    SDL_Rect rect;
-    rect.x = wallIntersection.x - 2;
-    rect.y = wallIntersection.y - 2;
-    rect.w = 4;
-    rect.h = 4;
+    SDL_Rect rect =
+    {
+        .x = (int)(wallIntersection.x - 2.0),
+        .y = (int)(wallIntersection.y - 2.0),
+        .w = 4,
+        .h = 4
+    };
 
     RenderCameraSpaceRectangle(
         display,
@@ -738,10 +735,10 @@ void RenderScreenSpaceLine(
     res =
         SDL_RenderDrawLineF(
             display->renderer,
-            x1,
-            y1,
-            x2,
-            y2
+            (float)x1,
+            (float)y1,
+            (float)x2,
+            (float)y2
         );
 
     assert(res == 0);
@@ -769,10 +766,10 @@ void RenderCameraSpaceRectangle(
 
     SDL_Rect cameraSpaceRect =
     {
-        .x = x1Screen,
-        .y = y1Screen,
-        .w = area->w,
-        .h = area->h
+        .x = (int)x1Screen,
+        .y = (int)y1Screen,
+        .w = (int)area->w,
+        .h = (int)area->h
     };
 
     RenderScreenSpaceRectangle(
@@ -812,15 +809,17 @@ void RenderScreenSpaceRectangle(
     }
     else
     {
-        SDL_FPoint points[5];
-        points[0] = (SDL_FPoint){ .x = area->x, .y = area->y };
-        points[1] = (SDL_FPoint){ .x = area->x + area->w, .y = area->y };
-        points[2] = (SDL_FPoint){ .x = area->x + area->w, .y = area->y + area->h };
-        points[3] = (SDL_FPoint){ .x = area->x, .y = area->y + area->h };
-        points[4] = (SDL_FPoint){ .x = area->x, .y = area->y };
+        SDL_Point points[5] =
+        {
+            (SDL_Point){ .x = area->x, .y = area->y },
+            (SDL_Point){ .x = area->x + area->w, .y = area->y },
+            (SDL_Point){ .x = area->x + area->w, .y = area->y + area->h },
+            (SDL_Point){ .x = area->x, .y = area->y + area->h },
+            (SDL_Point){ .x = area->x, .y = area->y }
+        };
 
         res =
-            SDL_RenderDrawLinesF(
+            SDL_RenderDrawLines(
                 display->renderer,
                 points,
                 5
