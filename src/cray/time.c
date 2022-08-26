@@ -59,5 +59,23 @@ double GetTimeInUS(uint64_t elapsedTicks)
 #endif // _WIN32
 
 #ifdef __unix
-// TODO
+uint64_t GetTicks()
+{
+    return 0;
+}
+
+double GetTimeInS(uint64_t elapsedTicks)
+{
+    return 0.0;
+}
+
+double GetTimeInMS(uint64_t elapsedTicks)
+{
+    return 0.0;
+}
+
+double GetTimeInUS(uint64_t elapsedTicks)
+{
+    return 0.0;
+}
 #endif // __unix
