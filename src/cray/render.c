@@ -5,7 +5,6 @@
 #include "SDL.h"
 #include "crayconsts.h"
 #include "craymath.h"
-#include "time.h"
 
 #pragma region Private Function Definitions
 

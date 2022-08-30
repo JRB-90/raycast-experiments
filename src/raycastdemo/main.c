@@ -10,7 +10,7 @@
 #include "dlist.h"
 #include "craymath.h"
 #include "raysettings.h"
-#include "time.h"
+#include "craytime.h"
 
 // Entry point
 int main(int argc, char* argv[])
@@ -210,7 +210,7 @@ int main(int argc, char* argv[])
                     scene.player.frame.theta
                 );
                 printf("Frame delta: %lu ms\n", delta);
-                printf("Render time: %f ms", renderTimeMS);
+                printf("Render time: %f ms\n", renderTimeMS);
             }
 
             previousTicks = currentTicks;

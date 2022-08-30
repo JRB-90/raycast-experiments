@@ -1,4 +1,4 @@
-#include "time.h"
+#include "craytime.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -59,23 +59,28 @@ double GetTimeInUS(uint64_t elapsedTicks)
 #endif // _WIN32
 
 #ifdef __unix
+#include "time.h"
+
 uint64_t GetTicks()
 {
-    return 0;
+    struct timespec t;
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t);
+
+    return t.tv_nsec;
 }
 
 double GetTimeInS(uint64_t elapsedTicks)
 {
-    return 0.0;
+    return (double)((double)elapsedTicks / 1000000000.0);
 }
 
 double GetTimeInMS(uint64_t elapsedTicks)
 {
-    return 0.0;
+    return (double)((double)elapsedTicks / 1000000.0);
 }
 
 double GetTimeInUS(uint64_t elapsedTicks)
 {
-    return 0.0;
+    return (double)((double)elapsedTicks / 1000.0);
 }
 #endif // __unix
