@@ -9,6 +9,7 @@ include_directories(raycastdemo PUBLIC
 
 add_executable(raycastdemo
 	main.c
+    raysettings.h
 )
 
 target_link_directories(raycastdemo PUBLIC

@@ -73,10 +73,46 @@ void UpdatePlayerPosition(Scene* const scene, InputState inputState)
 
 	if (inputState.right)
 	{
-		scene->player.frame.theta += ROT_SPEED;
+		Vector2D worldForward = { .x = 0.0, .y = -1.0 };
+		Vector2D lookDir =
+			FindLookVector(
+				worldForward,
+				scene->player.frame.theta + 90.0
+			);
+
+		lookDir = Vec2DNormalise(lookDir);
+
+		scene->player.frame.position =
+			AddVec2DToPoint2D(
+				scene->player.frame.position,
+				Vec2DMul(lookDir, TRANS_SPEED)
+			);
 	}
 
 	if (inputState.left)
+	{
+		Vector2D worldForward = { .x = 0.0, .y = -1.0 };
+		Vector2D lookDir =
+			FindLookVector(
+				worldForward,
+				scene->player.frame.theta - 90.0
+			);
+
+		lookDir = Vec2DNormalise(lookDir);
+
+		scene->player.frame.position =
+			AddVec2DToPoint2D(
+				scene->player.frame.position,
+				Vec2DMul(lookDir, TRANS_SPEED)
+			);
+	}
+
+	if (inputState.rotRight)
+	{
+		scene->player.frame.theta += ROT_SPEED;
+	}
+
+	if (inputState.rotLeft)
 	{
 		scene->player.frame.theta -= ROT_SPEED;
 	}

@@ -8,8 +8,12 @@ typedef struct InputState {
 	bool quit;
 	bool forwards;
 	bool backwards;
+	bool rotRight;
+	bool rotLeft;
 	bool right;
 	bool left;
+	bool toggleDebug;
+	bool toggleRenderMode;
 } InputState;
 
 // Functions definitions

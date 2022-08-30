@@ -1,16 +1,23 @@
 #include "input.h"
 #include "SDL.h"
 
+void ResetPulseKeys(InputState* const state);
 void UpdatePlayerControls(InputState* const state, SDL_Event* e);
 
 InputState DefaultInputState()
 {
-    InputState inputState;
-    inputState.quit = false;
-    inputState.forwards = false;
-    inputState.backwards = false;
-    inputState.left = false;
-    inputState.right = false;
+    InputState inputState =
+    {
+        .quit = false,
+        .forwards = false,
+        .backwards = false,
+        .rotLeft = false,
+        .rotRight = false,
+        .left = false,
+        .right = false,
+        .toggleDebug = false,
+        .toggleRenderMode = false,
+    };
 
     return inputState;
 }
@@ -18,6 +25,7 @@ InputState DefaultInputState()
 void UpdateInputState(InputState* const state)
 {
     SDL_Event e;
+    ResetPulseKeys(state);
 
     while (SDL_PollEvent(&e))
     {
@@ -34,12 +42,27 @@ void UpdateInputState(InputState* const state)
     }
 }
 
+void ResetPulseKeys(InputState* const state)
+{
+    state->toggleDebug = false;
+    state->toggleRenderMode = false;
+}
+
 void UpdatePlayerControls(InputState* const state, SDL_Event* e)
 {
     if (e->type == SDL_KEYDOWN)
     {
         switch (e->key.keysym.sym)
         {
+        case SDLK_ESCAPE:
+            state->quit = true;
+            return;
+        case SDLK_v:
+            state->toggleDebug = true;
+            break;
+        case SDLK_b:
+            state->toggleRenderMode = true;
+            break;
         case SDLK_w:
             state->forwards = true;
             break;
@@ -47,10 +70,28 @@ void UpdatePlayerControls(InputState* const state, SDL_Event* e)
             state->backwards = true;
             break;
         case SDLK_d:
-            state->right = true;
+            if (e->key.keysym.mod == KMOD_LCTRL)
+            {
+                state->rotRight = false;
+                state->right = true;
+            }
+            else
+            {
+                state->rotRight = true;
+                state->right = false;
+            }
             break;
         case SDLK_a:
-            state->left = true;
+            if (e->key.keysym.mod == KMOD_LCTRL)
+            {
+                state->rotLeft = false;
+                state->left = true;
+            }
+            else
+            {
+                state->rotLeft = true;
+                state->left = false;
+            }
             break;
         }
     }
@@ -65,9 +106,11 @@ void UpdatePlayerControls(InputState* const state, SDL_Event* e)
             state->backwards = false;
             break;
         case SDLK_d:
+            state->rotRight = false;
             state->right = false;
             break;
         case SDLK_a:
+            state->rotLeft = false;
             state->left = false;
             break;
         }

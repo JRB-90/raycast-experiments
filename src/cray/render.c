@@ -1,7 +1,6 @@
 #include "render.h"
 #include <assert.h>
 #include <stdio.h>
-#include <stdbool.h>
 #include <float.h>
 #include "SDL.h"
 #include "crayconsts.h"
@@ -113,8 +112,6 @@ void RenderTiles(
     const DisplayTile tiles[],
     int count)
 {
-    uint64_t start = GetTicks();
-
     ClearScreen(display, scene);
 
     for (int i = 0; i < count; i++)
@@ -131,9 +128,6 @@ void RenderTiles(
     }
 
     SDL_RenderPresent(display->renderer);
-
-    uint64_t timeTaken = GetTicks() - start;
-    printf("Rendering time: %f ms\n", GetTimeInMS(timeTaken));
 }
 
 void RenderTile(
@@ -141,8 +135,6 @@ void RenderTile(
     const Scene* const scene,
     const DisplayTile* const tile)
 {
-    uint64_t start = GetTicks();
-
     ClearScreen(display, scene);
 
     Frame2D tileCamPos = CalculateTileCameraPosition(scene, tile);
@@ -155,32 +147,22 @@ void RenderTile(
     );
 
     SDL_RenderPresent(display->renderer);
-
-    uint64_t timeTaken = GetTicks() - start;
-    printf("Rendering time: %f ms\n", GetTimeInMS(timeTaken));
 }
 
 void RenderSceneTopDown(
     const Display* const display,
     const Scene* const scene)
 {
-    uint64_t start = GetTicks();
-
     SDL_RenderSetViewport(display->renderer, NULL);
     ClearScreen(display, scene);
     RenderSceneTopDownInternal(display, scene, &scene->camera);
     SDL_RenderPresent(display->renderer);
-
-    uint64_t timeTaken = GetTicks() - start;
-    printf("Rendering time: %f ms\n", GetTimeInMS(timeTaken));
 }
 
 void RenderSceneFirstPerson(
     const Display* const display,
     const Scene* const scene)
 {
-    uint64_t start = GetTicks();
-
     SDL_RenderSetViewport(display->renderer, NULL);
     ClearScreen(display, scene);
     RenderSceneFirstPersonInternal(
@@ -190,9 +172,26 @@ void RenderSceneFirstPerson(
         display->height
     );
     SDL_RenderPresent(display->renderer);
+}
 
-    uint64_t timeTaken = GetTicks() - start;
-    printf("Rendering time: %f ms\n", GetTimeInMS(timeTaken));
+void ClearScreen(
+    const Display* const display,
+    const Scene* const scene)
+{
+    int res =
+        SDL_SetRenderDrawColor(
+            display->renderer,
+            scene->colors.clearCol.r,
+            scene->colors.clearCol.g,
+            scene->colors.clearCol.b,
+            scene->colors.clearCol.a
+        );
+
+    assert(res == 0);
+
+    res = SDL_RenderClear(display->renderer);
+
+    assert(res == 0);
 }
 
 #pragma endregion
@@ -473,26 +472,6 @@ void RenderVerticalWallStrip(
 
         assert(res == 0);
     }
-}
-
-void ClearScreen(
-    const Display* const display,
-    const Scene* const scene)
-{
-    int res =
-        SDL_SetRenderDrawColor(
-            display->renderer,
-            scene->colors.clearCol.r,
-            scene->colors.clearCol.g,
-            scene->colors.clearCol.b,
-            scene->colors.clearCol.a
-        );
-
-    assert(res == 0);
-
-    res = SDL_RenderClear(display->renderer);
-
-    assert(res == 0);
 }
 
 void RenderWallsTopDown(

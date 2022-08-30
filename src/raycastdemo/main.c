@@ -9,11 +9,21 @@
 #include "render.h"
 #include "dlist.h"
 #include "craymath.h"
+#include "raysettings.h"
+#include "time.h"
 
 // Entry point
 int main(int argc, char* argv[])
 {
-	printf("Initialising window...\n");
+    printf("Initialising settings...");
+
+    RaycastSettings settings =
+    {
+        .printDebugInfo = true,
+        .renderMode = Tiled
+    };
+
+    printf("Initialising window...\n");
 
     Display display =
         CreateDisplay(
@@ -128,40 +138,80 @@ int main(int argc, char* argv[])
             continue;
         }
 
+        if (inputState.toggleDebug)
+        {
+            settings.printDebugInfo = !settings.printDebugInfo;
+        }
+
+        if (inputState.toggleRenderMode)
+        {
+            if (settings.renderMode == FullStaticScene)
+            {
+                settings.renderMode = FullFirstPerson;
+            }
+            else if (settings.renderMode == FullFirstPerson)
+            {
+                settings.renderMode = Tiled;
+            }
+            else if (settings.renderMode == Tiled)
+            {
+                settings.renderMode = FullStaticScene;
+            }
+        }
+
         if (delta > targetInterval)
         {
-            printf("\033[2J");
-            printf("\033[H");
-            printf("Frame delta: %llu\n", delta);
-
             UpdatePlayerPosition(&scene, inputState);
 
-            printf(
-                "Player: %f, %f, %f\n",
-                scene.player.frame.position.x,
-                scene.player.frame.position.y,
-                scene.player.frame.theta
-            );
+            uint64_t renderStartTime = GetTicks();
 
-            scene.camera =
-            (Frame2D) {
-                .position =
-                {
-                    .x = CRAY_SCREEN_WIDTH / 2,
-                    .y = CRAY_SCREEN_HEIGHT / 2
-                },
-                .theta = 0.0
-            };
-            //RenderSceneTopDown(&display, &scene);
-            RenderSceneFirstPerson(&display, &scene);
+            if (settings.renderMode == FullStaticScene)
+            {
+                scene.camera =
+                    (Frame2D){
+                        .position =
+                        {
+                            .x = CRAY_SCREEN_WIDTH / 2,
+                            .y = CRAY_SCREEN_HEIGHT / 2
+                        },
+                        .theta = 0.0
+                };
+                RenderSceneTopDown(&display, &scene, settings.printDebugInfo);
+            }
+            else if (settings.renderMode == FullFirstPerson)
+            {
+                scene.camera =
+                    (Frame2D){
+                        .position =
+                        {
+                            .x = CRAY_SCREEN_WIDTH / 2,
+                            .y = CRAY_SCREEN_HEIGHT / 2
+                        },
+                        .theta = 0.0
+                };
+                RenderSceneFirstPerson(&display, &scene, settings.printDebugInfo);
+            }
+            else if (settings.renderMode == Tiled)
+            {
+                RenderTiles(&display, &scene, tiles, 3, settings.printDebugInfo);
+            }
 
+            uint64_t renderStopTime = GetTicks();
+            double renderTimeMS = GetTimeInMS(renderStopTime - renderStartTime);
 
-            
-            //RenderTile(display, scene, tile1);
-
-
-            
-            //RenderTiles(&display, &scene, tiles, 3);
+            if (settings.printDebugInfo)
+            {
+                printf("\033[2J");
+                printf("\033[H");
+                printf(
+                    "Player: %f, %f, %f\n",
+                    scene.player.frame.position.x,
+                    scene.player.frame.position.y,
+                    scene.player.frame.theta
+                );
+                printf("Frame delta: %llu ms\n", delta);
+                printf("Render time: %f ms", renderTimeMS);
+            }
 
             previousTicks = currentTicks;
         }
