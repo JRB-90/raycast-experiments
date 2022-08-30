@@ -176,7 +176,7 @@ int main(int argc, char* argv[])
                         },
                         .theta = 0.0
                 };
-                RenderSceneTopDown(&display, &scene, settings.printDebugInfo);
+                RenderSceneTopDown(&display, &scene);
             }
             else if (settings.renderMode == FullFirstPerson)
             {
@@ -189,11 +189,11 @@ int main(int argc, char* argv[])
                         },
                         .theta = 0.0
                 };
-                RenderSceneFirstPerson(&display, &scene, settings.printDebugInfo);
+                RenderSceneFirstPerson(&display, &scene);
             }
             else if (settings.renderMode == Tiled)
             {
-                RenderTiles(&display, &scene, tiles, 3, settings.printDebugInfo);
+                RenderTiles(&display, &scene, tiles, 3);
             }
 
             uint64_t renderStopTime = GetTicks();
@@ -209,7 +209,7 @@ int main(int argc, char* argv[])
                     scene.player.frame.position.y,
                     scene.player.frame.theta
                 );
-                printf("Frame delta: %llu ms\n", delta);
+                printf("Frame delta: %lu ms\n", delta);
                 printf("Render time: %f ms", renderTimeMS);
             }
 
