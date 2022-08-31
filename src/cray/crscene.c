@@ -1,5 +1,5 @@
-#include "scene.h"
-#include "crayconsts.h"
+#include "crscene.h"
+#include "crconsts.h"
 
 Player CreateDefaultPlayer()
 {

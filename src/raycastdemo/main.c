@@ -2,15 +2,15 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "SDL.h"
-#include "crayconsts.h"
-#include "display.h"
-#include "scene.h"
-#include "input.h"
-#include "render.h"
+#include "crconsts.h"
+#include "crdisplay.h"
+#include "crscene.h"
+#include "crinput.h"
+#include "crrender.h"
 #include "dlist.h"
-#include "craymath.h"
+#include "crmath.h"
 #include "raysettings.h"
-#include "craytime.h"
+#include "crtime.h"
 
 // Entry point
 int main(int argc, char* argv[])

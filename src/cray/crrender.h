@@ -2,8 +2,8 @@
 #define _RENDER_H_
 
 #include <stdbool.h>
-#include "scene.h"
-#include "display.h"
+#include "crscene.h"
+#include "crdisplay.h"
 
 // Function defs
 extern void RenderTiles(

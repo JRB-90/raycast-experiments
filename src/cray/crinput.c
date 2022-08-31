@@ -1,4 +1,4 @@
-#include "input.h"
+#include "crinput.h"
 #include "SDL.h"
 
 void ResetPulseKeys(InputState* const state);

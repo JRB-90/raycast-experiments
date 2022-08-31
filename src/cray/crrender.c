@@ -1,10 +1,10 @@
-#include "render.h"
+#include "crrender.h"
 #include <assert.h>
 #include <stdio.h>
 #include <float.h>
 #include "SDL.h"
-#include "crayconsts.h"
-#include "craymath.h"
+#include "crconsts.h"
+#include "crmath.h"
 
 #pragma region Private Function Definitions
 

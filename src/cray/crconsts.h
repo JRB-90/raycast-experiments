@@ -1,5 +1,5 @@
-#ifndef _CRAY_CONSTS_H_
-#define _CRAY_CONSTS_H_
+#ifndef _CR_CONSTS_H_
+#define _CR_CONSTS_H_
 
 // Constants for project
 
@@ -15,4 +15,4 @@ static const double TRANS_SPEED = 2.0;
 static const double ROT_SPEED = 2.0;
 static const double WALL_HEIGHT = 4000.0;
 
-#endif // !_CRAY_CONSTS_H_
+#endif // !_CR_CONSTS_H_
