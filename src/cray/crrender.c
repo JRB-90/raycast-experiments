@@ -5,6 +5,7 @@
 #include "SDL.h"
 #include "crconsts.h"
 #include "crmath.h"
+#include "crtime.h"
 
 #pragma region Private Function Definitions
 
@@ -109,9 +110,10 @@ void RenderTiles(
     const Display* const display,
     const Scene* const scene,
     const DisplayTile tiles[],
-    int count)
+    int count,
+    CycleProfile* profile)
 {
-    ClearScreen(display, scene);
+    ClearScreen(display, scene, profile);
 
     for (int i = 0; i < count; i++)
     {
@@ -132,9 +134,10 @@ void RenderTiles(
 void RenderTile(
     const Display* const display,
     const Scene* const scene,
-    const DisplayTile* const tile)
+    const DisplayTile* const tile,
+    CycleProfile* profile)
 {
-    ClearScreen(display, scene);
+    ClearScreen(display, scene, profile);
 
     Frame2D tileCamPos = CalculateTileCameraPosition(scene, tile);
 
@@ -150,20 +153,22 @@ void RenderTile(
 
 void RenderSceneTopDown(
     const Display* const display,
-    const Scene* const scene)
+    const Scene* const scene,
+    CycleProfile* profile)
 {
     SDL_RenderSetViewport(display->renderer, NULL);
-    ClearScreen(display, scene);
+    ClearScreen(display, scene, profile);
     RenderSceneTopDownInternal(display, scene, &scene->camera);
     SDL_RenderPresent(display->renderer);
 }
 
 void RenderSceneFirstPerson(
     const Display* const display,
-    const Scene* const scene)
+    const Scene* const scene,
+    CycleProfile* profile)
 {
     SDL_RenderSetViewport(display->renderer, NULL);
-    ClearScreen(display, scene);
+    ClearScreen(display, scene, profile);
     RenderSceneFirstPersonInternal(
         display,
         scene,
@@ -175,8 +180,11 @@ void RenderSceneFirstPerson(
 
 void ClearScreen(
     const Display* const display,
-    const Scene* const scene)
+    const Scene* const scene,
+    CycleProfile* profile)
 {
+    uint64_t startTime = GetTicks();
+
     int res =
         SDL_SetRenderDrawColor(
             display->renderer,
@@ -191,6 +199,9 @@ void ClearScreen(
     res = SDL_RenderClear(display->renderer);
 
     assert(res == 0);
+
+    uint64_t stopTime = GetTicks();
+    profile->clearTimeMS = GetTimeInMS(stopTime - startTime);
 }
 
 #pragma endregion

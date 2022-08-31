@@ -11,6 +11,7 @@
 #include "crmath.h"
 #include "raysettings.h"
 #include "crtime.h"
+#include "crprofile.h"
 
 // Entry point
 int main(int argc, char* argv[])
@@ -117,12 +118,15 @@ int main(int argc, char* argv[])
     printf("Starting main loop...\n");
     
     InputState inputState = DefaultInputState();
+
     bool isRunning = true;
     double period = 1.0 / (double)CRAY_FPS;
     uint64_t currentTicks = SDL_GetTicks64();
     uint64_t previousTicks = currentTicks;
     uint64_t targetInterval = (uint64_t)(period * 1000.0);
     uint64_t delta;
+
+    CycleProfile profile = DefaultCycleProfile();
 
     while (isRunning)
     {
@@ -176,7 +180,7 @@ int main(int argc, char* argv[])
                         },
                         .theta = 0.0
                 };
-                RenderSceneTopDown(&display, &scene);
+                RenderSceneTopDown(&display, &scene, &profile);
             }
             else if (settings.renderMode == FullFirstPerson)
             {
@@ -189,15 +193,15 @@ int main(int argc, char* argv[])
                         },
                         .theta = 0.0
                 };
-                RenderSceneFirstPerson(&display, &scene);
+                RenderSceneFirstPerson(&display, &scene, &profile);
             }
             else if (settings.renderMode == Tiled)
             {
-                RenderTiles(&display, &scene, tiles, 3);
+                RenderTiles(&display, &scene, tiles, 3, &profile);
             }
 
             uint64_t renderStopTime = GetTicks();
-            double renderTimeMS = GetTimeInMS(renderStopTime - renderStartTime);
+            profile.totalRenderTimeMS = GetTimeInMS(renderStopTime - renderStartTime);
 
             if (settings.printDebugInfo)
             {
@@ -210,8 +214,10 @@ int main(int argc, char* argv[])
                     scene.player.frame.theta
                 );
                 printf("Frame delta: %lu ms\n", delta);
-                printf("Render time: %f ms\n", renderTimeMS);
+                PrintProfileStats(&profile);
             }
+
+            ResetProfile(&profile);
 
             previousTicks = currentTicks;
         }
