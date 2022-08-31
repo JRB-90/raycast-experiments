@@ -218,6 +218,8 @@ int main(int argc, char* argv[])
     }
     
     printf("Closing down...\n");
+
+    ClearDoubleLinkedList(&scene.walls);
     CleanupDisplay(display);
 
 	return EXIT_SUCCESS;
