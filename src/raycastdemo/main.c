@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
     RaycastSettings settings =
     {
         .printDebugInfo = true,
-        .renderMode = Tiled
+        .renderMode = FullFirstPerson
     };
 
     printf("Initialising window...\n");
@@ -165,7 +165,11 @@ int main(int argc, char* argv[])
 
         if (delta > targetInterval)
         {
+            uint64_t updateStartTime = GetTicks();
+
             UpdatePlayerPosition(&scene, inputState);
+
+            profile.updatePlayerTimeMS = GetTimeInMS(GetTicks() - updateStartTime);
 
             uint64_t renderStartTime = GetTicks();
 
@@ -200,8 +204,9 @@ int main(int argc, char* argv[])
                 RenderTiles(&display, &scene, tiles, 3, &profile);
             }
 
-            uint64_t renderStopTime = GetTicks();
-            profile.totalRenderTimeMS = GetTimeInMS(renderStopTime - renderStartTime);
+            profile.totalRenderTimeMS = GetTimeInMS(GetTicks() - renderStartTime);
+
+            uint64_t printStartTime = GetTicks();
 
             if (settings.printDebugInfo)
             {
@@ -213,9 +218,11 @@ int main(int argc, char* argv[])
                     scene.player.frame.position.y,
                     scene.player.frame.theta
                 );
-                printf("Frame delta: %lu ms\n", delta);
+                printf("Frame delta:\t%lu ms\n", delta);
                 PrintProfileStats(&profile);
             }
+
+            printf("Print time:\t%f ms\n", GetTimeInMS(GetTicks() - printStartTime));
 
             ResetProfile(&profile);
 
