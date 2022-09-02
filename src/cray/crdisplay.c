@@ -48,7 +48,8 @@ Display CreateDisplay(const char* const title, int width, int height)
         .width = width,
         .height = height,
         .window = NULL,
-        .renderer = NULL
+        .renderer = NULL,
+        .texture = NULL
     };
 
     assert(SDL_Init(SDL_INIT_EVERYTHING) == 0);
@@ -74,11 +75,23 @@ Display CreateDisplay(const char* const title, int width, int height)
 
     assert(display.renderer != NULL);
 
+    display.texture =
+        SDL_CreateTexture(
+            display.renderer,
+            SDL_PIXELFORMAT_RGBA8888,
+            SDL_TEXTUREACCESS_STREAMING,
+            width,
+            height
+        );
+
+    assert(display.texture != NULL);
+
     return display;
 }
 
 void CleanupDisplay(Display display)
 {
+    SDL_DestroyTexture(display.texture);
     SDL_DestroyRenderer(display.renderer);
     SDL_DestroyWindow(display.window);
     SDL_Quit();

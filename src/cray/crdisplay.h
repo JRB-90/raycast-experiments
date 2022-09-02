@@ -14,6 +14,7 @@ typedef struct Color {
 typedef struct Display {
     SDL_Window* window;
     SDL_Renderer* renderer;
+    SDL_Texture* texture;
     int width;
     int height;
 } Display;
