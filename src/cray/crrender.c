@@ -6,6 +6,7 @@
 #include "crconsts.h"
 #include "crmath.h"
 #include "crtime.h"
+#include "crdraw.h"
 
 #pragma region Private Function Definitions
 
@@ -121,7 +122,7 @@ void RenderTiles(
     int count,
     CycleProfile* profile)
 {
-    SDL_RenderClear(display->renderer);
+    /*SDL_RenderClear(display->renderer);
     ClearScreen(display, scene, profile);
 
     for (int i = 0; i < count; i++)
@@ -140,6 +141,12 @@ void RenderTiles(
 
     uint64_t presentStartTime = GetTicks();
     SDL_RenderPresent(display->renderer);
+    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);*/
+
+    ClearScreen(display, scene, profile);
+
+    uint64_t presentStartTime = GetTicks();
+    RenderDisplay(display);
     profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);
 }
 
@@ -149,7 +156,7 @@ void RenderTile(
     const DisplayTile* const tile,
     CycleProfile* profile)
 {
-    SDL_RenderClear(display->renderer);
+    /*SDL_RenderClear(display->renderer);
     ClearScreen(display, scene, profile);
 
     Frame2D tileCamPos = CalculateTileCameraPosition(scene, tile);
@@ -164,6 +171,12 @@ void RenderTile(
 
     uint64_t presentStartTime = GetTicks();
     SDL_RenderPresent(display->renderer);
+    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);*/
+
+    ClearScreen(display, scene, profile);
+
+    uint64_t presentStartTime = GetTicks();
+    RenderDisplay(display);
     profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);
 }
 
@@ -172,13 +185,19 @@ void RenderSceneTopDown(
     const Scene* const scene,
     CycleProfile* profile)
 {
-    SDL_RenderClear(display->renderer);
+    /*SDL_RenderClear(display->renderer);
     SDL_RenderSetViewport(display->renderer, NULL);
     ClearScreen(display, scene, profile);
     RenderSceneTopDownInternal(display, scene, &scene->camera, profile);
 
     uint64_t presentStartTime = GetTicks();
     SDL_RenderPresent(display->renderer);
+    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);*/
+
+    ClearScreen(display, scene, profile);
+
+    uint64_t presentStartTime = GetTicks();
+    RenderDisplay(display);
     profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);
 }
 
@@ -187,7 +206,7 @@ void RenderSceneFirstPerson(
     const Scene* const scene,
     CycleProfile* profile)
 {
-    SDL_RenderClear(display->renderer);
+    /*SDL_RenderClear(display->renderer);
     SDL_RenderSetViewport(display->renderer, NULL);
     ClearScreen(display, scene, profile);
     RenderSceneFirstPersonInternal(
@@ -200,6 +219,12 @@ void RenderSceneFirstPerson(
     
     uint64_t presentStartTime = GetTicks();
     SDL_RenderPresent(display->renderer);
+    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);*/
+
+    ClearScreen(display, scene, profile);
+    
+    uint64_t presentStartTime = GetTicks();
+    RenderDisplay(display);
     profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);
 }
 
@@ -209,22 +234,7 @@ void ClearScreen(
     CycleProfile* profile)
 {
     uint64_t startTime = GetTicks();
-
-    int res =
-        SDL_SetRenderDrawColor(
-            display->renderer,
-            scene->colors.clearCol.r,
-            scene->colors.clearCol.g,
-            scene->colors.clearCol.b,
-            scene->colors.clearCol.a
-        );
-
-    assert(res == 0);
-
-    res = SDL_RenderClear(display->renderer);
-
-    assert(res == 0);
-
+    DrawClearColor(display, scene->colors.clearCol);
     profile->clearTimeMS = GetTimeInMS(GetTicks() - startTime);
 }
 

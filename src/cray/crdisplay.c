@@ -49,7 +49,8 @@ Display CreateDisplay(const char* const title, int width, int height)
         .height = height,
         .window = NULL,
         .renderer = NULL,
-        .texture = NULL
+        .texture = NULL,
+        .pixels = NULL
     };
 
     assert(SDL_Init(SDL_INIT_EVERYTHING) == 0);
@@ -86,13 +87,42 @@ Display CreateDisplay(const char* const title, int width, int height)
 
     assert(display.texture != NULL);
 
+    display.pixels = malloc(width * height * 4);
+
+    assert(display.pixels != NULL);
+
     return display;
 }
 
-void CleanupDisplay(Display display)
+void CleanupDisplay(Display* const display)
 {
-    SDL_DestroyTexture(display.texture);
-    SDL_DestroyRenderer(display.renderer);
-    SDL_DestroyWindow(display.window);
+    SDL_DestroyTexture(display->texture);
+    SDL_DestroyRenderer(display->renderer);
+    SDL_DestroyWindow(display->window);
     SDL_Quit();
+}
+
+void RenderDisplay(Display* const display)
+{
+    int res =
+        SDL_UpdateTexture(
+            display->texture, 
+            NULL, 
+            display->pixels, 
+            display->width * 4
+        );
+
+    assert(res == 0);
+
+    res = 
+        SDL_RenderCopy(
+            display->renderer, 
+            display->texture, 
+            NULL, 
+            NULL
+        );
+
+    assert(res == 0);
+
+    SDL_RenderPresent(display->renderer);
 }

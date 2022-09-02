@@ -220,9 +220,8 @@ int main(int argc, char* argv[])
                 );
                 printf("Frame delta:\t%lu ms\n", delta);
                 PrintProfileStats(&profile);
+                printf("Print time:\t%f ms\n", GetTimeInMS(GetTicks() - printStartTime));
             }
-
-            printf("Print time:\t%f ms\n", GetTimeInMS(GetTicks() - printStartTime));
 
             ResetProfile(&profile);
 
@@ -233,7 +232,7 @@ int main(int argc, char* argv[])
     printf("Closing down...\n");
 
     ClearDoubleLinkedList(&scene.walls);
-    CleanupDisplay(display);
+    CleanupDisplay(&display);
 
 	return EXIT_SUCCESS;
 }
