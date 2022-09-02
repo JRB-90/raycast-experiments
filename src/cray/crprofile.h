@@ -13,6 +13,7 @@ typedef struct CycleProfile {
 	double updatePlayerTimeMS;
 	double totalRenderTimeMS;
 	double clearTimeMS;
+	double renderPresentTimeMS;
 	AveragedSample tileRender;
 	AveragedSample topRender;
 	AveragedSample firstRender;

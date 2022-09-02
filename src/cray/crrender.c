@@ -121,6 +121,7 @@ void RenderTiles(
     int count,
     CycleProfile* profile)
 {
+    SDL_RenderClear(display->renderer);
     ClearScreen(display, scene, profile);
 
     for (int i = 0; i < count; i++)
@@ -137,7 +138,9 @@ void RenderTiles(
         );
     }
 
+    uint64_t presentStartTime = GetTicks();
     SDL_RenderPresent(display->renderer);
+    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);
 }
 
 void RenderTile(
@@ -146,6 +149,7 @@ void RenderTile(
     const DisplayTile* const tile,
     CycleProfile* profile)
 {
+    SDL_RenderClear(display->renderer);
     ClearScreen(display, scene, profile);
 
     Frame2D tileCamPos = CalculateTileCameraPosition(scene, tile);
@@ -158,7 +162,9 @@ void RenderTile(
         profile
     );
 
+    uint64_t presentStartTime = GetTicks();
     SDL_RenderPresent(display->renderer);
+    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);
 }
 
 void RenderSceneTopDown(
@@ -166,10 +172,14 @@ void RenderSceneTopDown(
     const Scene* const scene,
     CycleProfile* profile)
 {
+    SDL_RenderClear(display->renderer);
     SDL_RenderSetViewport(display->renderer, NULL);
     ClearScreen(display, scene, profile);
     RenderSceneTopDownInternal(display, scene, &scene->camera, profile);
+
+    uint64_t presentStartTime = GetTicks();
     SDL_RenderPresent(display->renderer);
+    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);
 }
 
 void RenderSceneFirstPerson(
@@ -177,6 +187,7 @@ void RenderSceneFirstPerson(
     const Scene* const scene,
     CycleProfile* profile)
 {
+    SDL_RenderClear(display->renderer);
     SDL_RenderSetViewport(display->renderer, NULL);
     ClearScreen(display, scene, profile);
     RenderSceneFirstPersonInternal(
@@ -186,7 +197,10 @@ void RenderSceneFirstPerson(
         display->height,
         profile
     );
+    
+    uint64_t presentStartTime = GetTicks();
     SDL_RenderPresent(display->renderer);
+    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);
 }
 
 void ClearScreen(
@@ -211,8 +225,7 @@ void ClearScreen(
 
     assert(res == 0);
 
-    uint64_t stopTime = GetTicks();
-    profile->clearTimeMS = GetTimeInMS(stopTime - startTime);
+    profile->clearTimeMS = GetTimeInMS(GetTicks() - startTime);
 }
 
 #pragma endregion

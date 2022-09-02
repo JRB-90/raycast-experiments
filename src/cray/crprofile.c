@@ -20,6 +20,7 @@ CycleProfile DefaultCycleProfile()
     {
         .updatePlayerTimeMS = 0.0,
         .totalRenderTimeMS = 0.0,
+        .renderPresentTimeMS = 0.0,
         .clearTimeMS = 0.0,
         .tileRender = DefaultSample(),
         .topRender = DefaultSample(),
@@ -41,6 +42,7 @@ void ResetProfile(CycleProfile* const profile)
     profile->updatePlayerTimeMS = 0.0;
     profile->totalRenderTimeMS = 0.0;
     profile->clearTimeMS = 0.0;
+    profile->renderPresentTimeMS = 0.0;
     profile->tileRender = DefaultSample();
     profile->topRender = DefaultSample();
     profile->firstRender = DefaultSample();
@@ -63,7 +65,8 @@ void PrintAveragedSample(AveragedSample* const sample, const char* const name)
 void PrintProfileStats(CycleProfile* const profile)
 {
     printf("Up play time:\t%f ms\n", profile->updatePlayerTimeMS);
-    printf("Total time:\t%f ms\n", profile->totalRenderTimeMS);
+    printf("Tot ren time:\t%f ms\n", profile->totalRenderTimeMS);
+    printf("Ren pres time:\t%f ms\n", profile->renderPresentTimeMS);
     printf("Clear time:\t%f ms\n", profile->clearTimeMS);
     PrintAveragedSample(&profile->tileRender, "Tile");
     PrintAveragedSample(&profile->topRender, "Top");
