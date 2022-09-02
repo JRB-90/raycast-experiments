@@ -65,7 +65,13 @@ Display CreateDisplay(const char* const title, int width, int height)
 
     assert(display.window != NULL);
 
-    display.renderer = SDL_CreateRenderer(display.window, -1, 0);
+    display.renderer = 
+        SDL_CreateRenderer(
+            display.window, 
+            -1, 
+            SDL_RENDERER_SOFTWARE
+        );
+
     assert(display.renderer != NULL);
 
     return display;
