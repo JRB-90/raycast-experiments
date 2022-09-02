@@ -1,9 +1,9 @@
 #ifndef _SCENE_H_
 #define _SCENE_H_
 
-#include "display.h"
-#include "input.h"
-#include "craymath.h"
+#include "crdisplay.h"
+#include "crinput.h"
+#include "crmath.h"
 #include "dlist.h"
 
 // Data types

@@ -1,4 +1,4 @@
-#include "craytime.h"
+#include "crtime.h"
 
 #ifdef _WIN32
 #include <windows.h>

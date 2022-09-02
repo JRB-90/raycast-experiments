@@ -1,6 +1,6 @@
 #define _USE_MATH_DEFINES
 
-#include "craymath.h"
+#include "crmath.h"
 #include <math.h>
 #include <assert.h>
 

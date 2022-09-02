@@ -2,15 +2,16 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "SDL.h"
-#include "crayconsts.h"
-#include "display.h"
-#include "scene.h"
-#include "input.h"
-#include "render.h"
+#include "crconsts.h"
+#include "crdisplay.h"
+#include "crscene.h"
+#include "crinput.h"
+#include "crrender.h"
 #include "dlist.h"
-#include "craymath.h"
+#include "crmath.h"
 #include "raysettings.h"
-#include "craytime.h"
+#include "crtime.h"
+#include "crprofile.h"
 
 // Entry point
 int main(int argc, char* argv[])
@@ -20,7 +21,7 @@ int main(int argc, char* argv[])
     RaycastSettings settings =
     {
         .printDebugInfo = true,
-        .renderMode = Tiled
+        .renderMode = FullFirstPerson
     };
 
     printf("Initialising window...\n");
@@ -117,12 +118,15 @@ int main(int argc, char* argv[])
     printf("Starting main loop...\n");
     
     InputState inputState = DefaultInputState();
+
     bool isRunning = true;
     double period = 1.0 / (double)CRAY_FPS;
     uint64_t currentTicks = SDL_GetTicks64();
     uint64_t previousTicks = currentTicks;
     uint64_t targetInterval = (uint64_t)(period * 1000.0);
     uint64_t delta;
+
+    CycleProfile profile = DefaultCycleProfile();
 
     while (isRunning)
     {
@@ -161,7 +165,11 @@ int main(int argc, char* argv[])
 
         if (delta > targetInterval)
         {
+            uint64_t updateStartTime = GetTicks();
+
             UpdatePlayerPosition(&scene, inputState);
+
+            profile.updatePlayerTimeMS = GetTimeInMS(GetTicks() - updateStartTime);
 
             uint64_t renderStartTime = GetTicks();
 
@@ -176,7 +184,7 @@ int main(int argc, char* argv[])
                         },
                         .theta = 0.0
                 };
-                RenderSceneTopDown(&display, &scene);
+                RenderSceneTopDown(&display, &scene, &profile);
             }
             else if (settings.renderMode == FullFirstPerson)
             {
@@ -189,15 +197,16 @@ int main(int argc, char* argv[])
                         },
                         .theta = 0.0
                 };
-                RenderSceneFirstPerson(&display, &scene);
+                RenderSceneFirstPerson(&display, &scene, &profile);
             }
             else if (settings.renderMode == Tiled)
             {
-                RenderTiles(&display, &scene, tiles, 3);
+                RenderTiles(&display, &scene, tiles, 3, &profile);
             }
 
-            uint64_t renderStopTime = GetTicks();
-            double renderTimeMS = GetTimeInMS(renderStopTime - renderStartTime);
+            profile.totalRenderTimeMS = GetTimeInMS(GetTicks() - renderStartTime);
+
+            uint64_t printStartTime = GetTicks();
 
             if (settings.printDebugInfo)
             {
@@ -209,9 +218,13 @@ int main(int argc, char* argv[])
                     scene.player.frame.position.y,
                     scene.player.frame.theta
                 );
-                printf("Frame delta: %lu ms\n", delta);
-                printf("Render time: %f ms\n", renderTimeMS);
+                printf("Frame delta:\t%lu ms\n", delta);
+                PrintProfileStats(&profile);
             }
+
+            printf("Print time:\t%f ms\n", GetTimeInMS(GetTicks() - printStartTime));
+
+            ResetProfile(&profile);
 
             previousTicks = currentTicks;
         }

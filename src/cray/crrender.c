@@ -1,10 +1,11 @@
-#include "render.h"
+#include "crrender.h"
 #include <assert.h>
 #include <stdio.h>
 #include <float.h>
 #include "SDL.h"
-#include "crayconsts.h"
-#include "craymath.h"
+#include "crconsts.h"
+#include "crmath.h"
+#include "crtime.h"
 
 #pragma region Private Function Definitions
 
@@ -17,18 +18,21 @@ void RenderTileInternal(
     const Display* const display,
     const Scene* const scene,
     const Frame2D* const cameraFrame,
-    const DisplayTile* const tile
+    const DisplayTile* const tile,
+    CycleProfile* profile
 );
 void RenderSceneTopDownInternal(
     const Display* const display,
     const Scene* const scene,
-    const Frame2D* const cameraFrame
+    const Frame2D* const cameraFrame,
+    CycleProfile* profile
 );
 void RenderSceneFirstPersonInternal(
     const Display* const display,
     const Scene* const scene,
     const int width,
-    const int height
+    const int height,
+    CycleProfile* profile
 );
 void RenderVerticalWallStrip(
     const Display* const display,
@@ -36,28 +40,33 @@ void RenderVerticalWallStrip(
     const int xPosition,
     const int height,
     const double distanceToWall,
-    const double angleWithWall
+    const double angleWithWall,
+    CycleProfile* profile
 );
 void RenderWallsTopDown(
     const Display* const display,
     const Scene* const scene,
-    const Frame2D* const cameraFrame
+    const Frame2D* const cameraFrame,
+    CycleProfile* profile
 );
 void RenderPlayerTopDown(
     const Display* const display,
     const Scene* const scene,
-    const Frame2D* const cameraFrame
+    const Frame2D* const cameraFrame,
+    CycleProfile* profile
 );
 void RenderProjectionTopDown(
     const Display* const display,
     const Scene* const scene,
-    const Frame2D* const cameraFrame
+    const Frame2D* const cameraFrame,
+    CycleProfile* profile
 );
 void RenderRayTopDown(
     const Display* const display,
     const Scene* const scene,
     const Frame2D* const cameraFrame,
-    const Vector2D* const ray
+    const Vector2D* const ray,
+    CycleProfile* profile
 );
 void ToScreenSpace(
     const Scene* const scene,
@@ -109,9 +118,11 @@ void RenderTiles(
     const Display* const display,
     const Scene* const scene,
     const DisplayTile tiles[],
-    int count)
+    int count,
+    CycleProfile* profile)
 {
-    ClearScreen(display, scene);
+    SDL_RenderClear(display->renderer);
+    ClearScreen(display, scene, profile);
 
     for (int i = 0; i < count; i++)
     {
@@ -122,19 +133,24 @@ void RenderTiles(
             display,
             scene,
             &tileCamPos,
-            &tile
+            &tile,
+            profile
         );
     }
 
+    uint64_t presentStartTime = GetTicks();
     SDL_RenderPresent(display->renderer);
+    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);
 }
 
 void RenderTile(
     const Display* const display,
     const Scene* const scene,
-    const DisplayTile* const tile)
+    const DisplayTile* const tile,
+    CycleProfile* profile)
 {
-    ClearScreen(display, scene);
+    SDL_RenderClear(display->renderer);
+    ClearScreen(display, scene, profile);
 
     Frame2D tileCamPos = CalculateTileCameraPosition(scene, tile);
 
@@ -142,41 +158,58 @@ void RenderTile(
         display,
         scene,
         &tileCamPos,
-        tile
+        tile,
+        profile
     );
 
+    uint64_t presentStartTime = GetTicks();
     SDL_RenderPresent(display->renderer);
+    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);
 }
 
 void RenderSceneTopDown(
     const Display* const display,
-    const Scene* const scene)
+    const Scene* const scene,
+    CycleProfile* profile)
 {
+    SDL_RenderClear(display->renderer);
     SDL_RenderSetViewport(display->renderer, NULL);
-    ClearScreen(display, scene);
-    RenderSceneTopDownInternal(display, scene, &scene->camera);
+    ClearScreen(display, scene, profile);
+    RenderSceneTopDownInternal(display, scene, &scene->camera, profile);
+
+    uint64_t presentStartTime = GetTicks();
     SDL_RenderPresent(display->renderer);
+    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);
 }
 
 void RenderSceneFirstPerson(
     const Display* const display,
-    const Scene* const scene)
+    const Scene* const scene,
+    CycleProfile* profile)
 {
+    SDL_RenderClear(display->renderer);
     SDL_RenderSetViewport(display->renderer, NULL);
-    ClearScreen(display, scene);
+    ClearScreen(display, scene, profile);
     RenderSceneFirstPersonInternal(
         display,
         scene,
         display->width,
-        display->height
+        display->height,
+        profile
     );
+    
+    uint64_t presentStartTime = GetTicks();
     SDL_RenderPresent(display->renderer);
+    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);
 }
 
 void ClearScreen(
     const Display* const display,
-    const Scene* const scene)
+    const Scene* const scene,
+    CycleProfile* profile)
 {
+    uint64_t startTime = GetTicks();
+
     int res =
         SDL_SetRenderDrawColor(
             display->renderer,
@@ -191,6 +224,8 @@ void ClearScreen(
     res = SDL_RenderClear(display->renderer);
 
     assert(res == 0);
+
+    profile->clearTimeMS = GetTimeInMS(GetTicks() - startTime);
 }
 
 #pragma endregion
@@ -252,8 +287,11 @@ void RenderTileInternal(
     const Display* const display,
     const Scene* const scene,
     const Frame2D* const cameraFrame,
-    const DisplayTile* const tile)
+    const DisplayTile* const tile,
+    CycleProfile* profile)
 {
+    uint64_t startTime = GetTicks();
+
     SDL_RenderSetViewport(display->renderer, &tile->position);
 
     if (tile->tileType == StaticPlayer ||
@@ -262,7 +300,8 @@ void RenderTileInternal(
         RenderSceneTopDownInternal(
             display, 
             scene, 
-            cameraFrame
+            cameraFrame,
+            profile
         );
     }
     else if (tile->tileType == FirstPerson)
@@ -271,7 +310,8 @@ void RenderTileInternal(
             display,
             scene,
             tile->position.w,
-            tile->position.h
+            tile->position.h,
+            profile
         );
     }
 
@@ -283,30 +323,42 @@ void RenderTileInternal(
         &tile->position,
         false
     );
+
+    AddSample(&profile->tileRender, GetTicks() - startTime);
 }
 
 void RenderSceneTopDownInternal(
     const Display* const display,
     const Scene* const scene,
-    const Frame2D* const cameraFrame)
+    const Frame2D* const cameraFrame,
+    CycleProfile* profile)
 {
-    RenderProjectionTopDown(display, scene, cameraFrame);
-    RenderWallsTopDown(display, scene, cameraFrame);
-    RenderPlayerTopDown(display, scene, cameraFrame);
+    uint64_t startTime = GetTicks();
+
+    RenderProjectionTopDown(display, scene, cameraFrame, profile);
+    RenderWallsTopDown(display, scene, cameraFrame, profile);
+    RenderPlayerTopDown(display, scene, cameraFrame, profile);
+
+    AddSample(&profile->topRender, GetTicks() - startTime);
 }
 
 void RenderSceneFirstPersonInternal(
     const Display* const display,
     const Scene* const scene,
     const int width,
-    const int height)
+    const int height,
+    CycleProfile* profile)
 {
+    uint64_t firstStartTime = GetTicks();
+
     Vector2D worldForward = { .x = 0.0, .y = -1.0 };
     double angleInterval = (scene->player.fov * 2.0) / ((double)(width - 1));
     double startAngle = scene->player.frame.theta - scene->player.fov;
 
     for (int i = 0; i < width; i++)
     {
+        uint64_t vertStartTime = GetTicks();
+
         LineSegment2D* nearestWall = NULL;
         double distanceToWall = DBL_MAX;
         Point2D wallIntersection;
@@ -359,7 +411,8 @@ void RenderSceneFirstPersonInternal(
                 i,
                 height,
                 0.0,
-                0.0
+                0.0,
+                profile
             );
 
             continue;
@@ -379,9 +432,14 @@ void RenderSceneFirstPersonInternal(
             i,
             height,
             distanceToWall,
-            angleWithWall
+            angleWithWall,
+            profile
         );
+
+        AddSample(&profile->vertRender, GetTicks() - vertStartTime);
     }
+
+    AddSample(&profile->firstRender, GetTicks() - firstStartTime);
 }
 
 void RenderVerticalWallStrip(
@@ -390,7 +448,8 @@ void RenderVerticalWallStrip(
     const int xPosition,
     const int height,
     const double distanceToWall,
-    const double angleWithWall)
+    const double angleWithWall,
+    CycleProfile* profile)
 {
     double wallHeightPixels = 0.0;
 
@@ -476,7 +535,8 @@ void RenderVerticalWallStrip(
 void RenderWallsTopDown(
     const Display* const display,
     const Scene* const scene,
-    const Frame2D* const cameraFrame)
+    const Frame2D* const cameraFrame,
+    CycleProfile* profile)
 {
     if (scene->walls.size < 1)
     {
@@ -503,7 +563,8 @@ void RenderWallsTopDown(
 void RenderPlayerTopDown(
     const Display* const display,
     const Scene* const scene,
-    const Frame2D* const cameraFrame)
+    const Frame2D* const cameraFrame,
+    CycleProfile* profile)
 {
     SDL_Rect rect =
     {
@@ -526,7 +587,8 @@ void RenderPlayerTopDown(
 void RenderProjectionTopDown(
     const Display* const display,
     const Scene* const scene,
-    const Frame2D* const cameraFrame)
+    const Frame2D* const cameraFrame,
+    CycleProfile* profile)
 {
     Vector2D worldForward = { .x = 0.0, .y = -1.0 };
     int widthIncrements = 9;
@@ -549,7 +611,8 @@ void RenderProjectionTopDown(
             display,
             scene,
             cameraFrame,
-            &lookDir
+            &lookDir,
+            profile
         );
     }
 }
@@ -558,7 +621,8 @@ void RenderRayTopDown(
     const Display* const display,
     const Scene* const scene,
     const Frame2D* const cameraFrame,
-    const Vector2D* const ray)
+    const Vector2D* const ray,
+    CycleProfile* profile)
 {
     const LineSegment2D* nearestWall = NULL;
     double distanceToWall = DBL_MAX;

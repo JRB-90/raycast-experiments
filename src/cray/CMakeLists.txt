@@ -11,18 +11,20 @@ include_directories(cray PUBLIC
 add_library(cray
 	dlist.h
 	dlist.c
-    display.h
-	display.c
-    input.h
-	input.c
-    scene.h
-	scene.c
-    render.h
-	render.c
-    craymath.h
-	craymath.c
-	craytime.h
-    craytime.c
+    crdisplay.h
+	crdisplay.c
+    crinput.h
+	crinput.c
+    crscene.h
+	crscene.c
+    crrender.h
+	crrender.c
+    crmath.h
+	crmath.c
+	crtime.h
+    crtime.c
+    crprofile.h
+	crprofile.c
 )
 
 target_link_libraries(cray PRIVATE

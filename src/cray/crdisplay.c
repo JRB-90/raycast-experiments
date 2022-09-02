@@ -1,6 +1,6 @@
-#include "display.h"
+#include "crdisplay.h"
 #include <assert.h>
-#include "crayconsts.h"
+#include "crconsts.h"
 
 Color CreateColor()
 {
