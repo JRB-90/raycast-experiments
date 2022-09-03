@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
     RaycastSettings settings =
     {
         .printDebugInfo = true,
-        .renderMode = FullFirstPerson
+        .renderMode = FullStaticScene
     };
 
     printf("Initialising window...\n");
