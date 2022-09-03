@@ -12,28 +12,28 @@ extern void RenderTiles(
 	const Scene* const scene,
 	const DisplayTile tiles[],
 	int count,
-	CycleProfile* profile
+	CycleProfile* const profile
 );
 extern void RenderTile(
 	const Display* const display,
 	const Scene* const scene,
 	const DisplayTile* const tile,
-	CycleProfile* profile
+	CycleProfile* const profile
 );
 extern void RenderSceneTopDown(
 	const Display* const display,
 	const Scene* const scene,
-	CycleProfile* profile
+	CycleProfile* const profile
 );
 extern void RenderSceneFirstPerson(
 	const Display* const display,
 	const Scene* const scene,
-	CycleProfile* profile
+	CycleProfile* const profile
 );
 extern void ClearScreen(
 	const Display* const display,
 	const Scene* const scene,
-	CycleProfile* profile
+	CycleProfile* const profile
 );
 
 #endif // !_RENDER_H_

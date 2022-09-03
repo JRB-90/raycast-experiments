@@ -3,6 +3,7 @@
 
 #include <inttypes.h>
 #include "SDL.h"
+#include "crprofile.h"
 
 // Data types
 typedef struct Color {
@@ -38,6 +39,6 @@ extern Color CreateColorRGB(uint8_t r, uint8_t g, uint8_t b);
 extern Color CreateColorARGB(uint8_t a, uint8_t r, uint8_t g, uint8_t b);
 extern Display CreateDisplay(const char* const title, int width, int height);
 extern void CleanupDisplay(Display* const display);
-extern void RenderDisplay(Display* const display);
+extern void RenderDisplay(const Display* const display, CycleProfile* const profile);
 
 #endif // !_DISPLAY_H_

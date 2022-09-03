@@ -1,12 +1,5 @@
 #include "crdraw.h"
 
-inline void WritePixel(
-	const Display* const display, 
-	int x,
-	int y, 
-	Color color
-);
-
 void DrawClearColor(const Display* const display, Color color)
 {
 	for (int i = 0; i < display->width; i++)

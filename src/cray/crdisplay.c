@@ -1,6 +1,7 @@
 #include "crdisplay.h"
 #include <assert.h>
 #include "crconsts.h"
+#include "crtime.h"
 
 Color CreateColor()
 {
@@ -102,8 +103,10 @@ void CleanupDisplay(Display* const display)
     SDL_Quit();
 }
 
-void RenderDisplay(Display* const display)
+void RenderDisplay(const Display* const display, CycleProfile* const profile)
 {
+    uint64_t presentStartTime = GetTicks();
+
     int res =
         SDL_UpdateTexture(
             display->texture, 
@@ -125,4 +128,6 @@ void RenderDisplay(Display* const display)
     assert(res == 0);
 
     SDL_RenderPresent(display->renderer);
+
+    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);
 }

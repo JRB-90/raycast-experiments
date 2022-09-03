@@ -120,7 +120,7 @@ void RenderTiles(
     const Scene* const scene,
     const DisplayTile tiles[],
     int count,
-    CycleProfile* profile)
+    CycleProfile* const profile)
 {
     /*SDL_RenderClear(display->renderer);
     ClearScreen(display, scene, profile);
@@ -145,16 +145,14 @@ void RenderTiles(
 
     ClearScreen(display, scene, profile);
 
-    uint64_t presentStartTime = GetTicks();
-    RenderDisplay(display);
-    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);
+    RenderDisplay(display, profile);
 }
 
 void RenderTile(
     const Display* const display,
     const Scene* const scene,
     const DisplayTile* const tile,
-    CycleProfile* profile)
+    CycleProfile* const profile)
 {
     /*SDL_RenderClear(display->renderer);
     ClearScreen(display, scene, profile);
@@ -175,15 +173,13 @@ void RenderTile(
 
     ClearScreen(display, scene, profile);
 
-    uint64_t presentStartTime = GetTicks();
-    RenderDisplay(display);
-    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);
+    RenderDisplay(display, profile);
 }
 
 void RenderSceneTopDown(
     const Display* const display,
     const Scene* const scene,
-    CycleProfile* profile)
+    CycleProfile* const profile)
 {
     /*SDL_RenderClear(display->renderer);
     SDL_RenderSetViewport(display->renderer, NULL);
@@ -196,19 +192,14 @@ void RenderSceneTopDown(
 
     ClearScreen(display, scene, profile);
 
-    uint64_t presentStartTime = GetTicks();
-    RenderDisplay(display);
-    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);
+    RenderDisplay(display, profile);
 }
 
 void RenderSceneFirstPerson(
     const Display* const display,
     const Scene* const scene,
-    CycleProfile* profile)
+    CycleProfile* const profile)
 {
-    /*SDL_RenderClear(display->renderer);
-    SDL_RenderSetViewport(display->renderer, NULL);
-    ClearScreen(display, scene, profile);
     RenderSceneFirstPersonInternal(
         display,
         scene,
@@ -217,21 +208,13 @@ void RenderSceneFirstPerson(
         profile
     );
     
-    uint64_t presentStartTime = GetTicks();
-    SDL_RenderPresent(display->renderer);
-    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);*/
-
-    ClearScreen(display, scene, profile);
-    
-    uint64_t presentStartTime = GetTicks();
-    RenderDisplay(display);
-    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);
+    RenderDisplay(display, profile);
 }
 
 void ClearScreen(
     const Display* const display,
     const Scene* const scene,
-    CycleProfile* profile)
+    CycleProfile* const profile)
 {
     uint64_t startTime = GetTicks();
     DrawClearColor(display, scene->colors.clearCol);
@@ -472,73 +455,42 @@ void RenderVerticalWallStrip(
     int wallStartY = (int)((height / 2.0) - (wallHeightPixels / 2.0));
     int wallEndY = (int)((height / 2.0) + (wallHeightPixels / 2.0));
 
-    int res =
-        SDL_SetRenderDrawColor(
-            display->renderer,
-            scene->colors.ceilingColor.r,
-            scene->colors.ceilingColor.g,
-            scene->colors.ceilingColor.b,
-            255
-        );
-
-    assert(res == 0);
-
     for (int i = 0; i < wallStartY; i++)
     {
-        res =
-            SDL_RenderDrawPoint(
-                display->renderer,
-                xPosition,
-                i
-            );
-
-        assert(res == 0);
+        WritePixel(
+            display,
+            xPosition,
+            i,
+            scene->colors.ceilingColor
+        );
     }
 
-    res =
-        SDL_SetRenderDrawColor(
-            display->renderer,
-            (uint8_t)(scene->colors.wallCol.r * angleWithWall),
-            (uint8_t)(scene->colors.wallCol.g * angleWithWall),
-            (uint8_t)(scene->colors.wallCol.b * angleWithWall),
-            255
-        );
-
-    assert(res == 0);
+    Color wallColor =
+    {
+        .r = (uint8_t)(scene->colors.wallCol.r * angleWithWall),
+        .g = (uint8_t)(scene->colors.wallCol.g * angleWithWall),
+        .b = (uint8_t)(scene->colors.wallCol.b * angleWithWall),
+        .a = 255
+    };
 
     for (int i = wallStartY; i < wallEndY; i++)
     {
-        res =
-            SDL_RenderDrawPoint(
-                display->renderer,
-                xPosition,
-                i
-            );
-
-        assert(res == 0);
-    }
-
-    res =
-        SDL_SetRenderDrawColor(
-            display->renderer,
-            scene->colors.floorCol.r,
-            scene->colors.floorCol.g,
-            scene->colors.floorCol.b,
-            255
+        WritePixel(
+            display,
+            xPosition,
+            i,
+            wallColor
         );
-
-    assert(res == 0);
+    }
 
     for (int i = wallEndY; i < height; i++)
     {
-        res =
-            SDL_RenderDrawPoint(
-                display->renderer,
-                xPosition,
-                i
-            );
-
-        assert(res == 0);
+        WritePixel(
+            display,
+            xPosition,
+            i,
+            scene->colors.floorCol
+        );
     }
 }
 
