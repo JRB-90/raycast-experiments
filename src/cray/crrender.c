@@ -74,8 +74,8 @@ void ToScreenSpace(
     const Frame2D* const cameraFrame,
     const double x,
     const double y,
-    double* xRes,
-    double* yRes
+    int* xRes,
+    int* yRes
 );
 void RenderCameraSpaceLine(
     const Display* const display,
