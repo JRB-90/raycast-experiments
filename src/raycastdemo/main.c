@@ -46,8 +46,6 @@ void PrintSummary(
 // Entry point
 int main(int argc, char* argv[])
 {
-    printf("Initialising settings...");
-
     RaycastSettings settings =
     {
         .printDebugInfo = true,
@@ -64,7 +62,7 @@ int main(int argc, char* argv[])
         );
 
     printf("Window initialised\n");
-    printf("Window initialising data...\n");
+    printf("Initialising scene...\n");
 
     Scene scene = CreateDefaultScene();
 
@@ -144,19 +142,18 @@ int main(int argc, char* argv[])
         firstPersonTile
     };
     
-    printf("Data initialised\n");
+    printf("Scene initialised\n");
     printf("Starting main loop...\n");
     
+    CycleProfile profile = DefaultCycleProfile();
     InputState inputState = DefaultInputState();
 
     bool isRunning = true;
     double delta;
     double period = 1.0 / (double)CRAY_FPS;
     double targetInterval = period * 1000.0;
-
     uint64_t currentTicks = GetTicks();
     uint64_t previousTicks = currentTicks;
-    CycleProfile profile = DefaultCycleProfile();
 
     while (isRunning)
     {
