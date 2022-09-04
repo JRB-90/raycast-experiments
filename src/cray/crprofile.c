@@ -49,7 +49,7 @@ void ResetProfile(CycleProfile* const profile)
     profile->vertRender = DefaultSample();
 }
 
-void PrintAveragedSample(AveragedSample* const sample, const char* const name)
+void PrintAveragedSample(const AveragedSample* const sample, const char* const name)
 {
     if (sample->count > 0)
     {
@@ -62,7 +62,7 @@ void PrintAveragedSample(AveragedSample* const sample, const char* const name)
     }
 }
 
-void PrintProfileStats(CycleProfile* const profile)
+void PrintProfileStats(const CycleProfile* const profile)
 {
     printf("Up play time:\t%f ms\n", profile->updatePlayerTimeMS);
     printf("Tot ren time:\t%f ms\n", profile->totalRenderTimeMS);

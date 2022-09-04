@@ -1,5 +1,5 @@
-#ifndef _CRAY_PROFILE_H_
-#define _CRAY_PROFILE_H_
+#ifndef _CR_PROFILE_H_
+#define _CR_PROFILE_H_
 
 #include <float.h>
 #include <inttypes.h>
@@ -24,7 +24,7 @@ extern AveragedSample DefaultSample();
 extern CycleProfile DefaultCycleProfile();
 extern void AddSample(AveragedSample* const sample, uint64_t ticks);
 extern void ResetProfile(CycleProfile* const profile);
-extern void PrintAveragedSample(AveragedSample* const sample, const char* const name);
-extern void PrintProfileStats(CycleProfile* const profile);
+extern void PrintAveragedSample(const AveragedSample* const sample, const char* const name);
+extern void PrintProfileStats(const CycleProfile* const profile);
 
-#endif // !_CRAY_PROFILE_H_
+#endif // !_CR_PROFILE_H_

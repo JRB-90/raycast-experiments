@@ -1,5 +1,5 @@
-#ifndef _RENDER_H_
-#define _RENDER_H_
+#ifndef _CR_RENDER_H_
+#define _CR_RENDER_H_
 
 #include <stdbool.h>
 #include "crscene.h"
@@ -36,4 +36,4 @@ extern void ClearScreen(
 	CycleProfile* const profile
 );
 
-#endif // !_RENDER_H_
+#endif // !_CR_RENDER_H_

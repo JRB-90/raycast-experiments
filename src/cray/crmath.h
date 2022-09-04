@@ -1,5 +1,5 @@
-#ifndef _CRAYMATH_H_
-#define _CRAYMATH_H_
+#ifndef _CR_MATH_H_
+#define _CR_MATH_H_
 
 #include <stdbool.h>
 
@@ -53,4 +53,4 @@ extern bool DoesRayInterectLine(
 	Point2D* const intersectionPoint
 );
 
-#endif // !_CRAYMATH_H_
+#endif // !_CR_MATH_H_

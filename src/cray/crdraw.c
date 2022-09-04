@@ -1,4 +1,5 @@
 #include "crdraw.h"
+#include "crmath.h"
 
 inline void WritePixel(
 	const Display* const display,
@@ -15,7 +16,7 @@ inline void WritePixel(
 
 inline void WritePixelViewport(
 	const Display* const display,
-	const Viewport* const viewport,
+	const Rect* const viewport,
 	const Color* const color,
 	int x,
 	int y)
@@ -49,7 +50,7 @@ void DrawClearColor(
 
 void DrawLine(
 	const Display* const display,
-	const Viewport* const viewport,
+	const Rect* const viewport,
 	const Color* const color,
 	int x1,
 	int y1,
@@ -147,7 +148,7 @@ void DrawLine(
 
 void DrawRect(
 	const Display* const display,
-	const Viewport* const viewport,
+	const Rect* const viewport,
 	const Color* const color,
 	int x, 
 	int y, 
@@ -197,7 +198,7 @@ void DrawRect(
 
 void DrawRectFilled(
 	const Display* const display,
-	const Viewport* const viewport,
+	const Rect* const viewport,
 	const Color* const color,
 	int x, 
 	int y,

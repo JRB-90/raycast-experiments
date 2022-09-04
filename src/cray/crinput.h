@@ -1,5 +1,5 @@
-#ifndef _INPUT_H_
-#define _INPUT_H_
+#ifndef _CR_INPUT_H_
+#define _CR_INPUT_H_
 
 #include <stdbool.h>
 
@@ -20,4 +20,4 @@ typedef struct InputState {
 extern InputState DefaultInputState();
 extern void UpdateInputState(InputState* const state);
 
-#endif // !_INPUT_H_
+#endif // !_CR_INPUT_H_
