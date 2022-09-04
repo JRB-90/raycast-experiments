@@ -19,6 +19,18 @@ typedef struct ScreenBuffer {
     uint8_t* pixels;
     int width;
     int height;
-};
+} ScreenBuffer;
+
+typedef enum TileType {
+    StaticScene,
+    StaticPlayer,
+    FirstPerson
+} TileType;
+
+typedef struct DisplayTile {
+    Rect viewport;
+    TileType tileType;
+    Color borderColor;
+} DisplayTile;
 
 #endif // !_CR_TYPES_H_

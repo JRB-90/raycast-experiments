@@ -88,7 +88,8 @@ Display CreateDisplay(const char* const title, int width, int height)
 
     assert(display.texture != NULL);
 
-    display.pixels = malloc(width * height * 4);
+    size_t pixByteCount = (size_t)width * (size_t)height * 4;
+    display.pixels = malloc(pixByteCount);
 
     assert(display.pixels != NULL);
 
@@ -97,6 +98,7 @@ Display CreateDisplay(const char* const title, int width, int height)
 
 void CleanupDisplay(Display* const display)
 {
+    free(display->pixels);
     SDL_DestroyTexture(display->texture);
     SDL_DestroyRenderer(display->renderer);
     SDL_DestroyWindow(display->window);

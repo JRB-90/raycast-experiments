@@ -1,4 +1,5 @@
 #include "crdraw.h"
+#include "crmath.h"
 
 inline void WritePixel(
 	const Display* const display,

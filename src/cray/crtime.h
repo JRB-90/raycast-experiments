@@ -1,5 +1,5 @@
-#ifndef _CRAY_TIME_H_
-#define _CRAY_TIME_H_
+#ifndef _CR_TIME_H_
+#define _CR_TIME_H_
 
 #include <stdint.h>
 #include <float.h>
@@ -9,4 +9,4 @@ extern double GetTimeInS(uint64_t elapsedTicks);
 extern double GetTimeInMS(uint64_t elapsedTicks);
 extern double GetTimeInUS(uint64_t elapsedTicks);
 
-#endif // !_CRAY_TIME_H_
+#endif // !_CR_TIME_H_

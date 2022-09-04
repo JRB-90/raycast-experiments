@@ -2,17 +2,15 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "SDL.h"
+#include "raysettings.h"
 #include "crconsts.h"
+#include "crtypes.h"
+#include "crinput.h"
 #include "crdisplay.h"
 #include "crscene.h"
-#include "crinput.h"
 #include "crrender.h"
-#include "dlist.h"
-#include "crmath.h"
-#include "raysettings.h"
 #include "crtime.h"
 #include "crprofile.h"
-#include "crdraw.h"
 
 #pragma region Function Defs
 

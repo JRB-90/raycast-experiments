@@ -1,5 +1,5 @@
-#ifndef _SCENE_H_
-#define _SCENE_H_
+#ifndef _CR_SCENE_H_
+#define _CR_SCENE_H_
 
 #include "crdisplay.h"
 #include "crinput.h"
@@ -41,4 +41,4 @@ extern void UpdatePlayerPosition(
 	CycleProfile* const profile
 );
 
-#endif // !_SCENE_H_
+#endif // !_CR_SCENE_H_
