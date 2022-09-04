@@ -13,12 +13,12 @@ typedef struct Color {
     uint8_t b;
 } Color;
 
-typedef struct Viewport {
+typedef struct Rect {
     int x;
     int y;
     int w;
     int h;
-} Viewport;
+} Rect;
 
 typedef struct Display {
     SDL_Window* window;
@@ -36,7 +36,7 @@ typedef enum TileType {
 } TileType;
 
 typedef struct DisplayTile {
-    Viewport viewport;
+    Rect viewport;
     TileType tileType;
     Color borderColor;
 } DisplayTile;
