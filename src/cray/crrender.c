@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <float.h>
+#include "crtypes.h"
 #include "crconsts.h"
 #include "crmath.h"
 #include "crtime.h"

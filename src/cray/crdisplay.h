@@ -3,32 +3,10 @@
 
 #include <inttypes.h>
 #include "SDL.h"
+#include "crtypes.h"
 #include "crprofile.h"
 
 // Data types
-typedef struct Color {
-    uint8_t a;
-    uint8_t r;
-    uint8_t g;
-    uint8_t b;
-} Color;
-
-typedef struct Rect {
-    int x;
-    int y;
-    int w;
-    int h;
-} Rect;
-
-typedef struct Display {
-    SDL_Window* window;
-    SDL_Renderer* renderer;
-    SDL_Texture* texture;
-    uint8_t* pixels;
-    int width;
-    int height;
-} Display;
-
 typedef enum TileType {
     StaticScene,
     StaticPlayer,
@@ -40,6 +18,15 @@ typedef struct DisplayTile {
     TileType tileType;
     Color borderColor;
 } DisplayTile;
+
+typedef struct Display {
+    SDL_Window* window;
+    SDL_Renderer* renderer;
+    SDL_Texture* texture;
+    uint8_t* pixels;
+    int width;
+    int height;
+} Display;
 
 extern Color CreateColor();
 extern Color CreateColorRGB(uint8_t r, uint8_t g, uint8_t b);
