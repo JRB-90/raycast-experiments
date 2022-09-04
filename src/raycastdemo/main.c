@@ -12,6 +12,7 @@
 #include "raysettings.h"
 #include "crtime.h"
 #include "crprofile.h"
+#include "crdraw.h"
 
 // Entry point
 int main(int argc, char* argv[])
@@ -21,7 +22,7 @@ int main(int argc, char* argv[])
     RaycastSettings settings =
     {
         .printDebugInfo = true,
-        .renderMode = FullStaticScene
+        .renderMode = Tiled
     };
 
     printf("Initialising window...\n");
@@ -72,7 +73,7 @@ int main(int argc, char* argv[])
     {
         .tileType = StaticScene,
         .borderColor = CreateColorRGB(255, 255, 0),
-        .position =
+        .viewport =
         {
             .x = 40,
             .y = 250,
@@ -85,7 +86,7 @@ int main(int argc, char* argv[])
     {
         .tileType = StaticPlayer,
         .borderColor = CreateColorRGB(0, 255, 255),
-        .position =
+        .viewport =
         {
             .x = 360,
             .y = 250,
@@ -98,7 +99,7 @@ int main(int argc, char* argv[])
     {
         .tileType = FirstPerson,
         .borderColor = CreateColorRGB(255, 0, 255),
-        .position =
+        .viewport =
         {
             .x = 170,
             .y = 30,

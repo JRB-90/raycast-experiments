@@ -25,6 +25,7 @@ typedef struct Frame2D {
 } Frame2D;
 
 // Function defs
+extern int Sign(int value);
 extern double ToRad(double deg);
 extern double ToDeg(double rad);
 extern double Point2DLength(const Point2D vector);
