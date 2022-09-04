@@ -1,6 +1,7 @@
 #include "crdisplay.h"
 #include <assert.h>
 #include "crconsts.h"
+#include "crtime.h"
 
 Color CreateColor()
 {
@@ -48,7 +49,9 @@ Display CreateDisplay(const char* const title, int width, int height)
         .width = width,
         .height = height,
         .window = NULL,
-        .renderer = NULL
+        .renderer = NULL,
+        .texture = NULL,
+        .pixels = NULL
     };
 
     assert(SDL_Init(SDL_INIT_EVERYTHING) == 0);
@@ -74,12 +77,57 @@ Display CreateDisplay(const char* const title, int width, int height)
 
     assert(display.renderer != NULL);
 
+    display.texture =
+        SDL_CreateTexture(
+            display.renderer,
+            SDL_PIXELFORMAT_RGBA8888,
+            SDL_TEXTUREACCESS_STREAMING,
+            width,
+            height
+        );
+
+    assert(display.texture != NULL);
+
+    display.pixels = malloc(width * height * 4);
+
+    assert(display.pixels != NULL);
+
     return display;
 }
 
-void CleanupDisplay(Display display)
+void CleanupDisplay(Display* const display)
 {
-    SDL_DestroyRenderer(display.renderer);
-    SDL_DestroyWindow(display.window);
+    SDL_DestroyTexture(display->texture);
+    SDL_DestroyRenderer(display->renderer);
+    SDL_DestroyWindow(display->window);
     SDL_Quit();
+}
+
+void RenderDisplay(const Display* const display, CycleProfile* const profile)
+{
+    uint64_t presentStartTime = GetTicks();
+
+    int res =
+        SDL_UpdateTexture(
+            display->texture, 
+            NULL, 
+            display->pixels, 
+            display->width * 4
+        );
+
+    assert(res == 0);
+
+    res = 
+        SDL_RenderCopy(
+            display->renderer, 
+            display->texture, 
+            NULL, 
+            NULL
+        );
+
+    assert(res == 0);
+
+    SDL_RenderPresent(display->renderer);
+
+    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);
 }

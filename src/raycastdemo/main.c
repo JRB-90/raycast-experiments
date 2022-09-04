@@ -12,6 +12,7 @@
 #include "raysettings.h"
 #include "crtime.h"
 #include "crprofile.h"
+#include "crdraw.h"
 
 // Entry point
 int main(int argc, char* argv[])
@@ -21,7 +22,7 @@ int main(int argc, char* argv[])
     RaycastSettings settings =
     {
         .printDebugInfo = true,
-        .renderMode = FullFirstPerson
+        .renderMode = Tiled
     };
 
     printf("Initialising window...\n");
@@ -72,7 +73,7 @@ int main(int argc, char* argv[])
     {
         .tileType = StaticScene,
         .borderColor = CreateColorRGB(255, 255, 0),
-        .position =
+        .viewport =
         {
             .x = 40,
             .y = 250,
@@ -85,7 +86,7 @@ int main(int argc, char* argv[])
     {
         .tileType = StaticPlayer,
         .borderColor = CreateColorRGB(0, 255, 255),
-        .position =
+        .viewport =
         {
             .x = 360,
             .y = 250,
@@ -98,7 +99,7 @@ int main(int argc, char* argv[])
     {
         .tileType = FirstPerson,
         .borderColor = CreateColorRGB(255, 0, 255),
-        .position =
+        .viewport =
         {
             .x = 170,
             .y = 30,
@@ -120,18 +121,18 @@ int main(int argc, char* argv[])
     InputState inputState = DefaultInputState();
 
     bool isRunning = true;
+    double delta;
     double period = 1.0 / (double)CRAY_FPS;
-    uint64_t currentTicks = SDL_GetTicks64();
-    uint64_t previousTicks = currentTicks;
-    uint64_t targetInterval = (uint64_t)(period * 1000.0);
-    uint64_t delta;
+    double targetInterval = period * 1000.0;
 
+    uint64_t currentTicks = GetTicks();
+    uint64_t previousTicks = currentTicks;
     CycleProfile profile = DefaultCycleProfile();
 
     while (isRunning)
     {
-        currentTicks = SDL_GetTicks64();
-        delta = currentTicks - previousTicks;
+        currentTicks = GetTicks();
+        delta = GetTimeInMS(currentTicks - previousTicks);
 
         UpdateInputState(&inputState);
 
@@ -166,9 +167,7 @@ int main(int argc, char* argv[])
         if (delta > targetInterval)
         {
             uint64_t updateStartTime = GetTicks();
-
             UpdatePlayerPosition(&scene, inputState);
-
             profile.updatePlayerTimeMS = GetTimeInMS(GetTicks() - updateStartTime);
 
             uint64_t renderStartTime = GetTicks();
@@ -218,11 +217,10 @@ int main(int argc, char* argv[])
                     scene.player.frame.position.y,
                     scene.player.frame.theta
                 );
-                printf("Frame delta:\t%lu ms\n", delta);
+                printf("Frame time:\t%f ms\n", delta);
                 PrintProfileStats(&profile);
+                printf("Print time:\t%f ms\n", GetTimeInMS(GetTicks() - printStartTime));
             }
-
-            printf("Print time:\t%f ms\n", GetTimeInMS(GetTicks() - printStartTime));
 
             ResetProfile(&profile);
 
@@ -233,7 +231,7 @@ int main(int argc, char* argv[])
     printf("Closing down...\n");
 
     ClearDoubleLinkedList(&scene.walls);
-    CleanupDisplay(display);
+    CleanupDisplay(&display);
 
 	return EXIT_SUCCESS;
 }

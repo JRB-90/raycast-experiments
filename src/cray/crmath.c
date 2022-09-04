@@ -4,6 +4,22 @@
 #include <math.h>
 #include <assert.h>
 
+int Sign(int value)
+{
+	if (value < 0)
+	{
+		return -1;
+	}
+	else if (value > 0)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
 double ToRad(double deg)
 {
 	return (deg * M_PI) / 180.0;
