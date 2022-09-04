@@ -33,6 +33,8 @@ typedef struct Scene {
 // Function defs
 extern Player CreateDefaultPlayer();
 extern Scene CreateDefaultScene();
+extern Scene* CreateTestScene(double size);
+extern void CleanupScene(Scene* const scene);
 extern void UpdatePlayerPosition(
 	Scene* const scene, 
 	const InputState* const inputState,

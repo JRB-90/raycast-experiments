@@ -17,6 +17,7 @@
 #pragma region Function Defs
 
 // Funtions defs
+void PopulateTestTiles(DisplayTile* const tiles);
 bool HandleUpdateState(
     InputState* const inputState,
     RaycastSettings* const settings
@@ -64,38 +65,80 @@ int main(int argc, char* argv[])
     printf("Window initialised\n");
     printf("Initialising scene...\n");
 
-    Scene scene = CreateDefaultScene();
+    DisplayTile tiles[3];
+    PopulateTestTiles(tiles);
+    Scene* scene = CreateTestScene(80.0);
+    
+    printf("Scene initialised\n");
+    printf("Starting main loop...\n");
+    
+    CycleProfile profile = DefaultCycleProfile();
+    InputState inputState = DefaultInputState();
 
-    double size = 80.0;
-    double hsize = size / 2.0;
+    bool isRunning = true;
+    double delta;
+    double period = 1.0 / (double)CRAY_FPS;
+    double targetInterval = period * 1000.0;
+    uint64_t currentTicks = GetTicks();
+    uint64_t previousTicks = currentTicks;
 
-    Point2D p1 = { .x = -size, .y = -hsize };
-    Point2D p2 = { .x = -hsize, .y = hsize };
-    Point2D p3 = { .x = size, .y = size };
-    Point2D p4 = { .x = size, .y = -hsize };
-    Point2D p5 = { .x = hsize, .y = -hsize };
-    Point2D p6 = { .x = hsize, .y = -size };
-    Point2D p7 = { .x = -hsize, .y = -size };
-    Point2D p8 = { .x = -hsize, .y = -hsize };
+    while (isRunning)
+    {
+        currentTicks = GetTicks();
+        delta = GetTimeInMS(currentTicks - previousTicks);
 
-    LineSegment2D L1 = { .p1 = p1, .p2 = p2 };
-    LineSegment2D L2 = { .p1 = p2, .p2 = p3 };
-    LineSegment2D L3 = { .p1 = p3, .p2 = p4 };
-    LineSegment2D L4 = { .p1 = p4, .p2 = p5 };
-    LineSegment2D L5 = { .p1 = p5, .p2 = p6 };
-    LineSegment2D L6 = { .p1 = p6, .p2 = p7 };
-    LineSegment2D L7 = { .p1 = p7, .p2 = p8 };
-    LineSegment2D L8 = { .p1 = p8, .p2 = p1 };
+        UpdateInputState(&inputState);
 
-    PushDLLNode(&scene.walls, &L1);
-    PushDLLNode(&scene.walls, &L2);
-    PushDLLNode(&scene.walls, &L3);
-    PushDLLNode(&scene.walls, &L4);
-    PushDLLNode(&scene.walls, &L5);
-    PushDLLNode(&scene.walls, &L6);
-    PushDLLNode(&scene.walls, &L7);
-    PushDLLNode(&scene.walls, &L8);
+        if (HandleUpdateState(&inputState, &settings))
+        {
+            printf("Received QUIT event from SDL\n");
+            isRunning = false;
+            continue;
+        }
 
+        if (delta > targetInterval)
+        {
+            Update(
+                &inputState, 
+                scene, 
+                &profile
+            );
+
+            Render(
+                &settings,
+                &display,
+                tiles,
+                3,
+                scene,
+                &profile
+            );
+
+            PrintSummary(
+                &settings,
+                scene,
+                &profile,
+                delta
+            );
+
+            ResetProfile(&profile);
+
+            previousTicks = currentTicks;
+        }
+    }
+    
+    printf("Closing down...\n");
+
+    CleanupScene(scene);
+    CleanupDisplay(&display);
+
+	return EXIT_SUCCESS;
+}
+
+#pragma region Function Bodies
+
+// Function bodies
+void PopulateTestTiles(DisplayTile* const tiles)
+{
     DisplayTile staticSceneTile =
     {
         .tileType = StaticScene,
@@ -135,81 +178,10 @@ int main(int argc, char* argv[])
         }
     };
 
-    DisplayTile tiles[3] =
-    {
-        staticSceneTile,
-        staticPlayerTile,
-        firstPersonTile
-    };
-    
-    printf("Scene initialised\n");
-    printf("Starting main loop...\n");
-    
-    CycleProfile profile = DefaultCycleProfile();
-    InputState inputState = DefaultInputState();
-
-    bool isRunning = true;
-    double delta;
-    double period = 1.0 / (double)CRAY_FPS;
-    double targetInterval = period * 1000.0;
-    uint64_t currentTicks = GetTicks();
-    uint64_t previousTicks = currentTicks;
-
-    while (isRunning)
-    {
-        currentTicks = GetTicks();
-        delta = GetTimeInMS(currentTicks - previousTicks);
-
-        UpdateInputState(&inputState);
-
-        if (HandleUpdateState(&inputState, &settings))
-        {
-            printf("Received QUIT event from SDL\n");
-            isRunning = false;
-            continue;
-        }
-
-        if (delta > targetInterval)
-        {
-            Update(
-                &inputState, 
-                &scene, 
-                &profile
-            );
-
-            Render(
-                &settings,
-                &display,
-                tiles,
-                3,
-                &scene,
-                &profile
-            );
-
-            PrintSummary(
-                &settings,
-                &scene,
-                &profile,
-                delta
-            );
-
-            ResetProfile(&profile);
-
-            previousTicks = currentTicks;
-        }
-    }
-    
-    printf("Closing down...\n");
-
-    ClearDoubleLinkedList(&scene.walls);
-    CleanupDisplay(&display);
-
-	return EXIT_SUCCESS;
+    tiles[0] = staticSceneTile;
+    tiles[1] = staticPlayerTile;
+    tiles[2] = firstPersonTile;
 }
-
-#pragma region Function Bodies
-
-// Function bodies
 bool HandleUpdateState(
     InputState* const inputState,
     RaycastSettings* const settings)
