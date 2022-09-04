@@ -5,6 +5,7 @@
 #include "crinput.h"
 #include "crmath.h"
 #include "dlist.h"
+#include "crprofile.h"
 
 // Data types
 typedef struct Player {
@@ -32,6 +33,10 @@ typedef struct Scene {
 // Function defs
 extern Player CreateDefaultPlayer();
 extern Scene CreateDefaultScene();
-extern void UpdatePlayerPosition(Scene* const scene, InputState inputState);
+extern void UpdatePlayerPosition(
+	Scene* const scene, 
+	const InputState* const inputState,
+	CycleProfile* const profile
+);
 
 #endif // !_SCENE_H_

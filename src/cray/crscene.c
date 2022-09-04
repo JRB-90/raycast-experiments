@@ -1,5 +1,6 @@
 #include "crscene.h"
 #include "crconsts.h"
+#include "crtime.h"
 
 Player CreateDefaultPlayer()
 {
@@ -33,9 +34,14 @@ Scene CreateDefaultScene()
 	return scene;
 }
 
-void UpdatePlayerPosition(Scene* const scene, InputState inputState)
+void UpdatePlayerPosition(
+	Scene* const scene,
+	const InputState* const inputState,
+	CycleProfile* const profile)
 {
-	if (inputState.forwards)
+	uint64_t updateStartTime = GetTicks();
+
+	if (inputState->forwards)
 	{
 		Vector2D worldForward = { .x = 0.0, .y = -1.0 };
 		Vector2D lookDir =
@@ -53,7 +59,7 @@ void UpdatePlayerPosition(Scene* const scene, InputState inputState)
 			);
 	}
 
-	if (inputState.backwards)
+	if (inputState->backwards)
 	{
 		Vector2D worldForward = { .x = 0.0, .y = -1.0 };
 		Vector2D lookDir =
@@ -71,7 +77,7 @@ void UpdatePlayerPosition(Scene* const scene, InputState inputState)
 			);
 	}
 
-	if (inputState.right)
+	if (inputState->right)
 	{
 		Vector2D worldForward = { .x = 0.0, .y = -1.0 };
 		Vector2D lookDir =
@@ -89,7 +95,7 @@ void UpdatePlayerPosition(Scene* const scene, InputState inputState)
 			);
 	}
 
-	if (inputState.left)
+	if (inputState->left)
 	{
 		Vector2D worldForward = { .x = 0.0, .y = -1.0 };
 		Vector2D lookDir =
@@ -107,13 +113,15 @@ void UpdatePlayerPosition(Scene* const scene, InputState inputState)
 			);
 	}
 
-	if (inputState.rotRight)
+	if (inputState->rotRight)
 	{
 		scene->player.frame.theta += ROT_SPEED;
 	}
 
-	if (inputState.rotLeft)
+	if (inputState->rotLeft)
 	{
 		scene->player.frame.theta -= ROT_SPEED;
 	}
+
+	profile->updatePlayerTimeMS = GetTimeInMS(GetTicks() - updateStartTime);
 }

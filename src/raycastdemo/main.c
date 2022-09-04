@@ -14,6 +14,35 @@
 #include "crprofile.h"
 #include "crdraw.h"
 
+#pragma region Function Defs
+
+// Funtions defs
+bool HandleUpdateState(
+    InputState* const inputState,
+    RaycastSettings* const settings
+);
+void Update(
+    const InputState* const inputState,
+    Scene* const scene,
+    CycleProfile* const profile
+);
+void Render(
+    const RaycastSettings* const settings,
+    const Display* const display,
+    const DisplayTile* const tiles,
+    const int tileCount,
+    Scene* const scene,
+    CycleProfile* const profile
+);
+void PrintSummary(
+    const RaycastSettings* const settings,
+    const Scene* const scene,
+    const CycleProfile* const profile,
+    double delta
+);
+
+#pragma endregion
+
 // Entry point
 int main(int argc, char* argv[])
 {
@@ -136,91 +165,36 @@ int main(int argc, char* argv[])
 
         UpdateInputState(&inputState);
 
-        if (inputState.quit)
+        if (HandleUpdateState(&inputState, &settings))
         {
             printf("Received QUIT event from SDL\n");
             isRunning = false;
             continue;
         }
 
-        if (inputState.toggleDebug)
-        {
-            settings.printDebugInfo = !settings.printDebugInfo;
-        }
-
-        if (inputState.toggleRenderMode)
-        {
-            if (settings.renderMode == FullStaticScene)
-            {
-                settings.renderMode = FullFirstPerson;
-            }
-            else if (settings.renderMode == FullFirstPerson)
-            {
-                settings.renderMode = Tiled;
-            }
-            else if (settings.renderMode == Tiled)
-            {
-                settings.renderMode = FullStaticScene;
-            }
-        }
-
         if (delta > targetInterval)
         {
-            uint64_t updateStartTime = GetTicks();
-            UpdatePlayerPosition(&scene, inputState);
-            profile.updatePlayerTimeMS = GetTimeInMS(GetTicks() - updateStartTime);
+            Update(
+                &inputState, 
+                &scene, 
+                &profile
+            );
 
-            uint64_t renderStartTime = GetTicks();
+            Render(
+                &settings,
+                &display,
+                tiles,
+                3,
+                &scene,
+                &profile
+            );
 
-            if (settings.renderMode == FullStaticScene)
-            {
-                scene.camera =
-                    (Frame2D){
-                        .position =
-                        {
-                            .x = CRAY_SCREEN_WIDTH / 2,
-                            .y = CRAY_SCREEN_HEIGHT / 2
-                        },
-                        .theta = 0.0
-                };
-                RenderSceneTopDown(&display, &scene, &profile);
-            }
-            else if (settings.renderMode == FullFirstPerson)
-            {
-                scene.camera =
-                    (Frame2D){
-                        .position =
-                        {
-                            .x = CRAY_SCREEN_WIDTH / 2,
-                            .y = CRAY_SCREEN_HEIGHT / 2
-                        },
-                        .theta = 0.0
-                };
-                RenderSceneFirstPerson(&display, &scene, &profile);
-            }
-            else if (settings.renderMode == Tiled)
-            {
-                RenderTiles(&display, &scene, tiles, 3, &profile);
-            }
-
-            profile.totalRenderTimeMS = GetTimeInMS(GetTicks() - renderStartTime);
-
-            uint64_t printStartTime = GetTicks();
-
-            if (settings.printDebugInfo)
-            {
-                printf("\033[2J");
-                printf("\033[H");
-                printf(
-                    "Player: %f, %f, %f\n",
-                    scene.player.frame.position.x,
-                    scene.player.frame.position.y,
-                    scene.player.frame.theta
-                );
-                printf("Frame time:\t%f ms\n", delta);
-                PrintProfileStats(&profile);
-                printf("Print time:\t%f ms\n", GetTimeInMS(GetTicks() - printStartTime));
-            }
+            PrintSummary(
+                &settings,
+                &scene,
+                &profile,
+                delta
+            );
 
             ResetProfile(&profile);
 
@@ -235,3 +209,117 @@ int main(int argc, char* argv[])
 
 	return EXIT_SUCCESS;
 }
+
+#pragma region Function Bodies
+
+// Function bodies
+bool HandleUpdateState(
+    InputState* const inputState,
+    RaycastSettings* const settings)
+{
+    if (inputState->quit)
+    {
+        return true;
+    }
+
+    if (inputState->toggleDebug)
+    {
+        settings->printDebugInfo = !settings->printDebugInfo;
+    }
+
+    if (inputState->toggleRenderMode)
+    {
+        if (settings->renderMode == FullStaticScene)
+        {
+            settings->renderMode = FullFirstPerson;
+        }
+        else if (settings->renderMode == FullFirstPerson)
+        {
+            settings->renderMode = Tiled;
+        }
+        else if (settings->renderMode == Tiled)
+        {
+            settings->renderMode = FullStaticScene;
+        }
+    }
+
+    return false;
+}
+
+void Update(
+    const InputState* const inputState,
+    Scene* const scene,
+    CycleProfile* const profile)
+{
+    UpdatePlayerPosition(scene, inputState, profile);
+}
+
+void Render(
+    const RaycastSettings* const settings,
+    const Display* const display,
+    const DisplayTile* const tiles,
+    const int tileCount,
+    Scene* const scene,
+    CycleProfile* const profile)
+{
+    uint64_t renderStartTime = GetTicks();
+
+    if (settings->renderMode == FullStaticScene)
+    {
+        scene->camera =
+            (Frame2D){
+                .position =
+                {
+                    .x = CRAY_SCREEN_WIDTH / 2,
+                    .y = CRAY_SCREEN_HEIGHT / 2
+                },
+                .theta = 0.0
+        };
+        RenderSceneTopDown(display, scene, profile);
+    }
+    else if (settings->renderMode == FullFirstPerson)
+    {
+        scene->camera =
+            (Frame2D){
+                .position =
+                {
+                    .x = CRAY_SCREEN_WIDTH / 2,
+                    .y = CRAY_SCREEN_HEIGHT / 2
+                },
+                .theta = 0.0
+        };
+        RenderSceneFirstPerson(display, scene, profile);
+    }
+    else if (settings->renderMode == Tiled)
+    {
+        RenderTiles(display, scene, tiles, tileCount, profile);
+    }
+
+    profile->totalRenderTimeMS = GetTimeInMS(GetTicks() - renderStartTime);
+}
+
+void PrintSummary(
+    const RaycastSettings* const settings,
+    const Scene* const scene,
+    const CycleProfile* const profile,
+    double delta)
+{
+    uint64_t printStartTime = GetTicks();
+
+    if (settings->printDebugInfo)
+    {
+        printf("\033[2J");
+        printf("\033[H");
+        printf(
+            "Player: %f, %f, %f\n",
+            scene->player.frame.position.x,
+            scene->player.frame.position.y,
+            scene->player.frame.theta
+        );
+        printf("Frame time:\t%f ms\n", delta);
+        PrintProfileStats(profile);
+        printf("Print time:\t%f ms\n", GetTimeInMS(GetTicks() - printStartTime));
+    }
+}
+
+#pragma endregion
