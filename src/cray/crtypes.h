@@ -1,6 +1,8 @@
 #ifndef _CR_TYPES_H_
 #define _CR_TYPES_H_
 
+#include <inttypes.h>
+
 typedef struct Color {
     uint8_t a;
     uint8_t r;
@@ -32,5 +34,9 @@ typedef struct DisplayTile {
     TileType tileType;
     Color borderColor;
 } DisplayTile;
+
+extern Color CreateColor();
+extern Color CreateColorRGB(uint8_t r, uint8_t g, uint8_t b);
+extern Color CreateColorARGB(uint8_t a, uint8_t r, uint8_t g, uint8_t b);
 
 #endif // !_CR_TYPES_H_

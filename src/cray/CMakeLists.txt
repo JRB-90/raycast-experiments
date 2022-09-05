@@ -28,6 +28,7 @@ add_library(cray
     crdraw.h
 	crdraw.c
     crtypes.h
+    crtypes.c
 )
 
 target_link_libraries(cray PRIVATE

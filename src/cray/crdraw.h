@@ -1,7 +1,7 @@
 #ifndef _CR_DRAW_H_
 #define _CR_DRAW_H_
 
-#include "crdisplay.h"
+#include "crtypes.h"
 
 extern inline void WritePixel(
 	const ScreenBuffer* const screen,
