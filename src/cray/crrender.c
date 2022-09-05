@@ -341,7 +341,6 @@ void RenderSceneFirstPersonInternal(
 
         LineSegment2D* nearestWall = NULL;
         double distanceToWall = DBL_MAX;
-        Point2D wallIntersection;
 
         double theta = startAngle + ((double)i * angleInterval);
 
@@ -376,7 +375,6 @@ void RenderSceneFirstPersonInternal(
                 {
                     nearestWall = line;
                     distanceToWall = distanceToLine;
-                    wallIntersection = intersectionPoint;
                 }
             }
 
