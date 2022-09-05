@@ -2,20 +2,20 @@
 #include "crmath.h"
 
 inline void WritePixel(
-	const Display* const display,
+	const ScreenBuffer* const screen,
 	const Color* const color,
 	int x,
 	int y)
 {
-	const int offset = (display->width * y * 4) + x * 4;
-	display->pixels[offset + 0] = color->a;
-	display->pixels[offset + 1] = color->b;
-	display->pixels[offset + 2] = color->g;
-	display->pixels[offset + 3] = color->r;
+	const int offset = (screen->width * y * 4) + x * 4;
+	screen->pixels[offset + 0] = color->a;
+	screen->pixels[offset + 1] = color->b;
+	screen->pixels[offset + 2] = color->g;
+	screen->pixels[offset + 3] = color->r;
 }
 
 inline void WritePixelViewport(
-	const Display* const display,
+	const ScreenBuffer* const screen,
 	const Rect* const viewport,
 	const Color* const color,
 	int x,
@@ -27,7 +27,7 @@ inline void WritePixelViewport(
 		y < viewport->h)
 	{
 		WritePixel(
-			display,
+			screen,
 			color,
 			x + viewport->x,
 			y + viewport->y
@@ -36,20 +36,20 @@ inline void WritePixelViewport(
 }
 
 void DrawClearColor(
-	const Display* const display, 
+	const ScreenBuffer* const screen,
 	const Color* const color)
 {
-	for (int i = 0; i < display->width; i++)
+	for (int i = 0; i < screen->width; i++)
 	{
-		for (int j = 0; j < display->height; j++)
+		for (int j = 0; j < screen->height; j++)
 		{
-			WritePixel(display, color, i, j);
+			WritePixel(screen, color, i, j);
 		}
 	}
 }
 
 void DrawLine(
-	const Display* const display,
+	const ScreenBuffer* const screen,
 	const Rect* const viewport,
 	const Color* const color,
 	int x1,
@@ -70,7 +70,7 @@ void DrawLine(
 		for (int x = x1; x != x2 + incX; x += incX)
 		{
 			WritePixelViewport(
-				display,
+				screen,
 				viewport,
 				color,
 				x,
@@ -84,7 +84,7 @@ void DrawLine(
 		for (int y = y1; y != y2 + incY; y += incY)
 		{
 			WritePixelViewport(
-				display,
+				screen,
 				viewport,
 				color,
 				x1,
@@ -103,7 +103,7 @@ void DrawLine(
 		for (int x = x1; x != x2 + incX; x += incX)
 		{
 			WritePixelViewport(
-				display,
+				screen,
 				viewport,
 				color,
 				x,
@@ -129,7 +129,7 @@ void DrawLine(
 		for (int y = y1; y != y2 + incY; y += incY)
 		{
 			WritePixelViewport(
-				display,
+				screen,
 				viewport,
 				color,
 				x,
@@ -147,7 +147,7 @@ void DrawLine(
 }
 
 void DrawRect(
-	const Display* const display,
+	const ScreenBuffer* const screen,
 	const Rect* const viewport,
 	const Color* const color,
 	int x, 
@@ -156,7 +156,7 @@ void DrawRect(
 	int h)
 {
 	DrawLine(
-		display,
+		screen,
 		viewport,
 		color,
 		x,
@@ -166,7 +166,7 @@ void DrawRect(
 	);
 
 	DrawLine(
-		display,
+		screen,
 		viewport,
 		color,
 		x + w - 1,
@@ -176,7 +176,7 @@ void DrawRect(
 	);
 
 	DrawLine(
-		display,
+		screen,
 		viewport,
 		color,
 		x + w - 1,
@@ -186,7 +186,7 @@ void DrawRect(
 	);
 
 	DrawLine(
-		display,
+		screen,
 		viewport,
 		color,
 		x,
@@ -197,7 +197,7 @@ void DrawRect(
 }
 
 void DrawRectFilled(
-	const Display* const display,
+	const ScreenBuffer* const screen,
 	const Rect* const viewport,
 	const Color* const color,
 	int x, 
@@ -210,7 +210,7 @@ void DrawRectFilled(
 		for (int j = y; j < y + h; j++)
 		{
 			WritePixelViewport(
-				display,
+				screen,
 				viewport,
 				color,
 				i,

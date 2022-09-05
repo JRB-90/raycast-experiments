@@ -46,12 +46,15 @@ Display CreateDisplay(const char* const title, int width, int height)
 {
     Display display =
     {
-        .width = width,
-        .height = height,
         .window = NULL,
         .renderer = NULL,
         .texture = NULL,
-        .pixels = NULL
+        .screen =
+        (ScreenBuffer){
+            .pixels = NULL,
+            .width = width,
+            .height = height
+        }
     };
 
     assert(SDL_Init(SDL_INIT_EVERYTHING) == 0);
@@ -89,16 +92,16 @@ Display CreateDisplay(const char* const title, int width, int height)
     assert(display.texture != NULL);
 
     size_t pixByteCount = (size_t)width * (size_t)height * 4;
-    display.pixels = malloc(pixByteCount);
+    display.screen.pixels = malloc(pixByteCount);
 
-    assert(display.pixels != NULL);
+    assert(display.screen.pixels != NULL);
 
     return display;
 }
 
 void CleanupDisplay(Display* const display)
 {
-    free(display->pixels);
+    free(display->screen.pixels);
     SDL_DestroyTexture(display->texture);
     SDL_DestroyRenderer(display->renderer);
     SDL_DestroyWindow(display->window);
@@ -113,8 +116,8 @@ void RenderDisplay(const Display* const display, CycleProfile* const profile)
         SDL_UpdateTexture(
             display->texture, 
             NULL, 
-            display->pixels, 
-            display->width * 4
+            display->screen.pixels,
+            display->screen.width * 4
         );
 
     assert(res == 0);

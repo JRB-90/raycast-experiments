@@ -16,21 +16,21 @@ Frame2D CalculateTileCameraPosition(
     const DisplayTile* const tile
 );
 void RenderTileInternal(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Scene* const scene,
     const Frame2D* const cameraFrame,
     const DisplayTile* const tile,
     CycleProfile* profile
 );
 void RenderSceneTopDownInternal(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
     const Frame2D* const cameraFrame,
     CycleProfile* profile
 );
 void RenderSceneFirstPersonInternal(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
     const int width,
@@ -38,7 +38,7 @@ void RenderSceneFirstPersonInternal(
     CycleProfile* profile
 );
 void RenderVerticalWallStrip(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
     const int xPosition,
@@ -48,28 +48,28 @@ void RenderVerticalWallStrip(
     CycleProfile* profile
 );
 void RenderWallsTopDown(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
     const Frame2D* const cameraFrame,
     CycleProfile* profile
 );
 void RenderPlayerTopDown(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
     const Frame2D* const cameraFrame,
     CycleProfile* profile
 );
 void RenderProjectionTopDown(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
     const Frame2D* const cameraFrame,
     CycleProfile* profile
 );
 void RenderRayTopDown(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
     const Frame2D* const cameraFrame,
@@ -85,7 +85,7 @@ void ToScreenSpace(
     int* yRes
 );
 void RenderCameraSpaceLine(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
     const Frame2D* const cameraFrame,
@@ -96,7 +96,7 @@ void RenderCameraSpaceLine(
     const double y2
 );
 void RenderCameraSpaceRectangle(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
     const Frame2D* const cameraFrame,
@@ -111,51 +111,48 @@ void RenderCameraSpaceRectangle(
 
 // Public function bodies
 void RenderTiles(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Scene* const scene,
     const DisplayTile tiles[],
     int count,
     CycleProfile* const profile)
 {
-    ClearScreen(display, scene, profile);
+    ClearScreen(screen, scene, profile);
 
     for (int i = 0; i < count; i++)
     {
         DisplayTile tile = tiles[i];
         Frame2D tileCamPos = CalculateTileCameraPosition(scene, &tile);
         RenderTileInternal(
-            display,
+            screen,
             scene,
             &tileCamPos,
             &tile,
             profile
         );
     }
-
-    RenderDisplay(display, profile);
 }
 
 void RenderTile(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Scene* const scene,
     const DisplayTile* const tile,
     CycleProfile* const profile)
 {
     Frame2D tileCamPos = CalculateTileCameraPosition(scene, tile);
 
-    ClearScreen(display, scene, profile);
+    ClearScreen(screen, scene, profile);
     RenderTileInternal(
-        display,
+        screen,
         scene,
         &tileCamPos,
         tile,
         profile
     );
-    RenderDisplay(display, profile);
 }
 
 void RenderSceneTopDown(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Scene* const scene,
     CycleProfile* const profile)
 {
@@ -163,23 +160,22 @@ void RenderSceneTopDown(
     {
         .x = 0,
         .y = 0,
-        .w = display->width,
-        .h = display->height
+        .w = screen->width,
+        .h = screen->height
     };
 
-    ClearScreen(display, scene, profile);
+    ClearScreen(screen, scene, profile);
     RenderSceneTopDownInternal(
-        display,
+        screen,
         &viewport,
         scene, 
         &scene->camera, 
         profile
     );
-    RenderDisplay(display, profile);
 }
 
 void RenderSceneFirstPerson(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Scene* const scene,
     CycleProfile* const profile)
 {
@@ -187,29 +183,27 @@ void RenderSceneFirstPerson(
     {
         .x = 0,
         .y = 0,
-        .w = display->width,
-        .h = display->height
+        .w = screen->width,
+        .h = screen->height
     };
 
     RenderSceneFirstPersonInternal(
-        display,
+        screen,
         &viewport,
         scene,
-        display->width,
-        display->height,
+        screen->width,
+        screen->height,
         profile
     );
-    
-    RenderDisplay(display, profile);
 }
 
 void ClearScreen(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Scene* const scene,
     CycleProfile* const profile)
 {
     uint64_t startTime = GetTicks();
-    DrawClearColor(display, &scene->colors.clearCol);
+    DrawClearColor(screen, &scene->colors.clearCol);
     profile->clearTimeMS = GetTimeInMS(GetTicks() - startTime);
 }
 
@@ -269,7 +263,7 @@ Frame2D CalculateTileCameraPosition(
 }
 
 void RenderTileInternal(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Scene* const scene,
     const Frame2D* const cameraFrame,
     const DisplayTile* const tile,
@@ -281,7 +275,7 @@ void RenderTileInternal(
         tile->tileType == StaticScene)
     {
         RenderSceneTopDownInternal(
-            display,
+            screen,
             &tile->viewport,
             scene, 
             cameraFrame,
@@ -291,7 +285,7 @@ void RenderTileInternal(
     else if (tile->tileType == FirstPerson)
     {
         RenderSceneFirstPersonInternal(
-            display,
+            screen,
             &tile->viewport,
             scene,
             tile->viewport.w,
@@ -301,7 +295,7 @@ void RenderTileInternal(
     }
 
     DrawRect(
-        display,
+        screen,
         &tile->viewport,
         &tile->borderColor,
         0,
@@ -314,21 +308,21 @@ void RenderTileInternal(
 }
 
 void RenderSceneTopDownInternal(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
     const Frame2D* const cameraFrame,
     CycleProfile* profile)
 {
     uint64_t startTime = GetTicks();
-    RenderProjectionTopDown(display, viewport, scene, cameraFrame, profile);
-    RenderWallsTopDown(display, viewport, scene, cameraFrame, profile);
-    RenderPlayerTopDown(display, viewport, scene, cameraFrame, profile);
+    RenderProjectionTopDown(screen, viewport, scene, cameraFrame, profile);
+    RenderWallsTopDown(screen, viewport, scene, cameraFrame, profile);
+    RenderPlayerTopDown(screen, viewport, scene, cameraFrame, profile);
     AddSample(&profile->topRender, GetTicks() - startTime);
 }
 
 void RenderSceneFirstPersonInternal(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
     const int width,
@@ -392,7 +386,7 @@ void RenderSceneFirstPersonInternal(
         if (nearestWall == NULL)
         {
             RenderVerticalWallStrip(
-                display,
+                screen,
                 viewport,
                 scene,
                 i,
@@ -414,7 +408,7 @@ void RenderSceneFirstPersonInternal(
         angleWithWall = 1.0 - (fabs(angleWithWall) / 2.0);
 
         RenderVerticalWallStrip(
-            display,
+            screen,
             viewport,
             scene,
             i,
@@ -431,7 +425,7 @@ void RenderSceneFirstPersonInternal(
 }
 
 void RenderVerticalWallStrip(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
     const int xPosition,
@@ -454,7 +448,7 @@ void RenderVerticalWallStrip(
     for (int i = 0; i < wallStartY; i++)
     {
         WritePixelViewport(
-            display,
+            screen,
             viewport,
             &scene->colors.ceilingColor,
             xPosition,
@@ -473,7 +467,7 @@ void RenderVerticalWallStrip(
     for (int i = wallStartY; i < wallEndY; i++)
     {
         WritePixelViewport(
-            display,
+            screen,
             viewport,
             &wallColor,
             xPosition,
@@ -484,7 +478,7 @@ void RenderVerticalWallStrip(
     for (int i = wallEndY; i < height; i++)
     {
         WritePixelViewport(
-            display,
+            screen,
             viewport,
             &scene->colors.floorCol,
             xPosition,
@@ -494,7 +488,7 @@ void RenderVerticalWallStrip(
 }
 
 void RenderWallsTopDown(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
     const Frame2D* const cameraFrame,
@@ -510,7 +504,7 @@ void RenderWallsTopDown(
         LineSegment2D* line = DLLAt((DLList* const)&scene->walls, i);
 
         RenderCameraSpaceLine(
-            display,
+            screen,
             viewport,
             scene,
             cameraFrame,
@@ -524,7 +518,7 @@ void RenderWallsTopDown(
 }
 
 void RenderPlayerTopDown(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
     const Frame2D* const cameraFrame,
@@ -539,7 +533,7 @@ void RenderPlayerTopDown(
     };
 
     RenderCameraSpaceRectangle(
-        display,
+        screen,
         viewport,
         scene,
         cameraFrame,
@@ -550,7 +544,7 @@ void RenderPlayerTopDown(
 }
 
 void RenderProjectionTopDown(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
     const Frame2D* const cameraFrame,
@@ -574,7 +568,7 @@ void RenderProjectionTopDown(
         lookDir = Vec2DNormalise(lookDir);
 
         RenderRayTopDown(
-            display,
+            screen,
             viewport,
             scene,
             cameraFrame,
@@ -585,7 +579,7 @@ void RenderProjectionTopDown(
 }
 
 void RenderRayTopDown(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
     const Frame2D* const cameraFrame,
@@ -631,7 +625,7 @@ void RenderRayTopDown(
     }
 
     RenderCameraSpaceLine(
-        display,
+        screen,
         viewport,
         scene,
         cameraFrame,
@@ -651,7 +645,7 @@ void RenderRayTopDown(
     };
 
     RenderCameraSpaceRectangle(
-        display,
+        screen,
         viewport,
         scene,
         cameraFrame,
@@ -681,7 +675,7 @@ void ToScreenSpace(
 }
 
 void RenderCameraSpaceLine(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
     const Frame2D* const cameraFrame,
@@ -715,7 +709,7 @@ void RenderCameraSpaceLine(
     );
 
     DrawLine(
-        display, 
+        screen,
         viewport,
         color,
         x1Screen,
@@ -726,7 +720,7 @@ void RenderCameraSpaceLine(
 }
 
 void RenderCameraSpaceRectangle(
-    const Display* const display,
+    const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
     const Frame2D* const cameraFrame, 
@@ -749,7 +743,7 @@ void RenderCameraSpaceRectangle(
     if (fill)
     {
         DrawRectFilled(
-            display,
+            screen,
             viewport,
             color,
             x1Screen,
@@ -761,7 +755,7 @@ void RenderCameraSpaceRectangle(
     else
     {
         DrawRect(
-            display,
+            screen,
             viewport,
             color,
             x1Screen,

@@ -242,7 +242,7 @@ void Render(
                 },
                 .theta = 0.0
         };
-        RenderSceneTopDown(display, scene, profile);
+        RenderSceneTopDown(&display->screen, scene, profile);
     }
     else if (settings->renderMode == FullFirstPerson)
     {
@@ -255,12 +255,14 @@ void Render(
                 },
                 .theta = 0.0
         };
-        RenderSceneFirstPerson(display, scene, profile);
+        RenderSceneFirstPerson(&display->screen, scene, profile);
     }
     else if (settings->renderMode == Tiled)
     {
-        RenderTiles(display, scene, tiles, tileCount, profile);
+        RenderTiles(&display->screen, scene, tiles, tileCount, profile);
     }
+
+    RenderDisplay(display, profile);
 
     profile->totalRenderTimeMS = GetTimeInMS(GetTicks() - renderStartTime);
 }

@@ -11,9 +11,7 @@ typedef struct Display {
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Texture* texture;
-    uint8_t* pixels;
-    int width;
-    int height;
+    ScreenBuffer screen;
 } Display;
 
 extern Color CreateColor();
