@@ -1,7 +1,10 @@
+#define _USE_MATH_DEFINES
+
 #include "crrender.h"
 #include <assert.h>
 #include <stdio.h>
 #include <float.h>
+#include <math.h>
 #include "crtypes.h"
 #include "crconsts.h"
 #include "crmath.h"
@@ -37,45 +40,45 @@ void RenderSceneFirstPersonInternal(
     const int height,
     CycleProfile* profile
 );
-void RenderVerticalWallStrip(
-    const ScreenBuffer* const screen,
-    const Rect* const viewport,
-    const Scene* const scene,
-    const int xPosition,
-    const int height,
-    const double distanceToWall,
-    const double angleWithWall,
-    CycleProfile* profile
-);
-void RenderWallsTopDown(
-    const ScreenBuffer* const screen,
-    const Rect* const viewport,
-    const Scene* const scene,
-    const Frame2D* const cameraFrame,
-    CycleProfile* profile
-);
-void RenderPlayerTopDown(
-    const ScreenBuffer* const screen,
-    const Rect* const viewport,
-    const Scene* const scene,
-    const Frame2D* const cameraFrame,
-    CycleProfile* profile
-);
-void RenderProjectionTopDown(
-    const ScreenBuffer* const screen,
-    const Rect* const viewport,
-    const Scene* const scene,
-    const Frame2D* const cameraFrame,
-    CycleProfile* profile
-);
-void RenderRayTopDown(
-    const ScreenBuffer* const screen,
-    const Rect* const viewport,
-    const Scene* const scene,
-    const Frame2D* const cameraFrame,
-    const Vector2D* const ray,
-    CycleProfile* profile
-);
+//void RenderVerticalWallStrip(
+//    const ScreenBuffer* const screen,
+//    const Rect* const viewport,
+//    const Scene* const scene,
+//    const int xPosition,
+//    const int height,
+//    const double distanceToWall,
+//    const double angleWithWall,
+//    CycleProfile* profile
+//);
+//void RenderWallsTopDown(
+//    const ScreenBuffer* const screen,
+//    const Rect* const viewport,
+//    const Scene* const scene,
+//    const Frame2D* const cameraFrame,
+//    CycleProfile* profile
+//);
+//void RenderPlayerTopDown(
+//    const ScreenBuffer* const screen,
+//    const Rect* const viewport,
+//    const Scene* const scene,
+//    const Frame2D* const cameraFrame,
+//    CycleProfile* profile
+//);
+//void RenderProjectionTopDown(
+//    const ScreenBuffer* const screen,
+//    const Rect* const viewport,
+//    const Scene* const scene,
+//    const Frame2D* const cameraFrame,
+//    CycleProfile* profile
+//);
+//void RenderRayTopDown(
+//    const ScreenBuffer* const screen,
+//    const Rect* const viewport,
+//    const Scene* const scene,
+//    const Frame2D* const cameraFrame,
+//    const Vector2D* const ray,
+//    CycleProfile* profile
+//);
 void ToScreenSpace(
     const Scene* const scene,
     const Frame2D* const cameraFrame,
