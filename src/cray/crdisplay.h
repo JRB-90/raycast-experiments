@@ -14,9 +14,6 @@ typedef struct Display {
     ScreenBuffer screen;
 } Display;
 
-extern Color CreateColor();
-extern Color CreateColorRGB(uint8_t r, uint8_t g, uint8_t b);
-extern Color CreateColorARGB(uint8_t a, uint8_t r, uint8_t g, uint8_t b);
 extern Display CreateDisplay(const char* const title, int width, int height);
 extern void CleanupDisplay(Display* const display);
 extern void RenderDisplay(const Display* const display, CycleProfile* const profile);

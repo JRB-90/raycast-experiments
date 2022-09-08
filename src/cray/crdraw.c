@@ -1,7 +1,8 @@
 #include "crdraw.h"
+#include <math.h>
 #include "crmath.h"
 
-inline void WritePixel(
+void WritePixel(
 	const ScreenBuffer* const screen,
 	const Color* const color,
 	int x,
@@ -14,7 +15,7 @@ inline void WritePixel(
 	screen->pixels[offset + 3] = color->r;
 }
 
-inline void WritePixelViewport(
+void WritePixelViewport(
 	const ScreenBuffer* const screen,
 	const Rect* const viewport,
 	const Color* const color,

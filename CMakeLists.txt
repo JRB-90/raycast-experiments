@@ -23,3 +23,4 @@ endif()
 
 add_subdirectory("src/cray")
 add_subdirectory("src/raycastdemo")
+add_subdirectory("src/crprofile")

@@ -1,11 +1,11 @@
 #ifndef _CR_SCENE_H_
 #define _CR_SCENE_H_
 
-#include "crdisplay.h"
 #include "crinput.h"
 #include "crmath.h"
 #include "dlist.h"
 #include "crprofile.h"
+#include "crtypes.h"
 
 // Data types
 typedef struct Player {
@@ -34,7 +34,7 @@ typedef struct Scene {
 extern Player CreateDefaultPlayer();
 extern Scene CreateDefaultScene();
 extern Scene* CreateTestScene(double size);
-extern void CleanupScene(Scene* const scene);
+extern void CleanupScene(Scene* scene);
 extern void UpdatePlayerPosition(
 	Scene* const scene, 
 	const InputState* const inputState,

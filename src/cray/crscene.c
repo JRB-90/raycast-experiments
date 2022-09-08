@@ -1,5 +1,6 @@
 #include "crscene.h"
 #include <assert.h>
+#include <stdlib.h>
 #include "crconsts.h"
 #include "crtime.h"
 
@@ -122,7 +123,7 @@ Scene* CreateTestScene(double size)
 	return scene;
 }
 
-void CleanupScene(Scene* const scene)
+void CleanupScene(Scene* scene)
 {
 	DLLNode* current = scene->walls.head;
 
@@ -134,6 +135,9 @@ void CleanupScene(Scene* const scene)
 	}
 
 	ClearDoubleLinkedList(&scene->walls);
+
+	free(scene);
+	scene = NULL;
 }
 
 void UpdatePlayerPosition(
