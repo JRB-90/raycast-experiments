@@ -50,7 +50,7 @@ Scene* CreateTestScene(double size)
 	scene->walls = CreateDoubleLinkedList();
 	scene->colors =
 	(SceneColors){
-		.clearCol = CreateColorRGB(0, 0, 0),
+		.clearCol = CreateColorRGB(0, 0, 255),
 		.wallCol = CreateColorRGB(255, 255, 255),
 		.floorCol = CreateColorRGB(52, 52, 52),
 		.ceilingColor = CreateColorRGB(52, 52, 128),

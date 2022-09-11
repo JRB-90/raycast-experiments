@@ -38,3 +38,13 @@ Color CreateColorARGB(uint8_t a, uint8_t r, uint8_t g, uint8_t b)
 
     return color;
 }
+
+uint32_t ToUint32Color(const Color* const color)
+{
+    uint32_t r2 = color->r << 24;
+    uint32_t g2 = color->g << 16;
+    uint32_t b2 = color->b << 8;
+    uint32_t a2 = color->a;
+
+    return r2 | g2 | b2 | a2;;
+}

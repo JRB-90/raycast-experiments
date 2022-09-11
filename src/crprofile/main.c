@@ -9,7 +9,8 @@
 
 const int SCRN_WIDTH			= 640;
 const int SCRN_HEIGHT			= 480;
-const int WRITE_PIXEL_ITR		= 1000000;
+
+const int WRITE_PIXEL_ITR		= 1000000000;
 const int DRAW_CLEAR_ITR		= 1000;
 const int DRAW_LINE_ITR			= 100000;
 const int DRAW_RECT_ITR			= 1000000;
@@ -436,18 +437,18 @@ int main(int argc, char* argv[])
 
 	printf("Begining profile tests..\n\n");
 
-	RunWritePixelTests(&screen);
-	RunWritePixelViewportTests(&screen);
-	RunDrawClearTests(&screen);
+	//RunWritePixelTests(&screen);
+	//RunWritePixelViewportTests(&screen);
+	//RunDrawClearTests(&screen);
 	RunDrawLineTests(&screen);
-	RunDrawRectTests(&screen);
-	RunDrawRectFilledTests(&screen);
+	//RunDrawRectTests(&screen);
+	//RunDrawRectFilledTests(&screen);
 
-	RunRenderRayTests(&screen, scene);
+	/*RunRenderRayTests(&screen, scene);
 	RunRenderProjTests(&screen, scene);
 	RunRenderPlayerTests(&screen, scene);
 	RunRenderWallsTests(&screen, scene);
-	RunRenderVertTests(&screen, scene);
+	RunRenderVertTests(&screen, scene);*/
 
 	CleanupScene(scene);
 	free(screen.pixels);

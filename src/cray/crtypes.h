@@ -38,5 +38,6 @@ typedef struct DisplayTile {
 extern Color CreateColor();
 extern Color CreateColorRGB(uint8_t r, uint8_t g, uint8_t b);
 extern Color CreateColorARGB(uint8_t a, uint8_t r, uint8_t g, uint8_t b);
+extern uint32_t ToUint32Color(const Color* const color);
 
 #endif // !_CR_TYPES_H_

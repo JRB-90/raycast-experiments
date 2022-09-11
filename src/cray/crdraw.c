@@ -1,5 +1,6 @@
 #include "crdraw.h"
 #include <math.h>
+#include <stdio.h>
 #include "crmath.h"
 
 void WritePixel(
@@ -40,12 +41,13 @@ void DrawClearColor(
 	const ScreenBuffer* const screen,
 	const Color* const color)
 {
-	for (int i = 0; i < screen->width; i++)
+	const int pixelCount = screen->width * screen->height;
+	uint32_t* buf = (uint32_t*)screen->pixels;
+	uint32_t c = ToUint32Color(color);
+
+	for (int i = 0; i < pixelCount; i++)
 	{
-		for (int j = 0; j < screen->height; j++)
-		{
-			WritePixel(screen, color, i, j);
-		}
+		buf[i] = c;
 	}
 }
 
