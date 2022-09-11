@@ -440,8 +440,8 @@ int main(int argc, char* argv[])
 	//RunWritePixelTests(&screen);
 	//RunWritePixelViewportTests(&screen);
 	//RunDrawClearTests(&screen);
-	RunDrawLineTests(&screen);
-	//RunDrawRectTests(&screen);
+	//RunDrawLineTests(&screen);
+	RunDrawRectTests(&screen);
 	//RunDrawRectFilledTests(&screen);
 
 	/*RunRenderRayTests(&screen, scene);

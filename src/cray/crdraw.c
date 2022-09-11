@@ -158,45 +158,43 @@ void DrawRect(
 	int w, 
 	int h)
 {
-	DrawLine(
-		screen,
-		viewport,
-		color,
-		x,
-		y,
-		x + w - 1,
-		y
-	);
+	for (int i = x; i < x + w - 1; i++)
+	{
+		WritePixelViewport(
+			screen,
+			viewport,
+			color,
+			i,
+			y
+		);
 
-	DrawLine(
-		screen,
-		viewport,
-		color,
-		x + w - 1,
-		y,
-		x + w - 1,
-		y + h - 1
-	);
+		WritePixelViewport(
+			screen,
+			viewport,
+			color,
+			i,
+			y + h - 1
+		);
+	}
 
-	DrawLine(
-		screen,
-		viewport,
-		color,
-		x + w - 1,
-		y + h - 1,
-		x,
-		y + h - 1
-	);
+	for (int i = y; i < y + h - 1; i++)
+	{
+		WritePixelViewport(
+			screen,
+			viewport,
+			color,
+			x,
+			i
+		);
 
-	DrawLine(
-		screen,
-		viewport,
-		color,
-		x,
-		y + h - 1,
-		x,
-		y
-	);
+		WritePixelViewport(
+			screen,
+			viewport,
+			color,
+			x + w - 1,
+			i
+		);
+	}
 }
 
 void DrawRectFilled(
