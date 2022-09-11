@@ -192,15 +192,15 @@ Vector2D FindLookVector(Vector2D worldForward, double theta)
 }
 
 bool DoesRayInterectLine(
-	const Point2D rayOrigin, 
-	const Vector2D rayDirection, 
-	const LineSegment2D lineSegment,
+	const Point2D* const rayOrigin, 
+	const Vector2D* const rayDirection,
+	const LineSegment2D* const lineSegment,
 	double* const distanceToLine,
 	Point2D* const intersectionPoint)
 {
-	Vector2D dirNorm = Vec2DNormalise(rayDirection);
-	Vector2D v1 = Vec2DBetween(lineSegment.p1, rayOrigin);
-	Vector2D v2 = Vec2DBetween(lineSegment.p1, lineSegment.p2);
+	Vector2D dirNorm = Vec2DNormalise(*rayDirection);
+	Vector2D v1 = Vec2DBetween(lineSegment->p1, *rayOrigin);
+	Vector2D v2 = Vec2DBetween(lineSegment->p1, lineSegment->p2);
 	Vector2D v3 = { .x = -dirNorm.y, .y = dirNorm.x };
 
 	double dot = Vec2DDot(v2, v3);
@@ -218,7 +218,7 @@ bool DoesRayInterectLine(
 	{
 		*distanceToLine = t1;
 		Vector2D vecToIntersection = Vec2DMul(dirNorm, t1);
-		Point2D intersect = AddVec2DToPoint2D(rayOrigin, vecToIntersection);
+		Point2D intersect = AddVec2DToPoint2D(*rayOrigin, vecToIntersection);
 		intersectionPoint->x = intersect.x;
 		intersectionPoint->y = intersect.y;
 

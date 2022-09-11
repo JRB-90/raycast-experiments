@@ -46,9 +46,9 @@ extern Frame2D CreateFrame2D(double x, double y, double theta);
 
 extern Vector2D FindLookVector(Vector2D worldForward, double theta);
 extern bool DoesRayInterectLine(
-	const Point2D rayOrigin, 
-	const Vector2D rayDirection, 
-	const LineSegment2D lineSegment,
+	const Point2D* const rayOrigin,
+	const Vector2D* const rayDirection,
+	const LineSegment2D* const lineSegment,
 	double* const distanceToLine,
 	Point2D* const intersectionPoint
 );
