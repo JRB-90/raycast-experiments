@@ -3,13 +3,13 @@
 
 #include "crtypes.h"
 
-extern inline void WritePixel(
+extern inline void DrawPixel(
 	const ScreenBuffer* const screen,
 	const Color* const color,
 	int x,
 	int y
 );
-extern inline void WritePixelViewport(
+extern inline void DrawPixelViewport(
 	const ScreenBuffer* const screen,
 	const Rect* const viewport,
 	const Color* const color,

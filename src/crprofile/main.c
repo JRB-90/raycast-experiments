@@ -15,7 +15,7 @@ const int DRAW_CLEAR_ITR		= 1000;
 const int DRAW_LINE_ITR			= 100000;
 const int DRAW_RECT_ITR			= 1000000;
 
-const int REN_RAY_ITR			= 100000;
+const int REN_RAY_ITR			= 1000000;
 const int REN_PROJ_ITR			= 100000;
 const int REN_PLAY_ITR			= 100000;
 const int REN_WALLS_ITR			= 100000;
@@ -31,7 +31,7 @@ void RunWritePixelTests(const ScreenBuffer* const screen)
 
 	for (int i = 0; i < WRITE_PIXEL_ITR; i++)
 	{
-		WritePixel(
+		DrawPixel(
 			screen,
 			&c,
 			0,
@@ -61,7 +61,7 @@ void RunWritePixelViewportTests(const ScreenBuffer* const screen)
 
 	for (int i = 0; i < WRITE_PIXEL_ITR; i++)
 	{
-		WritePixelViewport(
+		DrawPixelViewport(
 			screen,
 			&v,
 			&c,
@@ -441,14 +441,14 @@ int main(int argc, char* argv[])
 	//RunWritePixelViewportTests(&screen);
 	//RunDrawClearTests(&screen);
 	//RunDrawLineTests(&screen);
-	RunDrawRectTests(&screen);
+	//RunDrawRectTests(&screen);
 	//RunDrawRectFilledTests(&screen);
 
-	/*RunRenderRayTests(&screen, scene);
-	RunRenderProjTests(&screen, scene);
-	RunRenderPlayerTests(&screen, scene);
-	RunRenderWallsTests(&screen, scene);
-	RunRenderVertTests(&screen, scene);*/
+	RunRenderRayTests(&screen, scene);
+	//RunRenderProjTests(&screen, scene);
+	//RunRenderPlayerTests(&screen, scene);
+	//RunRenderWallsTests(&screen, scene);
+	//RunRenderVertTests(&screen, scene);
 
 	CleanupScene(scene);
 	free(screen.pixels);

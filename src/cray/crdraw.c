@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "crmath.h"
 
-void WritePixel(
+void DrawPixel(
 	const ScreenBuffer* const screen,
 	const Color* const color,
 	int x,
@@ -16,7 +16,7 @@ void WritePixel(
 	screen->pixels[offset + 3] = color->r;
 }
 
-void WritePixelViewport(
+void DrawPixelViewport(
 	const ScreenBuffer* const screen,
 	const Rect* const viewport,
 	const Color* const color,
@@ -28,7 +28,7 @@ void WritePixelViewport(
 		y >= 0 &&
 		y < viewport->h)
 	{
-		WritePixel(
+		DrawPixel(
 			screen,
 			color,
 			x + viewport->x,
@@ -72,7 +72,7 @@ void DrawLine(
 		// Horizontal line
 		for (int x = x1; x != x2 + incX; x += incX)
 		{
-			WritePixelViewport(
+			DrawPixelViewport(
 				screen,
 				viewport,
 				color,
@@ -86,7 +86,7 @@ void DrawLine(
 		// Vertical line
 		for (int y = y1; y != y2 + incY; y += incY)
 		{
-			WritePixelViewport(
+			DrawPixelViewport(
 				screen,
 				viewport,
 				color,
@@ -105,7 +105,7 @@ void DrawLine(
 
 		for (int x = x1; x != x2 + incX; x += incX)
 		{
-			WritePixelViewport(
+			DrawPixelViewport(
 				screen,
 				viewport,
 				color,
@@ -131,7 +131,7 @@ void DrawLine(
 
 		for (int y = y1; y != y2 + incY; y += incY)
 		{
-			WritePixelViewport(
+			DrawPixelViewport(
 				screen,
 				viewport,
 				color,
@@ -160,7 +160,7 @@ void DrawRect(
 {
 	for (int i = x; i < x + w - 1; i++)
 	{
-		WritePixelViewport(
+		DrawPixelViewport(
 			screen,
 			viewport,
 			color,
@@ -168,7 +168,7 @@ void DrawRect(
 			y
 		);
 
-		WritePixelViewport(
+		DrawPixelViewport(
 			screen,
 			viewport,
 			color,
@@ -179,7 +179,7 @@ void DrawRect(
 
 	for (int i = y; i < y + h - 1; i++)
 	{
-		WritePixelViewport(
+		DrawPixelViewport(
 			screen,
 			viewport,
 			color,
@@ -187,7 +187,7 @@ void DrawRect(
 			i
 		);
 
-		WritePixelViewport(
+		DrawPixelViewport(
 			screen,
 			viewport,
 			color,
@@ -210,7 +210,7 @@ void DrawRectFilled(
 	{
 		for (int j = y; j < y + h; j++)
 		{
-			WritePixelViewport(
+			DrawPixelViewport(
 				screen,
 				viewport,
 				color,

@@ -448,7 +448,7 @@ void RenderVerticalWallStrip(
 
     for (int i = 0; i < wallStartY; i++)
     {
-        WritePixelViewport(
+        DrawPixelViewport(
             screen,
             viewport,
             &scene->colors.ceilingColor,
@@ -467,7 +467,7 @@ void RenderVerticalWallStrip(
 
     for (int i = wallStartY; i < wallEndY; i++)
     {
-        WritePixelViewport(
+        DrawPixelViewport(
             screen,
             viewport,
             &wallColor,
@@ -478,7 +478,7 @@ void RenderVerticalWallStrip(
 
     for (int i = wallEndY; i < height; i++)
     {
-        WritePixelViewport(
+        DrawPixelViewport(
             screen,
             viewport,
             &scene->colors.floorCol,
