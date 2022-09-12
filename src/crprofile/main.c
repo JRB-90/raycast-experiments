@@ -8,23 +8,23 @@
 #include "crscene.h"
 #include "crmath.h"
 
-const int SCRN_WIDTH			= 640;
-const int SCRN_HEIGHT			= 480;
+const int SCRN_WIDTH					= 640;
+const int SCRN_HEIGHT					= 480;
 
-const int WRITE_PIXEL_ITR		= 1000000000;
-const int DRAW_CLEAR_ITR		= 1000;
-const int DRAW_LINE_ITR			= 100000;
-const int DRAW_RECT_ITR			= 1000000;
+const long long int WRITE_PIXEL_ITR		= 10000000000;
+const int DRAW_CLEAR_ITR				= 1000;
+const int DRAW_LINE_ITR					= 100000;
+const int DRAW_RECT_ITR					= 1000000;
 
-const int REN_RAY_ITR			= 1000000;
-const int REN_PROJ_ITR			= 1000000;
-const int REN_PLAY_ITR			= 1000000;
-const int REN_WALLS_ITR			= 1000000;
-const int REN_VERT_ITR			= 1000000;
+const int REN_RAY_ITR					= 1000000;
+const int REN_PROJ_ITR					= 1000000;
+const int REN_PLAY_ITR					= 1000000;
+const int REN_WALLS_ITR					= 1000000;
+const int REN_VERT_ITR					= 1000000;
 
-const int REN_FIRST_ITR			= 1000;
+const int REN_FIRST_ITR					= 1000;
 
-const int MATH_DOT_ITR			= 1000000000;
+const int MATH_DOT_ITR					= 1000000000;
 
 void RunWritePixelTests(const ScreenBuffer* const screen)
 {
@@ -34,7 +34,7 @@ void RunWritePixelTests(const ScreenBuffer* const screen)
 
 	uint64_t start = GetTicks();
 
-	for (int i = 0; i < WRITE_PIXEL_ITR; i++)
+	for (long long int i = 0; i < WRITE_PIXEL_ITR; i++)
 	{
 		DrawPixel(
 			screen,
@@ -46,7 +46,7 @@ void RunWritePixelTests(const ScreenBuffer* const screen)
 
 	double delta = GetTimeInMS(GetTicks() - start);
 
-	printf("%i iterations took %f ms\n\n", WRITE_PIXEL_ITR, delta);
+	printf("%lld iterations took %f ms\n\n", WRITE_PIXEL_ITR, delta);
 }
 
 void RunWritePixelViewportTests(const ScreenBuffer* const screen)
@@ -64,7 +64,7 @@ void RunWritePixelViewportTests(const ScreenBuffer* const screen)
 
 	uint64_t start = GetTicks();
 
-	for (int i = 0; i < WRITE_PIXEL_ITR; i++)
+	for (long long int i = 0; i < WRITE_PIXEL_ITR; i++)
 	{
 		DrawPixelViewport(
 			screen,
@@ -77,7 +77,7 @@ void RunWritePixelViewportTests(const ScreenBuffer* const screen)
 
 	double delta = GetTimeInMS(GetTicks() - start);
 
-	printf("%i iterations took %f ms\n\n", WRITE_PIXEL_ITR, delta);
+	printf("%lld iterations took %f ms\n\n", WRITE_PIXEL_ITR, delta);
 }
 
 void RunDrawClearTests(const ScreenBuffer* const screen)
@@ -538,7 +538,7 @@ int main(int argc, char* argv[])
 	//RunRenderVertTests(&screen, scene);
 	//RunRenderFirstTests(&screen, scene);
 
-	RunMathDotTests();
+	//RunMathDotTests();
 
 	CleanupScene(scene);
 	free(screen.pixels);
