@@ -40,46 +40,46 @@ void RenderSceneFirstPersonInternal(
     const int height,
     CycleProfile* profile
 );
-//void RenderVerticalWallStrip(
-//    const ScreenBuffer* const screen,
-//    const Rect* const viewport,
-//    const Scene* const scene,
-//    const int xPosition,
-//    const int height,
-//    const double distanceToWall,
-//    const double angleWithWall,
-//    CycleProfile* profile
-//);
-//void RenderWallsTopDown(
-//    const ScreenBuffer* const screen,
-//    const Rect* const viewport,
-//    const Scene* const scene,
-//    const Frame2D* const cameraFrame,
-//    CycleProfile* profile
-//);
-//void RenderPlayerTopDown(
-//    const ScreenBuffer* const screen,
-//    const Rect* const viewport,
-//    const Scene* const scene,
-//    const Frame2D* const cameraFrame,
-//    CycleProfile* profile
-//);
-//void RenderProjectionTopDown(
-//    const ScreenBuffer* const screen,
-//    const Rect* const viewport,
-//    const Scene* const scene,
-//    const Frame2D* const cameraFrame,
-//    CycleProfile* profile
-//);
-//void RenderRayTopDown(
-//    const ScreenBuffer* const screen,
-//    const Rect* const viewport,
-//    const Scene* const scene,
-//    const Frame2D* const cameraFrame,
-//    const Vector2D* const ray,
-//    CycleProfile* profile
-//);
-void ToScreenSpace(
+void RenderVerticalWallStrip(
+    const ScreenBuffer* const screen,
+    const Rect* const viewport,
+    const Scene* const scene,
+    const int xPosition,
+    const int height,
+    const double distanceToWall,
+    const double angleWithWall,
+    CycleProfile* profile
+);
+void RenderWallsTopDown(
+    const ScreenBuffer* const screen,
+    const Rect* const viewport,
+    const Scene* const scene,
+    const Frame2D* const cameraFrame,
+    CycleProfile* profile
+);
+void RenderPlayerTopDown(
+    const ScreenBuffer* const screen,
+    const Rect* const viewport,
+    const Scene* const scene,
+    const Frame2D* const cameraFrame,
+    CycleProfile* profile
+);
+void RenderProjectionTopDown(
+    const ScreenBuffer* const screen,
+    const Rect* const viewport,
+    const Scene* const scene,
+    const Frame2D* const cameraFrame,
+    CycleProfile* profile
+);
+void RenderRayTopDown(
+    const ScreenBuffer* const screen,
+    const Rect* const viewport,
+    const Scene* const scene,
+    const Frame2D* const cameraFrame,
+    const Vector2D* const ray,
+    CycleProfile* profile
+);
+inline void ToScreenSpace(
     const Scene* const scene,
     const Frame2D* const cameraFrame,
     const double x,
@@ -87,7 +87,7 @@ void ToScreenSpace(
     int* xRes,
     int* yRes
 );
-void RenderCameraSpaceLine(
+inline void RenderCameraSpaceLine(
     const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
@@ -98,7 +98,7 @@ void RenderCameraSpaceLine(
     const double x2,
     const double y2
 );
-void RenderCameraSpaceRectangle(
+inline void RenderCameraSpaceRectangle(
     const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
@@ -344,16 +344,13 @@ void RenderSceneFirstPersonInternal(
 
         LineSegment2D* nearestWall = NULL;
         double distanceToWall = DBL_MAX;
-
         double theta = startAngle + ((double)i * angleInterval);
 
         Vector2D lookDir =
             FindLookVector(
-                worldForward,
+                &worldForward,
                 theta
             );
-
-        lookDir = Vec2DNormalise(lookDir);
 
         DLLNode* current = scene->walls.head;
 
@@ -364,10 +361,10 @@ void RenderSceneFirstPersonInternal(
             LineSegment2D* line = (LineSegment2D*)current->data;
 
             bool doesIntersect =
-                DoesRayInterectLine(
-                    scene->player.frame.position,
-                    lookDir,
-                    *line,
+                DoesRayIntersectLine(
+                    &scene->player.frame.position,
+                    &lookDir,
+                    line,
                     &distanceToLine,
                     &intersectionPoint
                 );
@@ -435,7 +432,7 @@ void RenderVerticalWallStrip(
     const double angleWithWall,
     CycleProfile* profile)
 {
-    double wallHeightPixels = 0.0;
+    int wallHeightPixels = 0;
 
     if (distanceToWall > 0.0)
     {
@@ -443,12 +440,12 @@ void RenderVerticalWallStrip(
         wallHeightPixels = WALL_HEIGHT / h;
     }
     
-    int wallStartY = (int)((height / 2.0) - (wallHeightPixels / 2.0));
-    int wallEndY = (int)((height / 2.0) + (wallHeightPixels / 2.0));
+    int wallStartY = (height >> 1) - (wallHeightPixels >> 1);
+    int wallEndY = (height >> 1) + (wallHeightPixels >> 1);
 
     for (int i = 0; i < wallStartY; i++)
     {
-        WritePixelViewport(
+        DrawPixelViewport(
             screen,
             viewport,
             &scene->colors.ceilingColor,
@@ -467,7 +464,7 @@ void RenderVerticalWallStrip(
 
     for (int i = wallStartY; i < wallEndY; i++)
     {
-        WritePixelViewport(
+        DrawPixelViewport(
             screen,
             viewport,
             &wallColor,
@@ -478,7 +475,7 @@ void RenderVerticalWallStrip(
 
     for (int i = wallEndY; i < height; i++)
     {
-        WritePixelViewport(
+        DrawPixelViewport(
             screen,
             viewport,
             &scene->colors.floorCol,
@@ -562,7 +559,7 @@ void RenderProjectionTopDown(
         
         Vector2D lookDir =
             FindLookVector(
-                worldForward,
+                &worldForward,
                 theta
             );
 
@@ -585,7 +582,7 @@ void RenderRayTopDown(
     const Scene* const scene,
     const Frame2D* const cameraFrame,
     const Vector2D* const ray,
-    CycleProfile* profile)
+    CycleProfile* profile)//
 {
     const LineSegment2D* nearestWall = NULL;
     double distanceToWall = DBL_MAX;
@@ -599,10 +596,10 @@ void RenderRayTopDown(
         double distanceToLine;
 
         bool doesIntersect =
-            DoesRayInterectLine(
-                scene->player.frame.position,
-                *ray,
-                *line,
+            DoesRayIntersectLine(
+                &scene->player.frame.position,
+                ray,
+                line,
                 &distanceToLine,
                 &intersectionPoint
             );

@@ -147,12 +147,14 @@ void UpdatePlayerPosition(
 {
 	uint64_t updateStartTime = GetTicks();
 
+	const Vector2D worldForward = { .x = 0.0, .y = -1.0 };
+
 	if (inputState->forwards)
 	{
-		Vector2D worldForward = { .x = 0.0, .y = -1.0 };
+		
 		Vector2D lookDir =
 			FindLookVector(
-				worldForward,
+				&worldForward,
 				scene->player.frame.theta
 			);
 
@@ -170,7 +172,7 @@ void UpdatePlayerPosition(
 		Vector2D worldForward = { .x = 0.0, .y = -1.0 };
 		Vector2D lookDir =
 			FindLookVector(
-				worldForward,
+				&worldForward,
 				scene->player.frame.theta
 			);
 
@@ -188,7 +190,7 @@ void UpdatePlayerPosition(
 		Vector2D worldForward = { .x = 0.0, .y = -1.0 };
 		Vector2D lookDir =
 			FindLookVector(
-				worldForward,
+				&worldForward,
 				scene->player.frame.theta + 90.0
 			);
 
@@ -206,7 +208,7 @@ void UpdatePlayerPosition(
 		Vector2D worldForward = { .x = 0.0, .y = -1.0 };
 		Vector2D lookDir =
 			FindLookVector(
-				worldForward,
+				&worldForward,
 				scene->player.frame.theta - 90.0
 			);
 

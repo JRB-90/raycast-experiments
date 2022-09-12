@@ -1,4 +1,5 @@
 #include "crdisplay.h"
+#include <string.h>
 #include <assert.h>
 #include "crconsts.h"
 #include "crtime.h"
@@ -73,17 +74,27 @@ void RenderDisplay(const Display* const display, CycleProfile* const profile)
 {
     uint64_t presentStartTime = GetTicks();
 
-    int res =
-        SDL_UpdateTexture(
-            display->texture, 
-            NULL, 
-            display->screen.pixels,
-            display->screen.width * 4
+    int res = SDL_RenderClear(display->renderer);
+    assert(res == 0);
+
+    uint8_t* texturePixels = NULL;
+    int pitch = -1;
+
+    res =
+        SDL_LockTexture(
+            display->texture,
+            NULL,
+            (void**)&texturePixels,
+            &pitch
         );
 
     assert(res == 0);
 
-    res = 
+    memcpy(texturePixels, display->screen.pixels, pitch * display->screen.height);
+
+    SDL_UnlockTexture(display->texture);
+
+    res =
         SDL_RenderCopy(
             display->renderer, 
             display->texture, 

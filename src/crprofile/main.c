@@ -6,19 +6,25 @@
 #include "crdraw.h"
 #include "crrender.h"
 #include "crscene.h"
+#include "crmath.h"
 
-const int SCRN_WIDTH			= 640;
-const int SCRN_HEIGHT			= 480;
-const int WRITE_PIXEL_ITR		= 1000000;
-const int DRAW_CLEAR_ITR		= 1000;
-const int DRAW_LINE_ITR			= 100000;
-const int DRAW_RECT_ITR			= 1000000;
+const int SCRN_WIDTH					= 640;
+const int SCRN_HEIGHT					= 480;
 
-const int REN_RAY_ITR			= 100000;
-const int REN_PROJ_ITR			= 100000;
-const int REN_PLAY_ITR			= 100000;
-const int REN_WALLS_ITR			= 100000;
-const int REN_VERT_ITR			= 100000;
+const long long int WRITE_PIXEL_ITR		= 10000000000;
+const int DRAW_CLEAR_ITR				= 1000;
+const int DRAW_LINE_ITR					= 100000;
+const int DRAW_RECT_ITR					= 1000000;
+
+const int REN_RAY_ITR					= 1000000;
+const int REN_PROJ_ITR					= 1000000;
+const int REN_PLAY_ITR					= 1000000;
+const int REN_WALLS_ITR					= 1000000;
+const int REN_VERT_ITR					= 1000000;
+
+const int REN_FIRST_ITR					= 1000;
+
+const int MATH_DOT_ITR					= 1000000000;
 
 void RunWritePixelTests(const ScreenBuffer* const screen)
 {
@@ -28,9 +34,9 @@ void RunWritePixelTests(const ScreenBuffer* const screen)
 
 	uint64_t start = GetTicks();
 
-	for (int i = 0; i < WRITE_PIXEL_ITR; i++)
+	for (long long int i = 0; i < WRITE_PIXEL_ITR; i++)
 	{
-		WritePixel(
+		DrawPixel(
 			screen,
 			&c,
 			0,
@@ -40,7 +46,7 @@ void RunWritePixelTests(const ScreenBuffer* const screen)
 
 	double delta = GetTimeInMS(GetTicks() - start);
 
-	printf("%i iterations took %f ms\n\n", WRITE_PIXEL_ITR, delta);
+	printf("%lld iterations took %f ms\n\n", WRITE_PIXEL_ITR, delta);
 }
 
 void RunWritePixelViewportTests(const ScreenBuffer* const screen)
@@ -58,9 +64,9 @@ void RunWritePixelViewportTests(const ScreenBuffer* const screen)
 
 	uint64_t start = GetTicks();
 
-	for (int i = 0; i < WRITE_PIXEL_ITR; i++)
+	for (long long int i = 0; i < WRITE_PIXEL_ITR; i++)
 	{
-		WritePixelViewport(
+		DrawPixelViewport(
 			screen,
 			&v,
 			&c,
@@ -71,7 +77,7 @@ void RunWritePixelViewportTests(const ScreenBuffer* const screen)
 
 	double delta = GetTimeInMS(GetTicks() - start);
 
-	printf("%i iterations took %f ms\n\n", WRITE_PIXEL_ITR, delta);
+	printf("%lld iterations took %f ms\n\n", WRITE_PIXEL_ITR, delta);
 }
 
 void RunDrawClearTests(const ScreenBuffer* const screen)
@@ -423,6 +429,88 @@ void RunRenderVertTests(const ScreenBuffer* const screen, const Scene* const sce
 	printf("%i iterations took %f ms\n\n", REN_VERT_ITR, delta);
 }
 
+void RunRenderFirstTests(const ScreenBuffer* const screen, const Scene* const scene)
+{
+	printf("==== Render First test ====\n");
+
+	Rect v =
+	{
+		.x = 0,
+		.y = 0,
+		.w = SCRN_WIDTH - 1,
+		.h = SCRN_HEIGHT - 1
+	};
+
+	Frame2D c =
+	{
+		.position =
+		{
+			.x = SCRN_WIDTH / 2,
+			.y = SCRN_HEIGHT / 2
+		},
+		.theta = 0.0
+	};
+
+	Vector2D d =
+	{
+		.x = 1.0,
+		.y = 0.0
+	};
+
+	CycleProfile profile;
+
+	uint64_t start = GetTicks();
+
+	for (int i = 0; i < REN_FIRST_ITR; i++)
+	{
+		RenderSceneFirstPersonInternal(
+			screen,
+			&v,
+			scene,
+			SCRN_WIDTH,
+			SCRN_HEIGHT,
+			&profile
+		);
+	}
+
+	double delta = GetTimeInMS(GetTicks() - start);
+
+	printf("%i iterations took %f ms\n\n", REN_FIRST_ITR, delta);
+}
+
+void RunMathDotTests()
+{
+	printf("==== Math Dot test ====\n");
+
+	Vector2D v1 = { .x = 1.0, .y = 0.0 };
+	Vector2D v2 = { .x = 0.0, .y = 1.0 };
+	Vector2D v3 = { .x = -1.0, .y = 0.0 };
+	Vector2D v4 = { .x = 0.0, .y = -1.0 };
+	Vector2D v5 = Vec2DNormalise((Vector2D){ .x = 1.0, .y = 1.0 });
+
+	double res = 0.0;
+
+	uint64_t start = GetTicks();
+
+	for (int i = 0; i < MATH_DOT_ITR; i++)
+	{
+		res += Vec2DDot(v1, v1);
+		res += Vec2DDot(v1, v2);
+		res += Vec2DDot(v1, v3);
+		res += Vec2DDot(v1, v4);
+		res += Vec2DDot(v1, v5);
+	}
+
+	double delta = GetTimeInMS(GetTicks() - start);
+	printf("%i iterations took %f ms\n\n", MATH_DOT_ITR, delta);
+
+	// This stops compiler optimising away..
+	if (res == 0.0)
+	{
+		printf("");
+	}
+}
+
 int main(int argc, char* argv[])
 {
 	ScreenBuffer screen =
@@ -436,18 +524,21 @@ int main(int argc, char* argv[])
 
 	printf("Begining profile tests..\n\n");
 
-	RunWritePixelTests(&screen);
-	RunWritePixelViewportTests(&screen);
-	RunDrawClearTests(&screen);
-	RunDrawLineTests(&screen);
-	RunDrawRectTests(&screen);
-	RunDrawRectFilledTests(&screen);
+	//RunWritePixelTests(&screen);
+	//RunWritePixelViewportTests(&screen);
+	//RunDrawClearTests(&screen);
+	//RunDrawLineTests(&screen);
+	//RunDrawRectTests(&screen);
+	//RunDrawRectFilledTests(&screen);
 
-	RunRenderRayTests(&screen, scene);
-	RunRenderProjTests(&screen, scene);
-	RunRenderPlayerTests(&screen, scene);
-	RunRenderWallsTests(&screen, scene);
-	RunRenderVertTests(&screen, scene);
+	//RunRenderRayTests(&screen, scene);
+	//RunRenderProjTests(&screen, scene);
+	//RunRenderPlayerTests(&screen, scene);
+	//RunRenderWallsTests(&screen, scene);
+	//RunRenderVertTests(&screen, scene);
+	//RunRenderFirstTests(&screen, scene);
+
+	//RunMathDotTests();
 
 	CleanupScene(scene);
 	free(screen.pixels);
