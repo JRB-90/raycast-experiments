@@ -348,11 +348,9 @@ void RenderSceneFirstPersonInternal(
 
         Vector2D lookDir =
             FindLookVector(
-                worldForward,
+                &worldForward,
                 theta
             );
-
-        lookDir = Vec2DNormalise(lookDir);
 
         DLLNode* current = scene->walls.head;
 
@@ -363,7 +361,7 @@ void RenderSceneFirstPersonInternal(
             LineSegment2D* line = (LineSegment2D*)current->data;
 
             bool doesIntersect =
-                DoesRayInterectLine(
+                DoesRayIntersectLine(
                     &scene->player.frame.position,
                     &lookDir,
                     line,
@@ -561,7 +559,7 @@ void RenderProjectionTopDown(
         
         Vector2D lookDir =
             FindLookVector(
-                worldForward,
+                &worldForward,
                 theta
             );
 
@@ -598,7 +596,7 @@ void RenderRayTopDown(
         double distanceToLine;
 
         bool doesIntersect =
-            DoesRayInterectLine(
+            DoesRayIntersectLine(
                 &scene->player.frame.position,
                 ray,
                 line,

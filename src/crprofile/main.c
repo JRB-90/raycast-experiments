@@ -6,6 +6,7 @@
 #include "crdraw.h"
 #include "crrender.h"
 #include "crscene.h"
+#include "crmath.h"
 
 const int SCRN_WIDTH			= 640;
 const int SCRN_HEIGHT			= 480;
@@ -22,6 +23,8 @@ const int REN_WALLS_ITR			= 1000000;
 const int REN_VERT_ITR			= 1000000;
 
 const int REN_FIRST_ITR			= 1000;
+
+const int MATH_DOT_ITR			= 100000000;
 
 void RunWritePixelTests(const ScreenBuffer* const screen)
 {
@@ -475,6 +478,32 @@ void RunRenderFirstTests(const ScreenBuffer* const screen, const Scene* const sc
 	printf("%i iterations took %f ms\n\n", REN_FIRST_ITR, delta);
 }
 
+void RunMathDotTests()
+{
+	printf("==== Render First test ====\n");
+
+	Vector2D v1 = { .x = 1.0, .y = 0.0 };
+	Vector2D v2 = { .x = 0.0, .y = 1.0 };
+	Vector2D v3 = { .x = -1.0, .y = 0.0 };
+	Vector2D v4 = { .x = 0.0, .y = -1.0 };
+	Vector2D v5 = Vec2DNormalise((Vector2D){ .x = 1.0, .y = 1.0 });
+
+	uint64_t start = GetTicks();
+
+	for (int i = 0; i < MATH_DOT_ITR; i++)
+	{
+		double res;
+		res = Vec2DDot(v1, v1);
+		res = Vec2DDot(v1, v2);
+		res = Vec2DDot(v1, v3);
+		res = Vec2DDot(v1, v4);
+		res = Vec2DDot(v1, v5);
+	}
+
+	double delta = GetTimeInMS(GetTicks() - start);
+	printf("%i iterations took %f ms\n\n", MATH_DOT_ITR, delta);
+}
+
 int main(int argc, char* argv[])
 {
 	ScreenBuffer screen =
@@ -500,11 +529,9 @@ int main(int argc, char* argv[])
 	//RunRenderPlayerTests(&screen, scene);
 	//RunRenderWallsTests(&screen, scene);
 	//RunRenderVertTests(&screen, scene);
-	RunRenderFirstTests(&screen, scene);
+	//RunRenderFirstTests(&screen, scene);
 
-	// TODO - Render first person internal...
-
-	// TODO - Math functions?
+	RunMathDotTests();
 
 	CleanupScene(scene);
 	free(screen.pixels);

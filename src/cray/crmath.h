@@ -44,8 +44,8 @@ extern double Vec2DCross(const Vector2D v1, const Vector2D v2);
 extern double Vec2DDot(const Vector2D v1, const Vector2D v2);
 extern Frame2D CreateFrame2D(double x, double y, double theta);
 
-extern Vector2D FindLookVector(Vector2D worldForward, double theta);
-extern bool DoesRayInterectLine(
+extern Vector2D FindLookVector(const Vector2D* const worldForward, double theta);
+extern bool DoesRayIntersectLine(
 	const Point2D* const rayOrigin,
 	const Vector2D* const rayDirection,
 	const LineSegment2D* const lineSegment,

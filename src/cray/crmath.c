@@ -178,20 +178,20 @@ Frame2D CreateFrame2D(double x, double y, double theta)
 	return frame;
 }
 
-Vector2D FindLookVector(Vector2D worldForward, double theta)
+Vector2D FindLookVector(const Vector2D* const worldForward, double theta)
 {
 	double radTheta = ToRad(theta);
 
 	Vector2D lookVector =
 	{
-		.x = (worldForward.x * cos(radTheta)) - (worldForward.y * sin(radTheta)),
-		.y = (worldForward.y * cos(radTheta)) + (worldForward.x * sin(radTheta))
+		.x = (worldForward->x * cos(radTheta)) - (worldForward->y * sin(radTheta)),
+		.y = (worldForward->y * cos(radTheta)) + (worldForward->x * sin(radTheta))
 	};
 
 	return Vec2DNormalise(lookVector);
 }
 
-bool DoesRayInterectLine(
+bool DoesRayIntersectLine(
 	const Point2D* const rayOrigin, 
 	const Vector2D* const rayDirection,
 	const LineSegment2D* const lineSegment,
