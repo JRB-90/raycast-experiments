@@ -32,14 +32,14 @@ void RenderSceneTopDownInternal(
     const Frame2D* const cameraFrame,
     CycleProfile* profile
 );
-void RenderSceneFirstPersonInternal(
-    const ScreenBuffer* const screen,
-    const Rect* const viewport,
-    const Scene* const scene,
-    const int width,
-    const int height,
-    CycleProfile* profile
-);
+//void RenderSceneFirstPersonInternal(
+//    const ScreenBuffer* const screen,
+//    const Rect* const viewport,
+//    const Scene* const scene,
+//    const int width,
+//    const int height,
+//    CycleProfile* profile
+//);
 //void RenderVerticalWallStrip(
 //    const ScreenBuffer* const screen,
 //    const Rect* const viewport,
@@ -344,7 +344,6 @@ void RenderSceneFirstPersonInternal(
 
         LineSegment2D* nearestWall = NULL;
         double distanceToWall = DBL_MAX;
-
         double theta = startAngle + ((double)i * angleInterval);
 
         Vector2D lookDir =
@@ -440,7 +439,7 @@ void RenderVerticalWallStrip(
     if (distanceToWall > 0.0)
     {
         double h = tan(ToRad(scene->player.fov)) * distanceToWall;
-        wallHeightPixels = WALL_HEIGHT / (int)h;
+        wallHeightPixels = WALL_HEIGHT / h;
     }
     
     int wallStartY = (height >> 1) - (wallHeightPixels >> 1);

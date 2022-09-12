@@ -37,6 +37,14 @@ extern void ClearScreen(
 
 // Private Test Functions
 
+extern void RenderSceneFirstPersonInternal(
+    const ScreenBuffer* const screen,
+    const Rect* const viewport,
+    const Scene* const scene,
+    const int width,
+    const int height,
+    CycleProfile* profile
+);
 extern void RenderVerticalWallStrip(
     const ScreenBuffer* const screen,
     const Rect* const viewport,

@@ -21,6 +21,8 @@ const int REN_PLAY_ITR			= 1000000;
 const int REN_WALLS_ITR			= 1000000;
 const int REN_VERT_ITR			= 1000000;
 
+const int REN_FIRST_ITR			= 1000;
+
 void RunWritePixelTests(const ScreenBuffer* const screen)
 {
 	printf("==== Write pixel test ====\n");
@@ -424,6 +426,55 @@ void RunRenderVertTests(const ScreenBuffer* const screen, const Scene* const sce
 	printf("%i iterations took %f ms\n\n", REN_VERT_ITR, delta);
 }
 
+void RunRenderFirstTests(const ScreenBuffer* const screen, const Scene* const scene)
+{
+	printf("==== Render First test ====\n");
+
+	Rect v =
+	{
+		.x = 0,
+		.y = 0,
+		.w = SCRN_WIDTH - 1,
+		.h = SCRN_HEIGHT - 1
+	};
+
+	Frame2D c =
+	{
+		.position =
+		{
+			.x = SCRN_WIDTH / 2,
+			.y = SCRN_HEIGHT / 2
+		},
+		.theta = 0.0
+	};
+
+	Vector2D d =
+	{
+		.x = 1.0,
+		.y = 0.0
+	};
+
+	CycleProfile profile;
+
+	uint64_t start = GetTicks();
+
+	for (int i = 0; i < REN_FIRST_ITR; i++)
+	{
+		RenderSceneFirstPersonInternal(
+			screen,
+			&v,
+			scene,
+			SCRN_WIDTH,
+			SCRN_HEIGHT,
+			&profile
+		);
+	}
+
+	double delta = GetTimeInMS(GetTicks() - start);
+
+	printf("%i iterations took %f ms\n\n", REN_FIRST_ITR, delta);
+}
+
 int main(int argc, char* argv[])
 {
 	ScreenBuffer screen =
@@ -448,7 +499,12 @@ int main(int argc, char* argv[])
 	//RunRenderProjTests(&screen, scene);
 	//RunRenderPlayerTests(&screen, scene);
 	//RunRenderWallsTests(&screen, scene);
-	RunRenderVertTests(&screen, scene);
+	//RunRenderVertTests(&screen, scene);
+	RunRenderFirstTests(&screen, scene);
+
+	// TODO - Render first person internal...
+
+	// TODO - Math functions?
 
 	CleanupScene(scene);
 	free(screen.pixels);
