@@ -480,7 +480,7 @@ void RunRenderFirstTests(const ScreenBuffer* const screen, const Scene* const sc
 
 void RunMathDotTests()
 {
-	printf("==== Render First test ====\n");
+	printf("==== Math Dot test ====\n");
 
 	Vector2D v1 = { .x = 1.0, .y = 0.0 };
 	Vector2D v2 = { .x = 0.0, .y = 1.0 };
@@ -488,20 +488,27 @@ void RunMathDotTests()
 	Vector2D v4 = { .x = 0.0, .y = -1.0 };
 	Vector2D v5 = Vec2DNormalise((Vector2D){ .x = 1.0, .y = 1.0 });
 
+	double res = 0.0;
+
 	uint64_t start = GetTicks();
 
 	for (int i = 0; i < MATH_DOT_ITR; i++)
 	{
-		double res;
-		res = Vec2DDot(v1, v1);
-		res = Vec2DDot(v1, v2);
-		res = Vec2DDot(v1, v3);
-		res = Vec2DDot(v1, v4);
-		res = Vec2DDot(v1, v5);
+		res += Vec2DDot(v1, v1);
+		res += Vec2DDot(v1, v2);
+		res += Vec2DDot(v1, v3);
+		res += Vec2DDot(v1, v4);
+		res += Vec2DDot(v1, v5);
 	}
 
 	double delta = GetTimeInMS(GetTicks() - start);
 	printf("%i iterations took %f ms\n\n", MATH_DOT_ITR, delta);
+
+	// This stops compiler optimising away..
+	if (res == 0.0)
+	{
+		printf("");
+	}
 }
 
 int main(int argc, char* argv[])
@@ -531,7 +538,7 @@ int main(int argc, char* argv[])
 	//RunRenderVertTests(&screen, scene);
 	//RunRenderFirstTests(&screen, scene);
 
-	//RunMathDotTests();
+	RunMathDotTests();
 
 	CleanupScene(scene);
 	free(screen.pixels);
