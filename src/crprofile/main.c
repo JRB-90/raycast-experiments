@@ -24,7 +24,7 @@ const int REN_VERT_ITR			= 1000000;
 
 const int REN_FIRST_ITR			= 1000;
 
-const int MATH_DOT_ITR			= 100000000;
+const int MATH_DOT_ITR			= 1000000000;
 
 void RunWritePixelTests(const ScreenBuffer* const screen)
 {
@@ -531,7 +531,7 @@ int main(int argc, char* argv[])
 	//RunRenderVertTests(&screen, scene);
 	//RunRenderFirstTests(&screen, scene);
 
-	RunMathDotTests();
+	//RunMathDotTests();
 
 	CleanupScene(scene);
 	free(screen.pixels);

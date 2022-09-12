@@ -163,6 +163,11 @@ double Vec2DDot(const Vector2D v1, const Vector2D v2)
 	return (v1.x * v2.x) + (v1.y * v2.y);
 }
 
+double Vec2DDot2(const Vector2D* const v1, const Vector2D* const v2)
+{
+	return (v1->x * v2->x) + (v1->y * v2->y);
+}
+
 Frame2D CreateFrame2D(double x, double y, double theta)
 {
 	Frame2D frame =
@@ -214,7 +219,7 @@ bool DoesRayIntersectLine(
 	double t2 = Vec2DDot(v1, v3) / dot;
 
 	if (t1 >= 0.0 &&
-		(t2 >= 0.0 && t2 <= 1.0))
+	   (t2 >= 0.0 && t2 <= 1.0))
 	{
 		*distanceToLine = t1;
 		Vector2D vecToIntersection = Vec2DMul(dirNorm, t1);

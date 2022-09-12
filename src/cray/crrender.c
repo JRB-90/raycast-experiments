@@ -32,53 +32,53 @@ void RenderSceneTopDownInternal(
     const Frame2D* const cameraFrame,
     CycleProfile* profile
 );
-//void RenderSceneFirstPersonInternal(
-//    const ScreenBuffer* const screen,
-//    const Rect* const viewport,
-//    const Scene* const scene,
-//    const int width,
-//    const int height,
-//    CycleProfile* profile
-//);
-//void RenderVerticalWallStrip(
-//    const ScreenBuffer* const screen,
-//    const Rect* const viewport,
-//    const Scene* const scene,
-//    const int xPosition,
-//    const int height,
-//    const double distanceToWall,
-//    const double angleWithWall,
-//    CycleProfile* profile
-//);
-//void RenderWallsTopDown(
-//    const ScreenBuffer* const screen,
-//    const Rect* const viewport,
-//    const Scene* const scene,
-//    const Frame2D* const cameraFrame,
-//    CycleProfile* profile
-//);
-//void RenderPlayerTopDown(
-//    const ScreenBuffer* const screen,
-//    const Rect* const viewport,
-//    const Scene* const scene,
-//    const Frame2D* const cameraFrame,
-//    CycleProfile* profile
-//);
-//void RenderProjectionTopDown(
-//    const ScreenBuffer* const screen,
-//    const Rect* const viewport,
-//    const Scene* const scene,
-//    const Frame2D* const cameraFrame,
-//    CycleProfile* profile
-//);
-//void RenderRayTopDown(
-//    const ScreenBuffer* const screen,
-//    const Rect* const viewport,
-//    const Scene* const scene,
-//    const Frame2D* const cameraFrame,
-//    const Vector2D* const ray,
-//    CycleProfile* profile
-//);
+void RenderSceneFirstPersonInternal(
+    const ScreenBuffer* const screen,
+    const Rect* const viewport,
+    const Scene* const scene,
+    const int width,
+    const int height,
+    CycleProfile* profile
+);
+void RenderVerticalWallStrip(
+    const ScreenBuffer* const screen,
+    const Rect* const viewport,
+    const Scene* const scene,
+    const int xPosition,
+    const int height,
+    const double distanceToWall,
+    const double angleWithWall,
+    CycleProfile* profile
+);
+void RenderWallsTopDown(
+    const ScreenBuffer* const screen,
+    const Rect* const viewport,
+    const Scene* const scene,
+    const Frame2D* const cameraFrame,
+    CycleProfile* profile
+);
+void RenderPlayerTopDown(
+    const ScreenBuffer* const screen,
+    const Rect* const viewport,
+    const Scene* const scene,
+    const Frame2D* const cameraFrame,
+    CycleProfile* profile
+);
+void RenderProjectionTopDown(
+    const ScreenBuffer* const screen,
+    const Rect* const viewport,
+    const Scene* const scene,
+    const Frame2D* const cameraFrame,
+    CycleProfile* profile
+);
+void RenderRayTopDown(
+    const ScreenBuffer* const screen,
+    const Rect* const viewport,
+    const Scene* const scene,
+    const Frame2D* const cameraFrame,
+    const Vector2D* const ray,
+    CycleProfile* profile
+);
 inline void ToScreenSpace(
     const Scene* const scene,
     const Frame2D* const cameraFrame,
