@@ -20,7 +20,8 @@ const int REN_RAY_ITR					= 1000000;
 const int REN_PROJ_ITR					= 1000000;
 const int REN_PLAY_ITR					= 1000000;
 const int REN_WALLS_ITR					= 1000000;
-const int REN_VERT_ITR					= 1000000;
+//const int REN_VERT_ITR					= 1000000;
+const int REN_VERT_ITR					= 640 * 1000;
 
 const int REN_FIRST_ITR					= 1000;
 
@@ -535,7 +536,7 @@ int main(int argc, char* argv[])
 	//RunRenderProjTests(&screen, scene);
 	//RunRenderPlayerTests(&screen, scene);
 	//RunRenderWallsTests(&screen, scene);
-	//RunRenderVertTests(&screen, scene);
+	RunRenderVertTests(&screen, scene);
 	//RunRenderFirstTests(&screen, scene);
 
 	//RunMathDotTests();
