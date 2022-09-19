@@ -12,23 +12,26 @@ typedef struct Screen {
 	unsigned int h;
 	unsigned int vw;
 	unsigned int vh;
-	unsigned int bpp;
+	unsigned int bitsPP;
+	unsigned int bytesPP;
 	unsigned int size;
 	unsigned int stride;
 	uint8_t* pixels;
 } Screen;
 
-extern int OpenFB(const char* const fbPath[]);
-extern void CloseFB(int frameBufferFD);
-extern fb_fix_screeninfo GetFixedScreenInfo(int frameBufferFD);
-extern void PrintFixedScreenInfo(int frameBufferFD);
-extern fb_var_screeninfo GetVariableScreenInfo(int frameBufferFD);
-extern void SetVariableScreenInfo(
-	const int frameBufferFD, 
-	const fb_var_screeninfo* const screenInfo
-);
-extern void PrintVariableScreenInfo(int frameBufferFD);
-extern Screen CreateScreen(const int frameBufferFD);
-extern void DestroyScreen(Screen* const screen);
+typedef struct RpiDisplay {
+	int frameBufferFD;
+	fb_fix_screeninfo fixedScreenInfo;
+	fb_var_screeninfo originalScreenInfo;
+	fb_var_screeninfo currentScreenInfo;
+	Screen screen;
+} RpiDisplay;
+
+extern int InitRpiDisplay(RpiDisplay* const display, const char* const fbPath);
+extern void DestroyRpiDisplay(RpiDisplay* const display);
+extern int ChangeDisplay(RpiDisplay* const display, int xres, int yres, int bitsPP);
+extern int RevertDisplay(RpiDisplay* const display);
+extern void PrintDisplayInfo(const RpiDisplay* const display);
+extern void PlotPixel(const RpiDisplay* const display, int x, int y, uint16_t c);
 
 #endif // !_RPI_FB_H_

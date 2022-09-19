@@ -7,6 +7,9 @@ add_executable(rpidisplay
 	main.c
     rpifb.h
 	rpifb.c
+    rpimailbox.h
+	rpimailbox.c
+    rpibase.h
 )
 
 target_link_directories(rpidisplay PUBLIC

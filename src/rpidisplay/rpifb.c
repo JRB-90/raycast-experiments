@@ -6,117 +6,240 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
-int OpenFB(const char* const fbPath[])
-{
-	int frameBufferFD = open(fbPath, O_RDWR);
+int GetFixedScreenInfo(int frameBufferFD, fb_fix_screeninfo* const screenInfo);
+int GetVariableScreenInfo(int frameBufferFD, fb_var_screeninfo* const screenInfo);
+int SetVariableScreenInfo(const int frameBufferFD, const fb_var_screeninfo* const screenInfo);
+void PrintFixedScreenInfo(const fb_fix_screeninfo* const screenInfo);
+void PrintVariableScreenInfo(const fb_var_screeninfo* const screenInfo);
+int InitScreen(
+	const int frameBufferFD,
+	const fb_fix_screeninfo* const fixScreenInfo,
+	const fb_var_screeninfo* const varScreenInfo,
+	Screen* const screen
+);
+void DestroyScreen(Screen* const screen);
 
-	if (frameBufferFD == -1)
+int InitRpiDisplay(RpiDisplay* const display, const char* const fbPath)
+{
+	display->frameBufferFD = open(fbPath, O_RDWR);
+
+	if (display->frameBufferFD == -1)
 	{
-		printf("Failed to open the framebuffer\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "Failed to open the framebuffer\n");
+
+		return -1;
 	}
 
-	return frameBufferFD;
-}
-
-void CloseFB(int frameBufferFD)
-{
-	close(frameBufferFD);
-}
-
-fb_fix_screeninfo GetFixedScreenInfo(int frameBufferFD)
-{
-	fb_fix_screeninfo screenInfo;
-
-	if (ioctl(frameBufferFD, FBIOGET_FSCREENINFO, &screenInfo))
+	if (GetFixedScreenInfo(display->frameBufferFD, &display->fixedScreenInfo))
 	{
-		printf("Failed to get the fixed screen info\n");
-		exit(EXIT_FAILURE);
+		close(display->frameBufferFD);
+
+		return -1;
 	}
 
-	return screenInfo;
+	if (GetVariableScreenInfo(display->frameBufferFD, &display->originalScreenInfo))
+	{
+		close(display->frameBufferFD);
+
+		return -1;
+	}
+
+	if (GetVariableScreenInfo(display->frameBufferFD, &display->currentScreenInfo))
+	{
+		close(display->frameBufferFD);
+
+		return -1;
+	}
+
+	if (InitScreen(
+			display->frameBufferFD,
+			&display->fixedScreenInfo,
+			&display->currentScreenInfo,
+			&display->screen)
+		)
+	{
+		close(display->frameBufferFD);
+
+		return -1;
+	}
+
+	return 0;
 }
 
-void PrintFixedScreenInfo(int frameBufferFD)
+void DestroyRpiDisplay(RpiDisplay* display)
 {
-	fb_fix_screeninfo screenInfo = GetFixedScreenInfo(frameBufferFD);
+	DestroyScreen(&display->screen);
+	close(display->frameBufferFD);
+}
 
+int ChangeDisplay(RpiDisplay* const display, int xres, int yres, int bitsPP)
+{
+	fb_var_screeninfo screenInfo = display->currentScreenInfo;
+	screenInfo.xres = xres;
+	screenInfo.xres_virtual = xres;
+	screenInfo.yres = yres;
+	screenInfo.yres_virtual = yres;
+	screenInfo.bits_per_pixel = bitsPP;
+
+	if (SetVariableScreenInfo(display->frameBufferFD, &screenInfo))
+	{
+		fprintf(stderr, "Failed to set var screen info\n");
+
+		return -1;
+	}
+
+	DestroyScreen(&display->screen);
+
+	if (GetFixedScreenInfo(display->frameBufferFD, &display->fixedScreenInfo))
+	{
+		close(display->frameBufferFD);
+
+		return -1;
+	}
+
+	if (GetVariableScreenInfo(display->frameBufferFD, &display->currentScreenInfo))
+	{
+		close(display->frameBufferFD);
+
+		return -1;
+	}
+	
+	if (InitScreen(
+		display->frameBufferFD,
+		&display->fixedScreenInfo,
+		&display->currentScreenInfo,
+		&display->screen)
+	)
+	{
+		fprintf(stderr, "Failed to recreate screen after display change\n");
+		close(display->frameBufferFD);
+
+		return -1;
+	}
+
+	return 0;
+}
+
+int RevertDisplay(RpiDisplay* const display)
+{
+	return
+		ChangeDisplay(
+			display,
+			display->originalScreenInfo.xres,
+			display->originalScreenInfo.yres,
+			display->originalScreenInfo.bits_per_pixel
+		);
+}
+
+void PrintDisplayInfo(const RpiDisplay* const display)
+{
+	PrintFixedScreenInfo(&display->fixedScreenInfo);
+	PrintVariableScreenInfo(&display->currentScreenInfo);
 	printf(
-		"Fix screen info: %d length\n",
-		screenInfo.smem_len
+		"Display info: %d size, %d stride\n",
+		display->screen.size,
+		display->screen.stride
 	);
 }
 
-struct fb_var_screeninfo GetVariableScreenInfo(int frameBufferFD)
+void PlotPixel(const RpiDisplay* const display, int x, int y, uint16_t c)
 {
-	fb_var_screeninfo screenInfo;
-
-	if (ioctl(frameBufferFD, FBIOGET_VSCREENINFO, &screenInfo))
-	{
-		printf("Failed to get the variable screen info\n");
-		exit(EXIT_FAILURE);
-	}
-
-	return screenInfo;
+	const unsigned int offset = (y * display->screen.stride) + (x * display->screen.bytesPP);
+	display->screen.pixels[offset] = (uint8_t)(c & 0xFF);
+	display->screen.pixels[offset + 1] = (uint8_t)(c >> 8);
 }
 
-void SetVariableScreenInfo(
+int GetFixedScreenInfo(int frameBufferFD, fb_fix_screeninfo* const screenInfo)
+{
+	if (ioctl(frameBufferFD, FBIOGET_FSCREENINFO, screenInfo))
+	{
+		fprintf(stderr, "Failed to get the fixed screen info\n");
+		
+		return -1;
+	}
+
+	return 0;
+}
+
+int GetVariableScreenInfo(int frameBufferFD, fb_var_screeninfo* const screenInfo)
+{
+	if (ioctl(frameBufferFD, FBIOGET_VSCREENINFO, screenInfo))
+	{
+		fprintf(stderr, "Failed to get the variable screen info\n");
+		
+		return -1;
+	}
+
+	return 0;
+}
+
+int SetVariableScreenInfo(
 	const int frameBufferFD, 
 	const fb_var_screeninfo* const screenInfo)
 {
 	if (ioctl(frameBufferFD, FBIOPUT_VSCREENINFO, screenInfo))
 	{
-		printf("Failed to set the variable screen info\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "Failed to set the variable screen info\n");
+
+		return -1;
 	}
+
+	return 0;
 }
 
-void PrintVariableScreenInfo(int frameBufferFD)
+void PrintFixedScreenInfo(const fb_fix_screeninfo* const screenInfo)
 {
-	fb_var_screeninfo screenInfo = GetVariableScreenInfo(frameBufferFD);
-
 	printf(
-		"Var screen info: %dx%d res, %d bpp\n",
-		screenInfo.xres,
-		screenInfo.yres,
-		screenInfo.bits_per_pixel
+		"Fix screen info: %d mem len, %d line len\n",
+		screenInfo->smem_len,
+		screenInfo->line_length
 	);
 }
 
-Screen CreateScreen(const int frameBufferFD)
+void PrintVariableScreenInfo(const fb_var_screeninfo* const screenInfo)
 {
-	fb_fix_screeninfo fixScreenInfo = GetFixedScreenInfo(frameBufferFD);
-	fb_var_screeninfo varScreenInfo = GetVariableScreenInfo(frameBufferFD);
+	printf(
+		"Var screen info: %dx%d res, %d bpp\n",
+		screenInfo->xres,
+		screenInfo->yres,
+		screenInfo->bits_per_pixel
+	);
+}
 
-	Screen screen =
-	{
-		.w = varScreenInfo.xres,
-		.h = varScreenInfo.yres,
-		.vw = varScreenInfo.xres_virtual,
-		.vh = varScreenInfo.yres_virtual,
-		.bpp = varScreenInfo.bits_per_pixel,
-		.size = fixScreenInfo.smem_len,
-		.stride = fixScreenInfo.line_length,
-		.pixels = NULL
-	};
+int InitScreen(
+	const int frameBufferFD,
+	const fb_fix_screeninfo* const fixScreenInfo,
+	const fb_var_screeninfo* const varScreenInfo,
+	Screen* const screen)
+{
+	screen->w = varScreenInfo->xres;
+	screen->h = varScreenInfo->yres;
+	screen->vw = varScreenInfo->xres_virtual;
+	screen->vh = varScreenInfo->yres_virtual;
+	screen->bitsPP = varScreenInfo->bits_per_pixel;
+	screen->bytesPP = varScreenInfo->bits_per_pixel / 8;
+	screen->size = varScreenInfo->xres * varScreenInfo->yres * (varScreenInfo->bits_per_pixel / 8);
+	screen->stride = varScreenInfo->xres * (varScreenInfo->bits_per_pixel / 8);
+	screen->pixels = NULL;
 
-	screen.pixels =
+	screen->pixels =
 		(uint8_t*)mmap(
 			0,
-			fixScreenInfo.smem_len,
+			fixScreenInfo->smem_len,
 			PROT_READ | PROT_WRITE,
 			MAP_SHARED,
 			frameBufferFD,
 			0
 		);
 
-	if (screen.pixels == -1)
+	if (screen->pixels == -1)
 	{
-		printf("Failed to create the screen, mem map failed\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "Failed to create the screen, mem map failed\n");
+
+		return -1;
 	}
 
-	return screen;
+	return 0;
 }
 
 void DestroyScreen(Screen* const screen)
