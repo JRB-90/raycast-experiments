@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 
-project(craycaster)
+project(craycaster C)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 set(SDL2_DIR $ENV{SDL2_DIR})
@@ -8,7 +8,7 @@ set(CRAY_DIR "${CMAKE_SOURCE_DIR}/src/cray")
 
 if (UNIX)
 	set(MATH_LIBS m dl)
-endif(UNIX)
+endif()
 
 if (MSVC)
     add_compile_options(/W3)
@@ -22,5 +22,13 @@ else()
 endif()
 
 add_subdirectory("src/cray")
+
+if (CRSDL)
+add_subdirectory("src/crsdl2")
+elseif (CRRPI)
+
+endif()
+
 add_subdirectory("src/raycastdemo")
-add_subdirectory("src/crprofile")
+
+#add_subdirectory("src/crprofile")

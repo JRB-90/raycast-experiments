@@ -1,9 +1,8 @@
 #ifndef _CR_SCENE_H_
 #define _CR_SCENE_H_
 
-#include "crinput.h"
 #include "crmath.h"
-#include "dlist.h"
+#include "crlist.h"
 #include "crprofile.h"
 #include "crtypes.h"
 
@@ -36,7 +35,7 @@ extern Scene CreateDefaultScene();
 extern Scene* CreateTestScene(double size);
 extern void CleanupScene(Scene* scene);
 extern void UpdatePlayerPosition(
-	Scene* const scene, 
+	Scene* const scene,
 	const InputState* const inputState,
 	CycleProfile* const profile
 );
