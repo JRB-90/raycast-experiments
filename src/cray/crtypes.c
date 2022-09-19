@@ -48,3 +48,37 @@ uint32_t ToUint32Color(const Color* const color)
 
     return r2 | g2 | b2 | a2;;
 }
+
+InputState DefaultInputState()
+{
+    InputState inputState =
+    {
+        .quit = false,
+        .forwards = false,
+        .backwards = false,
+        .rotLeft = false,
+        .rotRight = false,
+        .left = false,
+        .right = false,
+        .toggleDebug = false,
+        .toggleRenderMode = false,
+    };
+
+    return inputState;
+}
+
+ScreenBuffer DefaultScreen()
+{
+    ScreenBuffer screen =
+    {
+        .pixels = NULL,
+        .size = -1,
+        .width = -1,
+        .height = -1,
+        .stride = -1,
+        .bitsPP = -1,
+        .bytesPP = -1
+    };
+
+    return screen;
+}

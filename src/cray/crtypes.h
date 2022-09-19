@@ -1,6 +1,7 @@
 #ifndef _CR_TYPES_H_
 #define _CR_TYPES_H_
 
+#include <stdbool.h>
 #include <inttypes.h>
 
 typedef struct Color {
@@ -19,8 +20,12 @@ typedef struct Rect {
 
 typedef struct ScreenBuffer {
     uint8_t* pixels;
+    int size;
     int width;
     int height;
+    int stride;
+    int bitsPP;
+    int bytesPP;
 } ScreenBuffer;
 
 typedef enum TileType {
@@ -35,9 +40,23 @@ typedef struct DisplayTile {
     Color borderColor;
 } DisplayTile;
 
+typedef struct InputState {
+    bool quit;
+    bool forwards;
+    bool backwards;
+    bool rotRight;
+    bool rotLeft;
+    bool right;
+    bool left;
+    bool toggleDebug;
+    bool toggleRenderMode;
+} InputState;
+
 extern Color CreateColor();
 extern Color CreateColorRGB(uint8_t r, uint8_t g, uint8_t b);
 extern Color CreateColorARGB(uint8_t a, uint8_t r, uint8_t g, uint8_t b);
 extern uint32_t ToUint32Color(const Color* const color);
+extern InputState DefaultInputState();
+extern ScreenBuffer DefaultScreen();
 
 #endif // !_CR_TYPES_H_

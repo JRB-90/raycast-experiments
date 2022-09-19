@@ -1,16 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "SDL.h"
 #include "raysettings.h"
 #include "crconsts.h"
 #include "crtypes.h"
-#include "crinput.h"
-#include "crdisplay.h"
 #include "crscene.h"
 #include "crrender.h"
 #include "crtime.h"
 #include "crprofile.h"
+
+#ifdef CRSDL
+#include "crsdl2_input.h"
+#include "crsdl2_display.h"
+#endif // CRSDL
 
 #pragma region Function Defs
 
@@ -27,8 +29,8 @@ void Update(
 );
 void Render(
     const RaycastSettings* const settings,
-    const Display* const display,
     const DisplayTile* const tiles,
+    const ScreenBuffer* const screen,
     const int tileCount,
     Scene* const scene,
     CycleProfile* const profile
@@ -53,12 +55,20 @@ int main(int argc, char* argv[])
 
     printf("Initialising window...\n");
 
-    Display display =
+    /*Display display =
         CreateDisplay(
             "C Raycaster",
             CRAY_SCREEN_WIDTH,
             CRAY_SCREEN_HEIGHT
-        );
+        );*/
+
+    ScreenBuffer screen = DefaultScreen();
+
+    if (InitDisplay(&screen))
+    {
+        fprintf(stderr, "Window initialisation failed, shutting down...\n");
+        exit(EXIT_FAILURE);
+    }
 
     printf("Window initialised\n");
     printf("Initialising scene...\n");
@@ -104,8 +114,8 @@ int main(int argc, char* argv[])
 
             Render(
                 &settings,
-                &display,
                 tiles,
+                &screen,
                 3,
                 scene,
                 &profile
@@ -127,7 +137,7 @@ int main(int argc, char* argv[])
     printf("Closing down...\n");
 
     CleanupScene(scene);
-    CleanupDisplay(&display);
+    DestroyDisplay(&screen);
 
 	return EXIT_SUCCESS;
 }
@@ -223,8 +233,8 @@ void Update(
 
 void Render(
     const RaycastSettings* const settings,
-    const Display* const display,
     const DisplayTile* const tiles,
+    const ScreenBuffer* const screen,
     const int tileCount,
     Scene* const scene,
     CycleProfile* const profile)
@@ -242,7 +252,7 @@ void Render(
                 },
                 .theta = 0.0
         };
-        RenderSceneTopDown(&display->screen, scene, profile);
+        RenderSceneTopDown(screen, scene, profile);
     }
     else if (settings->renderMode == FullFirstPerson)
     {
@@ -255,14 +265,14 @@ void Render(
                 },
                 .theta = 0.0
         };
-        RenderSceneFirstPerson(&display->screen, scene, profile);
+        RenderSceneFirstPerson(screen, scene, profile);
     }
     else if (settings->renderMode == Tiled)
     {
-        RenderTiles(&display->screen, scene, tiles, tileCount, profile);
+        RenderTiles(screen, scene, tiles, tileCount, profile);
     }
 
-    RenderDisplay(display, profile);
+    RenderDisplay(screen, profile);
 
     profile->totalRenderTimeMS = GetTimeInMS(GetTicks() - renderStartTime);
 }

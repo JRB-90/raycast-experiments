@@ -1,26 +1,10 @@
-#include "crinput.h"
+#include "crsdl2_input.h"
 #include "SDL.h"
+#include "crtypes.h"
+#include <stdbool.h>
 
 void ResetPulseKeys(InputState* const state);
 void UpdatePlayerControls(InputState* const state, SDL_Event* e);
-
-InputState DefaultInputState()
-{
-    InputState inputState =
-    {
-        .quit = false,
-        .forwards = false,
-        .backwards = false,
-        .rotLeft = false,
-        .rotRight = false,
-        .left = false,
-        .right = false,
-        .toggleDebug = false,
-        .toggleRenderMode = false,
-    };
-
-    return inputState;
-}
 
 void UpdateInputState(InputState* const state)
 {
