@@ -3,32 +3,36 @@ cmake_minimum_required(VERSION 3.8)
 project(craycaster C)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
-set(SDL2_DIR $ENV{SDL2_DIR})
 set(CRAY_DIR "${CMAKE_SOURCE_DIR}/src/cray")
-
-if (UNIX)
-	set(MATH_LIBS m dl)
-endif()
 
 if (MSVC)
     add_compile_options(/W3)
     #add_compile_options(/WX)
-else()
-    #add_compile_options(-Wall -Wextra -pedantic -Werror)
-   add_compile_options(-Wall) 
-   #add_compile_options(-pg)
-   add_compile_options(-g)
-   add_compile_options(-o0)
+elseif(UNIX)
+    set(MATH_LIBS m dl)
+    
+    add_compile_options(-Wall)
+    #add_compile_options(-Wextra)
+    #add_compile_options(-pedantic)
+    #add_compile_options(-Werror)
+    #add_compile_options(-pg)
+    add_compile_options(-g)
+    add_compile_options(-o0)
+
+    if (CRRPI)
+        add_compile_options(-nostartfiles)
+        add_compile_options(-mfloat-abi=hard)
+        add_compile_definitions(RPI1)
+    endif()
+endif()
+
+if (CRSDL)
+    set(SDL2_DIR $ENV{SDL2_DIR})
+    add_subdirectory("src/crsdl2")
+elseif (CRRPIFB)
+    
 endif()
 
 add_subdirectory("src/cray")
-
-if (CRSDL)
-add_subdirectory("src/crsdl2")
-elseif (CRRPI)
-
-endif()
-
 add_subdirectory("src/raycastdemo")
-
 #add_subdirectory("src/crprofile")
