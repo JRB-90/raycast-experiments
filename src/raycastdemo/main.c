@@ -14,6 +14,11 @@
 #include "crsdl2_display.h"
 #endif // CRSDL
 
+#ifdef CRRPIFB
+#include "crrpidfb_input.h"
+#include "crrpidfb_display.h"
+#endif // CRSDL
+
 #pragma region Function Defs
 
 // Funtions defs

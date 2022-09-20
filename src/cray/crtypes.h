@@ -55,6 +55,7 @@ typedef struct InputState {
 extern Color CreateColor();
 extern Color CreateColorRGB(uint8_t r, uint8_t g, uint8_t b);
 extern Color CreateColorARGB(uint8_t a, uint8_t r, uint8_t g, uint8_t b);
+extern uint16_t ToUint16Color(const Color* const color);
 extern uint32_t ToUint32Color(const Color* const color);
 extern InputState DefaultInputState();
 extern ScreenBuffer DefaultScreen();

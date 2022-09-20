@@ -24,5 +24,6 @@ target_link_libraries(raycastdemo PUBLIC
 )
 elseif (CRRPI)
 target_link_libraries(raycastdemo PUBLIC
+	crrpifb
 )
 endif()

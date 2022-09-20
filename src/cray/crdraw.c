@@ -10,13 +10,27 @@ void DrawClearColor(
 	const ScreenBuffer* const screen,
 	const Color* const color)
 {
-	const int pixelCount = screen->width * screen->height;
-	uint32_t* buf = (uint32_t*)screen->pixels;
-	uint32_t c = ToUint32Color(color);
-
-	for (int i = 0; i < pixelCount; i++)
+	if (screen->bytesPP == 4)
 	{
-		buf[i] = c;
+		const int pixelCount = screen->width * screen->height;
+		uint32_t* buf = (uint32_t*)screen->pixels;
+		uint32_t c = ToUint32Color(color);
+
+		for (int i = 0; i < pixelCount; i++)
+		{
+			buf[i] = c;
+		}
+	}
+	else if (screen->bytesPP == 2)
+	{
+		const int pixelCount = (screen->width * screen->height) / 2;
+		uint16_t* buf = (uint32_t*)screen->pixels;
+		uint16_t c = ToUint16Color(color);
+
+		for (int i = 0; i < pixelCount; i++)
+		{
+			buf[i] = c;
+		}
 	}
 }
 

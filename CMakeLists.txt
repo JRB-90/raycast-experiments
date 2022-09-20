@@ -30,7 +30,8 @@ if (CRSDL)
     set(SDL2_DIR $ENV{SDL2_DIR})
     add_subdirectory("src/crsdl2")
 elseif (CRRPIFB)
-    
+    set(SDL2_DIR $ENV{SDL2_DIR})
+    add_subdirectory("src/crrpifb")
 endif()
 
 add_subdirectory("src/cray")

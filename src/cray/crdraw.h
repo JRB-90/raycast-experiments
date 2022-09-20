@@ -42,11 +42,21 @@ static inline void DrawPixel(
 	int x,
 	int y)
 {
-	const int offset = (screen->width * y * 4) + x * 4;
-	screen->pixels[offset + 0] = color->a;
-	screen->pixels[offset + 1] = color->b;
-	screen->pixels[offset + 2] = color->g;
-	screen->pixels[offset + 3] = color->r;
+	if (screen->bytesPP == 4)
+	{
+		const int offset = (screen->width * y * 4) + x * 4;
+		screen->pixels[offset + 0] = color->a;
+		screen->pixels[offset + 1] = color->b;
+		screen->pixels[offset + 2] = color->g;
+		screen->pixels[offset + 3] = color->r;
+	}
+	else if (screen->bytesPP == 2)
+	{
+		const unsigned int offset = (y * screen->stride) + (x * screen->bytesPP);
+		uint16_t c = ToUint16Color(color);
+		screen->pixels[offset] = (uint8_t)(c & 0xFF);
+		screen->pixels[offset + 1] = (uint8_t)(c >> 8);
+	}
 }
 
 static inline void DrawPixelViewport(

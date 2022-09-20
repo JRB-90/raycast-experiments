@@ -40,6 +40,16 @@ Color CreateColorARGB(uint8_t a, uint8_t r, uint8_t g, uint8_t b)
     return color;
 }
 
+uint16_t ToUint16Color(const Color* const color)
+{
+    uint16_t r2 = (color->r / 2) << 12;
+    uint16_t g2 = (color->g / 2) << 8;
+    uint16_t b2 = (color->b / 2) << 4;
+    uint16_t a2 = (color->a / 2);
+
+    return a2 | b2 | g2 | r2;
+}
+
 uint32_t ToUint32Color(const Color* const color)
 {
     uint32_t r2 = color->r << 24;
@@ -47,7 +57,7 @@ uint32_t ToUint32Color(const Color* const color)
     uint32_t b2 = color->b << 8;
     uint32_t a2 = color->a;
 
-    return r2 | g2 | b2 | a2;;
+    return r2 | g2 | b2 | a2;
 }
 
 InputState DefaultInputState()
