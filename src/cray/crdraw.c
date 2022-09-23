@@ -14,7 +14,7 @@ void DrawClearColor(
 	{
 		const int pixelCount = screen->width * screen->height;
 		uint32_t* buf = (uint32_t*)screen->pixels;
-		uint32_t c = ToUint32Color(color);
+		uint32_t c = ToUint32RGBAColor(color);
 
 		for (int i = 0; i < pixelCount; i++)
 		{
@@ -23,9 +23,9 @@ void DrawClearColor(
 	}
 	else if (screen->bytesPP == 2)
 	{
-		const int pixelCount = (screen->width * screen->height) / 2;
+		const int pixelCount = screen->width * screen->height;
 		uint16_t* buf = (uint32_t*)screen->pixels;
-		uint16_t c = ToUint16Color(color);
+		uint16_t c = ToUint16RGB565Color(color);
 
 		for (int i = 0; i < pixelCount; i++)
 		{

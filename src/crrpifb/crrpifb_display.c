@@ -62,6 +62,23 @@ int InitDisplay(ScreenBuffer* const screen)
 		return -1;
 	}
 
+	PrintFixedScreenInfo(&display.fixedScreenInfo);
+	PrintVariableScreenInfo(&display.currentScreenInfo);
+
+	display.currentScreenInfo.xres = 640;
+	display.currentScreenInfo.xres_virtual = display.currentScreenInfo.xres;
+	display.currentScreenInfo.yres = 480;
+	display.currentScreenInfo.yres_virtual = display.currentScreenInfo.yres;
+	display.currentScreenInfo.bits_per_pixel = 16;
+	//display.currentScreenInfo.yoffset = 0;
+
+	if (SetVariableScreenInfo(display.frameBufferFD, &display.currentScreenInfo))
+	{
+		close(display.frameBufferFD);
+
+		return -1;
+	}
+
 	if (InitScreen(
 		display.frameBufferFD,
 		&display.fixedScreenInfo,
@@ -69,6 +86,7 @@ int InitDisplay(ScreenBuffer* const screen)
 		screen)
 	)
 	{
+		SetVariableScreenInfo(display.frameBufferFD, &display.originalScreenInfo);
 		close(display.frameBufferFD);
 
 		return -1;
@@ -80,6 +98,7 @@ int InitDisplay(ScreenBuffer* const screen)
 int DestroyDisplay(ScreenBuffer* const screen)
 {
 	DestroyScreen(screen);
+	SetVariableScreenInfo(display.frameBufferFD, &display.currentScreenInfo);
 	close(display.frameBufferFD);
 
 	return 0;
@@ -140,9 +159,11 @@ void PrintFixedScreenInfo(const fb_fix_screeninfo* const screenInfo)
 void PrintVariableScreenInfo(const fb_var_screeninfo* const screenInfo)
 {
 	printf(
-		"Var screen info: %dx%d res, %d bpp\n",
+		"Var screen info: %dx%d rres, %dx%d vres, %d bpp\n",
 		screenInfo->xres,
 		screenInfo->yres,
+		screenInfo->xres_virtual,
+		screenInfo->yres_virtual,
 		screenInfo->bits_per_pixel
 	);
 }
@@ -157,14 +178,14 @@ int InitScreen(
 	screen->height = varScreenInfo->yres;
 	screen->bitsPP = varScreenInfo->bits_per_pixel;
 	screen->bytesPP = varScreenInfo->bits_per_pixel / 8;
-	screen->size = varScreenInfo->xres * varScreenInfo->yres * (varScreenInfo->bits_per_pixel / 8);
+	screen->size = varScreenInfo->xres_virtual * varScreenInfo->yres_virtual * (varScreenInfo->bits_per_pixel / 8);
 	screen->stride = varScreenInfo->xres * (varScreenInfo->bits_per_pixel / 8);
 	screen->pixels = NULL;
 
 	screen->pixels =
 		(uint8_t*)mmap(
 			0,
-			fixScreenInfo->smem_len,
+			screen->size,
 			PROT_READ | PROT_WRITE,
 			MAP_SHARED,
 			frameBufferFD,

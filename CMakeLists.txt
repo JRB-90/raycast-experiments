@@ -17,7 +17,7 @@ elseif(UNIX)
     #add_compile_options(-Werror)
     #add_compile_options(-pg)
     add_compile_options(-g)
-    add_compile_options(-o0)
+    add_compile_options(-o6)
 
     if (CRRPI)
         add_compile_options(-nostartfiles)

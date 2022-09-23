@@ -56,6 +56,7 @@ int main(int argc, char* argv[])
     {
         .printDebugInfo = true,
         .renderMode = Tiled
+        //.renderMode = FullFirstPerson
     };
 
     printf("Initialising window...\n");

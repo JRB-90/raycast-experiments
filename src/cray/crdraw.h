@@ -53,7 +53,7 @@ static inline void DrawPixel(
 	else if (screen->bytesPP == 2)
 	{
 		const unsigned int offset = (y * screen->stride) + (x * screen->bytesPP);
-		uint16_t c = ToUint16Color(color);
+		uint16_t c = ToUint16RGB565Color(color);
 		screen->pixels[offset] = (uint8_t)(c & 0xFF);
 		screen->pixels[offset + 1] = (uint8_t)(c >> 8);
 	}
