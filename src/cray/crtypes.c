@@ -87,7 +87,8 @@ ScreenBuffer DefaultScreen()
         .height = -1,
         .stride = -1,
         .bitsPP = -1,
-        .bytesPP = -1
+        .bytesPP = -1,
+        .offset = -1
     };
 
     return screen;

@@ -26,6 +26,7 @@ typedef struct ScreenBuffer {
     int stride;
     int bitsPP;
     int bytesPP;
+    int offset;
 } ScreenBuffer;
 
 typedef enum TileType {

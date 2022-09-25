@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <signal.h>
 #include <stdbool.h>
 #include "raysettings.h"
 #include "crconsts.h"
@@ -49,9 +50,26 @@ void PrintSummary(
 
 #pragma endregion
 
+Scene* scene;
+
+void SignalHandler(int signum)
+{
+    if (signum == SIGTERM ||
+        signum == SIGABRT ||
+        signum == SIGINT)
+    {
+        CleanupScene(scene);
+        DestroyDisplay();
+        exit(EXIT_SUCCESS);
+    }
+}
+
 // Entry point
 int main(int argc, char* argv[])
 {
+    scene = NULL;
+    signal(SIGINT, SignalHandler);
+
     RaycastSettings settings =
     {
         .printDebugInfo = true,
@@ -60,13 +78,6 @@ int main(int argc, char* argv[])
     };
 
     printf("Initialising window...\n");
-
-    /*Display display =
-        CreateDisplay(
-            "C Raycaster",
-            CRAY_SCREEN_WIDTH,
-            CRAY_SCREEN_HEIGHT
-        );*/
 
     ScreenBuffer screen = DefaultScreen();
 
@@ -81,7 +92,7 @@ int main(int argc, char* argv[])
 
     DisplayTile tiles[3];
     PopulateTestTiles(tiles);
-    Scene* scene = CreateTestScene(80.0);
+    scene = CreateTestScene(80.0);
     
     printf("Scene initialised\n");
     printf("Starting main loop...\n");
@@ -144,8 +155,7 @@ int main(int argc, char* argv[])
 
     CleanupScene(scene);
     DestroyDisplay(&screen);
-
-	return EXIT_SUCCESS;
+	exit(EXIT_SUCCESS);
 }
 
 #pragma region Function Bodies
@@ -278,8 +288,9 @@ void Render(
         RenderTiles(screen, scene, tiles, tileCount, profile);
     }
 
-    RenderDisplay(screen, profile);
-
+    uint64_t presentStartTime = GetTicks();
+    RenderDisplay(screen);
+    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);
     profile->totalRenderTimeMS = GetTimeInMS(GetTicks() - renderStartTime);
 }
 

@@ -9,7 +9,6 @@ add_library(crrpifb
 	crrpifb_display.c
 	crrpifb_input.h
 	crrpifb_input.c
-    vcio.h
 )
 
 include_directories(crrpifb PUBLIC
