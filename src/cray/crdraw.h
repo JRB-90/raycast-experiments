@@ -44,11 +44,22 @@ static inline void DrawPixel(
 {
 	if (screen->bytesPP == 4)
 	{
-		const int offset = (screen->width * y * 4) + x * 4;
-		screen->pixels[offset + 0] = color->a;
-		screen->pixels[offset + 1] = color->b;
-		screen->pixels[offset + 2] = color->g;
-		screen->pixels[offset + 3] = color->r;
+		if (screen->colorFormat == CF_ARGB)
+		{
+			const int offset = (screen->stride * y) + (x * 4) + screen->offset;
+			screen->pixels[offset + 0] = color->b;
+			screen->pixels[offset + 1] = color->g;
+			screen->pixels[offset + 2] = color->r;
+			screen->pixels[offset + 3] = color->a;
+		}
+		else if (screen->colorFormat == CF_RGBA)
+		{
+			const int offset = (screen->width * y * 4) + (x * 4) + (screen->offset);
+			screen->pixels[offset + 0] = color->a;
+			screen->pixels[offset + 1] = color->b;
+			screen->pixels[offset + 2] = color->g;
+			screen->pixels[offset + 3] = color->r;
+		}
 	}
 	else if (screen->bytesPP == 2)
 	{

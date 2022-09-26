@@ -123,6 +123,7 @@ int InitDisplay(ScreenBuffer* const screen)
 	screen->bytesPP = display.vinfo.bits_per_pixel / 8;
 	screen->size = display.screenSizeBytes;
 	screen->stride = display.vinfo.xres * (display.vinfo.bits_per_pixel / 8);
+	screen->colorFormat = CF_ARGB;
 
 	screen->pixels =
 		(uint8_t*)mmap(
@@ -191,7 +192,7 @@ void PrintScreenInfo(
 
 int PanDisplay(ScreenBuffer* const screen)
 {
-	screen->offset = display.fbWritePage * display.screenPixels;
+	screen->offset = display.fbWritePage * display.screenSizeBytes;
 	display.vinfo.yoffset = display.fbReadPage * display.vinfo.yres;
 	display.vinfo.activate = FB_ACTIVATE_VBL;
 

@@ -12,22 +12,33 @@ void DrawClearColor(
 {
 	if (screen->bytesPP == 4)
 	{
+		const int offset = screen->offset / screen->bytesPP;
 		const int pixelCount = screen->width * screen->height;
 		uint32_t* buf = (uint32_t*)screen->pixels;
-		uint32_t c = ToUint32RGBAColor(color);
 
-		for (int i = 0; i < pixelCount; i++)
+		if (screen->colorFormat == CF_ARGB)
 		{
-			buf[i] = c;
+			for (int i = offset; i < pixelCount + offset; i++)
+			{
+				buf[i] = ToUint32ARGBColor(color);
+			}
+		}
+		else if (screen->colorFormat == CF_RGBA)
+		{
+			for (int i = offset; i < pixelCount + offset; i++)
+			{
+				buf[i] = ToUint32RGBAColor(color);
+			}
 		}
 	}
 	else if (screen->bytesPP == 2)
 	{
+		const int offset = screen->offset / screen->bytesPP;
 		const int pixelCount = screen->width * screen->height;
-		uint16_t* buf = (uint32_t*)screen->pixels;
+		uint16_t* buf = (uint16_t*)screen->pixels;
 		uint16_t c = ToUint16RGB565Color(color);
 
-		for (int i = 0; i < pixelCount; i++)
+		for (int i = offset; i < pixelCount + offset; i++)
 		{
 			buf[i] = c;
 		}

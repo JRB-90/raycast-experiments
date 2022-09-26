@@ -59,6 +59,16 @@ uint32_t ToUint32RGBAColor(const Color* const color)
     return a2 | r2 | g2 | b2;
 }
 
+uint32_t ToUint32ARGBColor(const Color* const color)
+{
+    uint32_t a2 = color->a << 24;
+    uint32_t r2 = color->r << 16;
+    uint32_t g2 = color->g << 8;
+    uint32_t b2 = color->b;
+
+    return a2 | r2 | g2 | b2;
+}
+
 InputState DefaultInputState()
 {
     InputState inputState =
@@ -88,7 +98,8 @@ ScreenBuffer DefaultScreen()
         .stride = -1,
         .bitsPP = -1,
         .bytesPP = -1,
-        .offset = -1
+        .offset = -1,
+        .colorFormat = CF_ARGB
     };
 
     return screen;

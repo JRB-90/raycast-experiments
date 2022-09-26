@@ -105,9 +105,11 @@ int CreateDisplay(
     screen->width = width;
     screen->height = height;
     screen->bitsPP = 32;
-    screen->bytesPP = 32;
+    screen->bytesPP = 4;
     screen->stride = screen->width * screen->bytesPP;
     screen->size = screen->stride * screen->height;
+    screen->offset = 0;
+    screen->colorFormat = CF_RGBA;
 
     return 0;
 }

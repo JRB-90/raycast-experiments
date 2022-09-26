@@ -4,6 +4,12 @@
 #include <stdbool.h>
 #include <inttypes.h>
 
+typedef enum ColorFormat {
+    CF_ARGB,
+    CF_RGBA,
+    CF_RGB565
+} ColorFormat;
+
 typedef struct Color {
     uint8_t a;
     uint8_t r;
@@ -27,6 +33,7 @@ typedef struct ScreenBuffer {
     int bitsPP;
     int bytesPP;
     int offset;
+    ColorFormat colorFormat;
 } ScreenBuffer;
 
 typedef enum TileType {
@@ -58,6 +65,7 @@ extern Color CreateColorRGB(uint8_t r, uint8_t g, uint8_t b);
 extern Color CreateColorARGB(uint8_t a, uint8_t r, uint8_t g, uint8_t b);
 extern uint16_t ToUint16RGB565Color(const Color* const color);
 extern uint32_t ToUint32RGBAColor(const Color* const color);
+extern uint32_t ToUint32ARGBColor(const Color* const color);
 extern InputState DefaultInputState();
 extern ScreenBuffer DefaultScreen();
 
