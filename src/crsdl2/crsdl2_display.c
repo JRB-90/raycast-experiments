@@ -13,10 +13,7 @@ int CreateDisplay(
     int height
 );
 int CleanupDisplay(ScreenBuffer* const screen);
-int RenderDisplayInternal(
-    ScreenBuffer* const screen, 
-    CycleProfile* const profile
-);
+int RenderDisplayInternal(ScreenBuffer* const screen);
 
 int InitDisplay(ScreenBuffer* const screen)
 {
@@ -34,11 +31,9 @@ int DestroyDisplay(ScreenBuffer* const screen)
     return CleanupDisplay(screen);
 }
 
-int RenderDisplay(
-    ScreenBuffer* const screen,
-    CycleProfile* const profile)
+int RenderDisplay(ScreenBuffer* const screen)
 {
-    return RenderDisplayInternal(screen, profile);
+    return RenderDisplayInternal(screen);
 }
 
 int CreateDisplay(
@@ -110,9 +105,11 @@ int CreateDisplay(
     screen->width = width;
     screen->height = height;
     screen->bitsPP = 32;
-    screen->bytesPP = 32;
+    screen->bytesPP = 4;
     screen->stride = screen->width * screen->bytesPP;
     screen->size = screen->stride * screen->height;
+    screen->offset = 0;
+    screen->colorFormat = CF_RGBA;
 
     return 0;
 }
@@ -128,12 +125,8 @@ int CleanupDisplay(ScreenBuffer* const screen)
     return 0;
 }
 
-int RenderDisplayInternal(
-    ScreenBuffer* const screen,
-    CycleProfile* const profile)
+int RenderDisplayInternal(ScreenBuffer* const screen)
 {
-    uint64_t presentStartTime = GetTicks();
-
     int res = SDL_RenderClear(display.renderer);
     if (res)
     {
@@ -174,8 +167,6 @@ int RenderDisplayInternal(
     }
 
     SDL_RenderPresent(display.renderer);
-
-    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);
 
     return 0;
 }

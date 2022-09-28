@@ -1,10 +1,9 @@
-#ifndef _CR_DISPLAY_H_
-#define _CR_DISPLAY_H_
+#ifndef _CR_SDL_DISPLAY_H_
+#define _CR_SDL_DISPLAY_H_
 
 #include <inttypes.h>
 #include "SDL.h"
 #include "crtypes.h"
-#include "crprofile.h"
 
 // Data types
 typedef struct SdlDisplay {
@@ -15,6 +14,6 @@ typedef struct SdlDisplay {
 
 extern int InitDisplay(ScreenBuffer* const screen);
 extern int DestroyDisplay(ScreenBuffer* const screen);
-extern int RenderDisplay(ScreenBuffer* const screen, CycleProfile* const profile);
+extern int RenderDisplay(ScreenBuffer* const screen);
 
-#endif // !_CR_DISPLAY_H_
+#endif // !_CR_SDL_DISPLAY_H_

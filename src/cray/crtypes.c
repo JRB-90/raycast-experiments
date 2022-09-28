@@ -1,4 +1,5 @@
 #include "crtypes.h"
+#include <stddef.h>
 
 Color CreateColor()
 {
@@ -39,14 +40,33 @@ Color CreateColorARGB(uint8_t a, uint8_t r, uint8_t g, uint8_t b)
     return color;
 }
 
-uint32_t ToUint32Color(const Color* const color)
+uint16_t ToUint16RGB565Color(const Color* const color)
+{
+    uint16_t r = (color->r >> 3) << 11;
+    uint16_t g = (color->g >> 2) << 5;
+    uint16_t b = (color->b >> 3);
+
+    return r | g | b;
+}
+
+uint32_t ToUint32RGBAColor(const Color* const color)
 {
     uint32_t r2 = color->r << 24;
     uint32_t g2 = color->g << 16;
     uint32_t b2 = color->b << 8;
     uint32_t a2 = color->a;
 
-    return r2 | g2 | b2 | a2;;
+    return a2 | r2 | g2 | b2;
+}
+
+uint32_t ToUint32ARGBColor(const Color* const color)
+{
+    uint32_t a2 = color->a << 24;
+    uint32_t r2 = color->r << 16;
+    uint32_t g2 = color->g << 8;
+    uint32_t b2 = color->b;
+
+    return a2 | r2 | g2 | b2;
 }
 
 InputState DefaultInputState()
@@ -77,7 +97,9 @@ ScreenBuffer DefaultScreen()
         .height = -1,
         .stride = -1,
         .bitsPP = -1,
-        .bytesPP = -1
+        .bytesPP = -1,
+        .offset = -1,
+        .colorFormat = CF_ARGB
     };
 
     return screen;

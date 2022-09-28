@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <signal.h>
 #include <stdbool.h>
 #include "raysettings.h"
 #include "crconsts.h"
@@ -12,6 +13,11 @@
 #ifdef CRSDL
 #include "crsdl2_input.h"
 #include "crsdl2_display.h"
+#endif // CRSDL
+
+#ifdef CRRPIFB
+#include "crrpidfb_input.h"
+#include "crrpidfb_display.h"
 #endif // CRSDL
 
 #pragma region Function Defs
@@ -44,30 +50,62 @@ void PrintSummary(
 
 #pragma endregion
 
+Scene* scene;
+ScreenBuffer screen;
+
+void Cleanup(int status)
+{
+    if (scene != NULL)
+    {
+        CleanupScene(scene);
+    }
+    DestroyInputDevice();
+    DestroyDisplay(&screen);
+    exit(status);
+}
+
+void SignalHandler(int signum)
+{
+    if (signum == SIGTERM ||
+        signum == SIGABRT ||
+        signum == SIGINT)
+    {
+        Cleanup(EXIT_SUCCESS);
+    }
+}
+
 // Entry point
 int main(int argc, char* argv[])
 {
+    scene = NULL;
+    screen = DefaultScreen();
+    CycleProfile profile = DefaultCycleProfile();
+    InputState inputState = DefaultInputState();
+
+    signal(SIGINT, SignalHandler);
+     
     RaycastSettings settings =
     {
-        .printDebugInfo = true,
+        .printDebugInfo = false,
         .renderMode = Tiled
+        //.renderMode = FullFirstPerson
     };
 
+    printf("Initialising input...\n");
+
+    if (InitInputDevice())
+    {
+        fprintf(stderr, "Window initialisation failed, shutting down...\n");
+        Cleanup(EXIT_FAILURE);
+    }
+
+    printf("Input initialised\n");
     printf("Initialising window...\n");
-
-    /*Display display =
-        CreateDisplay(
-            "C Raycaster",
-            CRAY_SCREEN_WIDTH,
-            CRAY_SCREEN_HEIGHT
-        );*/
-
-    ScreenBuffer screen = DefaultScreen();
 
     if (InitDisplay(&screen))
     {
         fprintf(stderr, "Window initialisation failed, shutting down...\n");
-        exit(EXIT_FAILURE);
+        Cleanup(EXIT_FAILURE);
     }
 
     printf("Window initialised\n");
@@ -75,14 +113,11 @@ int main(int argc, char* argv[])
 
     DisplayTile tiles[3];
     PopulateTestTiles(tiles);
-    Scene* scene = CreateTestScene(80.0);
+    scene = CreateTestScene(80.0);
     
     printf("Scene initialised\n");
     printf("Starting main loop...\n");
     
-    CycleProfile profile = DefaultCycleProfile();
-    InputState inputState = DefaultInputState();
-
     bool isRunning = true;
     double delta;
     double period = 1.0 / (double)CRAY_FPS;
@@ -99,7 +134,7 @@ int main(int argc, char* argv[])
 
         if (HandleUpdateState(&inputState, &settings))
         {
-            printf("Received QUIT event from SDL\n");
+            printf("Received QUIT event from input\n");
             isRunning = false;
             continue;
         }
@@ -136,10 +171,7 @@ int main(int argc, char* argv[])
     
     printf("Closing down...\n");
 
-    CleanupScene(scene);
-    DestroyDisplay(&screen);
-
-	return EXIT_SUCCESS;
+    Cleanup(EXIT_SUCCESS);
 }
 
 #pragma region Function Bodies
@@ -272,8 +304,9 @@ void Render(
         RenderTiles(screen, scene, tiles, tileCount, profile);
     }
 
-    RenderDisplay(screen, profile);
-
+    uint64_t presentStartTime = GetTicks();
+    RenderDisplay(screen);
+    profile->renderPresentTimeMS = GetTimeInMS(GetTicks() - presentStartTime);
     profile->totalRenderTimeMS = GetTimeInMS(GetTicks() - renderStartTime);
 }
 

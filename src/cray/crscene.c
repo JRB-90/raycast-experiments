@@ -125,6 +125,11 @@ Scene* CreateTestScene(double size)
 
 void CleanupScene(Scene* scene)
 {
+	if (scene == NULL)
+	{
+		return;
+	}
+
 	DLLNode* current = scene->walls.head;
 
 	while (current != NULL)

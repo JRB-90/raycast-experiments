@@ -1,7 +1,6 @@
 #ifndef _CR_INPUT_H_
 #define _CR_INPUT_H_
 
-#include <stdbool.h>
 #include "crtypes.h"
 
 // Functions definitions

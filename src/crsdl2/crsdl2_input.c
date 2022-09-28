@@ -6,7 +6,17 @@
 void ResetPulseKeys(InputState* const state);
 void UpdatePlayerControls(InputState* const state, SDL_Event* e);
 
-void UpdateInputState(InputState* const state)
+int InitInputDevice()
+{
+    return 0;
+}
+
+int DestroyInputDevice()
+{
+    return 0;
+}
+
+int UpdateInputState(InputState* const state)
 {
     SDL_Event e;
     ResetPulseKeys(state);
@@ -24,6 +34,8 @@ void UpdateInputState(InputState* const state)
             UpdatePlayerControls(state, &e);
         }
     }
+
+    return 0;
 }
 
 void ResetPulseKeys(InputState* const state)
