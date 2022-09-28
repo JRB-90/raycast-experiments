@@ -51,6 +51,18 @@ void PrintSummary(
 #pragma endregion
 
 Scene* scene;
+ScreenBuffer screen;
+
+void Cleanup(int status)
+{
+    if (scene != NULL)
+    {
+        CleanupScene(scene);
+    }
+    DestroyInputDevice();
+    DestroyDisplay(&screen);
+    exit(status);
+}
 
 void SignalHandler(int signum)
 {
@@ -58,9 +70,7 @@ void SignalHandler(int signum)
         signum == SIGABRT ||
         signum == SIGINT)
     {
-        CleanupScene(scene);
-        DestroyDisplay();
-        exit(EXIT_SUCCESS);
+        Cleanup(EXIT_SUCCESS);
     }
 }
 
@@ -68,23 +78,34 @@ void SignalHandler(int signum)
 int main(int argc, char* argv[])
 {
     scene = NULL;
-    signal(SIGINT, SignalHandler);
+    screen = DefaultScreen();
+    CycleProfile profile = DefaultCycleProfile();
+    InputState inputState = DefaultInputState();
 
+    signal(SIGINT, SignalHandler);
+     
     RaycastSettings settings =
     {
-        .printDebugInfo = true,
+        .printDebugInfo = false,
         .renderMode = Tiled
         //.renderMode = FullFirstPerson
     };
 
-    printf("Initialising window...\n");
+    printf("Initialising input...\n");
 
-    ScreenBuffer screen = DefaultScreen();
+    if (InitInputDevice())
+    {
+        fprintf(stderr, "Window initialisation failed, shutting down...\n");
+        Cleanup(EXIT_FAILURE);
+    }
+
+    printf("Input initialised\n");
+    printf("Initialising window...\n");
 
     if (InitDisplay(&screen))
     {
         fprintf(stderr, "Window initialisation failed, shutting down...\n");
-        exit(EXIT_FAILURE);
+        Cleanup(EXIT_FAILURE);
     }
 
     printf("Window initialised\n");
@@ -97,9 +118,6 @@ int main(int argc, char* argv[])
     printf("Scene initialised\n");
     printf("Starting main loop...\n");
     
-    CycleProfile profile = DefaultCycleProfile();
-    InputState inputState = DefaultInputState();
-
     bool isRunning = true;
     double delta;
     double period = 1.0 / (double)CRAY_FPS;
@@ -116,7 +134,7 @@ int main(int argc, char* argv[])
 
         if (HandleUpdateState(&inputState, &settings))
         {
-            printf("Received QUIT event from SDL\n");
+            printf("Received QUIT event from input\n");
             isRunning = false;
             continue;
         }
@@ -153,9 +171,7 @@ int main(int argc, char* argv[])
     
     printf("Closing down...\n");
 
-    CleanupScene(scene);
-    DestroyDisplay(&screen);
-	exit(EXIT_SUCCESS);
+    Cleanup(EXIT_SUCCESS);
 }
 
 #pragma region Function Bodies
