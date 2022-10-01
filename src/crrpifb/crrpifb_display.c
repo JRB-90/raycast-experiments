@@ -43,7 +43,9 @@ void PrintScreenInfo(
 	const fb_var_screeninfo* const vinfo
 );
 
-int InitDisplay(ScreenBuffer* const screen)
+int InitDisplay(
+	const ScreenFormat* const desiredFormat, 
+	ScreenBuffer* const screen)
 {
 	screen->pixels = NULL;
 	display.fbfd = NULL;

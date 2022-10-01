@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <stdbool.h>
+#include <string.h>
 #include "raysettings.h"
 #include "crconsts.h"
 #include "crtypes.h"
@@ -23,6 +24,14 @@
 #pragma region Function Defs
 
 // Funtions defs
+void SignalHandler(int signum);
+void Cleanup(int status);
+RaycastSettings ParseCommandLine(
+    int argc, 
+    char* argv[]
+);
+void PrintUsage();
+void PrintHelp();
 void PopulateTestTiles(DisplayTile* const tiles);
 bool HandleUpdateState(
     InputState* const inputState,
@@ -50,29 +59,9 @@ void PrintSummary(
 
 #pragma endregion
 
+// Globals
 Scene* scene;
 ScreenBuffer screen;
-
-void Cleanup(int status)
-{
-    if (scene != NULL)
-    {
-        CleanupScene(scene);
-    }
-    DestroyInputDevice();
-    DestroyDisplay(&screen);
-    exit(status);
-}
-
-void SignalHandler(int signum)
-{
-    if (signum == SIGTERM ||
-        signum == SIGABRT ||
-        signum == SIGINT)
-    {
-        Cleanup(EXIT_SUCCESS);
-    }
-}
 
 // Entry point
 int main(int argc, char* argv[])
@@ -81,15 +70,9 @@ int main(int argc, char* argv[])
     screen = DefaultScreen();
     CycleProfile profile = DefaultCycleProfile();
     InputState inputState = DefaultInputState();
+    RaycastSettings settings = ParseCommandLine(argc, argv);
 
     signal(SIGINT, SignalHandler);
-     
-    RaycastSettings settings =
-    {
-        .printDebugInfo = false,
-        .renderMode = Tiled
-        //.renderMode = FullFirstPerson
-    };
 
     printf("Initialising input...\n");
 
@@ -102,7 +85,7 @@ int main(int argc, char* argv[])
     printf("Input initialised\n");
     printf("Initialising window...\n");
 
-    if (InitDisplay(&screen))
+    if (InitDisplay(&settings.screenFormat, &screen))
     {
         fprintf(stderr, "Window initialisation failed, shutting down...\n");
         Cleanup(EXIT_FAILURE);
@@ -177,6 +160,170 @@ int main(int argc, char* argv[])
 #pragma region Function Bodies
 
 // Function bodies
+void SignalHandler(int signum)
+{
+    if (signum == SIGTERM ||
+        signum == SIGABRT ||
+        signum == SIGINT)
+    {
+        Cleanup(EXIT_SUCCESS);
+    }
+}
+
+void Cleanup(int status)
+{
+    if (scene != NULL)
+    {
+        CleanupScene(scene);
+    }
+    DestroyInputDevice();
+    DestroyDisplay(&screen);
+    exit(status);
+}
+
+RaycastSettings ParseCommandLine(
+    int argc, 
+    char* argv[])
+{
+    RaycastSettings settings =
+    {
+        .printDebugInfo = false,
+        .renderMode = Tiled,
+        .screenFormat = (ScreenFormat)
+        {
+            .width = 640,
+            .height = 480,
+            .format = CF_RGB565
+        }
+    };
+
+    int i = 1;
+    while (i < argc)
+    {
+        char* argStr = argv[i];
+        if (strcmp(argStr, "-h") == 0 ||
+            strcmp(argStr, "--help") == 0)
+        {
+            PrintHelp();
+        }
+        else if (strcmp(argStr, "-v") == 0)
+        {
+            settings.printDebugInfo = true;
+        }
+        else if (strcmp(argStr, "-mode") == 0)
+        {
+            i++;
+
+            if (i >= argc)
+            {
+                fprintf(stderr, "No mode argument passed\n");
+                PrintUsage();
+            }
+
+            if (strcmp(argv[i], "Tiled") == 0)
+            {
+                settings.renderMode = Tiled;
+            }
+            else if (strcmp(argv[i], "Full") == 0)
+            {
+                settings.renderMode = FullFirstPerson;
+            }
+            else
+            {
+                fprintf(stderr, "Invalid mode argument: %s\n", argv[i]);
+                PrintUsage();
+            }
+        }
+        else if (strcmp(argStr, "-res") == 0)
+        {
+            i++;
+            if (i >= argc)
+            {
+                fprintf(stderr, "No res x argument passed\n");
+                PrintUsage();
+            }
+
+            int xres = atoi(argv[i]);
+            if (xres == 0)
+            {
+                fprintf(stderr, "Invalid res x argument: %s\n", argv[i]);
+                PrintUsage();
+            }
+
+            i++;
+            if (i >= argc)
+            {
+                fprintf(stderr, "No res y argument passed\n");
+                PrintUsage();
+            }
+
+            int yres = atoi(argv[i]);
+            if (yres == 0)
+            {
+                fprintf(stderr, "Invalid res y argument: %s\n", argv[i]);
+                PrintUsage();
+            }
+
+            settings.screenFormat.width = xres;
+            settings.screenFormat.height = yres;
+        }
+        else if (strcmp(argStr, "-format") == 0)
+        {
+            i++;
+            if (i >= argc)
+            {
+                fprintf(stderr, "No format argument passed\n");
+                PrintUsage();
+            }
+
+            if (strcmp(argv[i], "ARGB") == 0)
+            {
+                settings.screenFormat.format = CF_ARGB;
+            }
+            else if (strcmp(argv[i], "RGBA") == 0)
+            {
+                settings.screenFormat.format = CF_RGBA;
+            }
+            else if (strcmp(argv[i], "RGB565") == 0)
+            {
+                settings.screenFormat.format = CF_RGB565;
+            }
+            else
+            {
+                fprintf(stderr, "Invalid format argument: %s\n", argv[i]);
+                PrintUsage();
+            }
+        }
+        else
+        {
+            fprintf(stderr, "Invalid argument: %s\n", argStr);
+            PrintUsage();
+        }
+
+        i++;
+    }
+
+    return settings;
+}
+
+void PrintUsage()
+{
+    fprintf(stderr, "usage: raycastdemo [-v] [-mode m] [-res r] [-format f] [-h]\n");
+    exit(EXIT_FAILURE);
+}
+
+void PrintHelp()
+{
+    printf("raycastdemo help\n");
+    printf("Options:\n");
+    printf("\t-v:        Enable debug printing\n");
+    printf("\t-mode m:   Set render mode, m -> <Tiled> | <Full>\n");
+    printf("\t-res r:    Set resolution, r -> <xres> <yres>\n");
+    printf("\t-format f: Set the color format, f -> <ARGB> | <RGBA> | <RGB565>\n");
+    printf("\t-h:        Display the help text\n");
+    exit(EXIT_SUCCESS);
+}
+
 void PopulateTestTiles(DisplayTile* const tiles)
 {
     DisplayTile staticSceneTile =
@@ -222,6 +369,7 @@ void PopulateTestTiles(DisplayTile* const tiles)
     tiles[1] = staticPlayerTile;
     tiles[2] = firstPersonTile;
 }
+
 bool HandleUpdateState(
     InputState* const inputState,
     RaycastSettings* const settings)

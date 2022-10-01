@@ -40,6 +40,21 @@ Color CreateColorARGB(uint8_t a, uint8_t r, uint8_t g, uint8_t b)
     return color;
 }
 
+int ToBitsPerPixel(const ColorFormat colorFormat)
+{
+    switch (colorFormat)
+    {
+    case CF_ARGB:
+        return 32;
+    case CF_RGBA:
+        return 32;
+    case CF_RGB565:
+        return 16;
+    default:
+        return -1;
+    }
+}
+
 uint16_t ToUint16RGB565Color(const Color* const color)
 {
     uint16_t r = (color->r >> 3) << 11;
