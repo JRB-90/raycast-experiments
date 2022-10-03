@@ -1,8 +1,8 @@
 #include "crscene.h"
 #include <assert.h>
 #include <stdlib.h>
-#include "crconsts.h"
 #include "crtime.h"
+#include "crconsts.h"
 
 Player CreateDefaultPlayer()
 {
