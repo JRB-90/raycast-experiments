@@ -193,7 +193,7 @@ RaycastSettings ParseCommandLine(
         {
             .width = 640,
             .height = 480,
-            .format = CF_RGB565
+            .format = CF_ARGB
         }
     };
 
