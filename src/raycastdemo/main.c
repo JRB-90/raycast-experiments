@@ -26,7 +26,10 @@
 // Funtions defs
 void SignalHandler(int signum);
 void Cleanup(int status);
-void PopulateTestTiles(DisplayTile* const tiles);
+void PopulateTestTiles(
+    RaycastSettings* const settings, 
+    DisplayTile* const tiles
+);
 bool HandleUpdateState(
     InputState* const inputState,
     RaycastSettings* const settings
@@ -89,7 +92,7 @@ int main(int argc, char* argv[])
     printf("Initialising scene...\n");
 
     DisplayTile tiles[3];
-    PopulateTestTiles(tiles);
+    PopulateTestTiles(&settings, tiles);
     scene = CreateTestScene(80.0);
     
     printf("Scene initialised\n");
@@ -175,7 +178,9 @@ void Cleanup(int status)
     exit(status);
 }
 
-void PopulateTestTiles(DisplayTile* const tiles)
+void PopulateTestTiles(
+    RaycastSettings* const settings,
+    DisplayTile* const tiles)
 {
     DisplayTile staticSceneTile =
     {
@@ -183,10 +188,10 @@ void PopulateTestTiles(DisplayTile* const tiles)
         .borderColor = CreateColorRGB(255, 255, 0),
         .viewport =
         {
-            .x = 40,
-            .y = 250,
-            .w = 200,
-            .h = 200
+            .x = settings->screenFormat.width * 0.05,
+            .y = settings->screenFormat.height * 0.55,
+            .w = settings->screenFormat.width * 0.4,
+            .h = settings->screenFormat.height * 0.4
         }
     };
 
@@ -196,10 +201,10 @@ void PopulateTestTiles(DisplayTile* const tiles)
         .borderColor = CreateColorRGB(0, 255, 255),
         .viewport =
         {
-            .x = 360,
-            .y = 250,
-            .w = 200,
-            .h = 200
+            .x = settings->screenFormat.width * 0.55,
+            .y = settings->screenFormat.height * 0.55,
+            .w = settings->screenFormat.width * 0.4,
+            .h = settings->screenFormat.height * 0.4
         }
     };
 
@@ -209,10 +214,10 @@ void PopulateTestTiles(DisplayTile* const tiles)
         .borderColor = CreateColorRGB(255, 0, 255),
         .viewport =
         {
-            .x = 170,
-            .y = 30,
-            .w = 300,
-            .h = 200
+            .x = settings->screenFormat.width * 0.2,
+            .y = settings->screenFormat.height * 0.05,
+            .w = settings->screenFormat.width * 0.6,
+            .h = settings->screenFormat.height * 0.45
         }
     };
 
