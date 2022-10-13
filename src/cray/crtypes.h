@@ -36,6 +36,12 @@ typedef struct ScreenBuffer {
     ColorFormat colorFormat;
 } ScreenBuffer;
 
+typedef struct ScreenFormat {
+    int width;
+    int height;
+    ColorFormat format;
+} ScreenFormat;
+
 typedef enum TileType {
     StaticScene,
     StaticPlayer,
@@ -63,6 +69,7 @@ typedef struct InputState {
 extern Color CreateColor();
 extern Color CreateColorRGB(uint8_t r, uint8_t g, uint8_t b);
 extern Color CreateColorARGB(uint8_t a, uint8_t r, uint8_t g, uint8_t b);
+extern int ToBitsPerPixel(const ColorFormat colorFormat);
 extern uint16_t ToUint16RGB565Color(const Color* const color);
 extern uint32_t ToUint32RGBAColor(const Color* const color);
 extern uint32_t ToUint32ARGBColor(const Color* const color);

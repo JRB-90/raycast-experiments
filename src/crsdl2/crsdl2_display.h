@@ -1,18 +1,12 @@
 #ifndef _CR_SDL_DISPLAY_H_
 #define _CR_SDL_DISPLAY_H_
 
-#include <inttypes.h>
-#include "SDL.h"
 #include "crtypes.h"
 
-// Data types
-typedef struct SdlDisplay {
-    SDL_Window* window;
-    SDL_Renderer* renderer;
-    SDL_Texture* texture;
-} SdlDisplay;
-
-extern int InitDisplay(ScreenBuffer* const screen);
+extern int InitDisplay(
+	const ScreenFormat* const desiredFormat, 
+	ScreenBuffer* const screen
+);
 extern int DestroyDisplay(ScreenBuffer* const screen);
 extern int RenderDisplay(ScreenBuffer* const screen);
 

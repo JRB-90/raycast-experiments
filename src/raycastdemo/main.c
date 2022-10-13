@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <stdbool.h>
+#include <string.h>
 #include "raysettings.h"
-#include "crconsts.h"
 #include "crtypes.h"
 #include "crscene.h"
 #include "crrender.h"
@@ -23,13 +23,19 @@
 #pragma region Function Defs
 
 // Funtions defs
-void PopulateTestTiles(DisplayTile* const tiles);
+void SignalHandler(int signum);
+void Cleanup(int status);
+void PopulateTestTiles(
+    RaycastSettings* const settings, 
+    DisplayTile* const tiles
+);
 bool HandleUpdateState(
     InputState* const inputState,
     RaycastSettings* const settings
 );
 void Update(
     const InputState* const inputState,
+    double deltaMS,
     Scene* const scene,
     CycleProfile* const profile
 );
@@ -50,29 +56,9 @@ void PrintSummary(
 
 #pragma endregion
 
+// Globals
 Scene* scene;
 ScreenBuffer screen;
-
-void Cleanup(int status)
-{
-    if (scene != NULL)
-    {
-        CleanupScene(scene);
-    }
-    DestroyInputDevice();
-    DestroyDisplay(&screen);
-    exit(status);
-}
-
-void SignalHandler(int signum)
-{
-    if (signum == SIGTERM ||
-        signum == SIGABRT ||
-        signum == SIGINT)
-    {
-        Cleanup(EXIT_SUCCESS);
-    }
-}
 
 // Entry point
 int main(int argc, char* argv[])
@@ -81,15 +67,9 @@ int main(int argc, char* argv[])
     screen = DefaultScreen();
     CycleProfile profile = DefaultCycleProfile();
     InputState inputState = DefaultInputState();
+    RaycastSettings settings = ParseCommandLine(argc, argv);
 
     signal(SIGINT, SignalHandler);
-     
-    RaycastSettings settings =
-    {
-        .printDebugInfo = false,
-        .renderMode = Tiled
-        //.renderMode = FullFirstPerson
-    };
 
     printf("Initialising input...\n");
 
@@ -102,7 +82,7 @@ int main(int argc, char* argv[])
     printf("Input initialised\n");
     printf("Initialising window...\n");
 
-    if (InitDisplay(&screen))
+    if (InitDisplay(&settings.screenFormat, &screen))
     {
         fprintf(stderr, "Window initialisation failed, shutting down...\n");
         Cleanup(EXIT_FAILURE);
@@ -112,15 +92,20 @@ int main(int argc, char* argv[])
     printf("Initialising scene...\n");
 
     DisplayTile tiles[3];
-    PopulateTestTiles(tiles);
-    scene = CreateTestScene(80.0);
+    PopulateTestTiles(&settings, tiles);
+    scene = 
+        CreateTestScene(
+            &settings.playerSettings, 
+            settings.wallHeight, 
+            80.0
+        );
     
     printf("Scene initialised\n");
     printf("Starting main loop...\n");
     
     bool isRunning = true;
     double delta;
-    double period = 1.0 / (double)CRAY_FPS;
+    double period = 1.0 / (double)settings.targetFps;
     double targetInterval = period * 1000.0;
     uint64_t currentTicks = GetTicks();
     uint64_t previousTicks = currentTicks;
@@ -143,6 +128,7 @@ int main(int argc, char* argv[])
         {
             Update(
                 &inputState, 
+                delta,
                 scene, 
                 &profile
             );
@@ -177,7 +163,30 @@ int main(int argc, char* argv[])
 #pragma region Function Bodies
 
 // Function bodies
-void PopulateTestTiles(DisplayTile* const tiles)
+void SignalHandler(int signum)
+{
+    if (signum == SIGTERM ||
+        signum == SIGABRT ||
+        signum == SIGINT)
+    {
+        Cleanup(EXIT_SUCCESS);
+    }
+}
+
+void Cleanup(int status)
+{
+    if (scene != NULL)
+    {
+        CleanupScene(scene);
+    }
+    DestroyInputDevice();
+    DestroyDisplay(&screen);
+    exit(status);
+}
+
+void PopulateTestTiles(
+    RaycastSettings* const settings,
+    DisplayTile* const tiles)
 {
     DisplayTile staticSceneTile =
     {
@@ -185,10 +194,10 @@ void PopulateTestTiles(DisplayTile* const tiles)
         .borderColor = CreateColorRGB(255, 255, 0),
         .viewport =
         {
-            .x = 40,
-            .y = 250,
-            .w = 200,
-            .h = 200
+            .x = settings->screenFormat.width * 0.05,
+            .y = settings->screenFormat.height * 0.55,
+            .w = settings->screenFormat.width * 0.4,
+            .h = settings->screenFormat.height * 0.4
         }
     };
 
@@ -198,10 +207,10 @@ void PopulateTestTiles(DisplayTile* const tiles)
         .borderColor = CreateColorRGB(0, 255, 255),
         .viewport =
         {
-            .x = 360,
-            .y = 250,
-            .w = 200,
-            .h = 200
+            .x = settings->screenFormat.width * 0.55,
+            .y = settings->screenFormat.height * 0.55,
+            .w = settings->screenFormat.width * 0.4,
+            .h = settings->screenFormat.height * 0.4
         }
     };
 
@@ -211,10 +220,10 @@ void PopulateTestTiles(DisplayTile* const tiles)
         .borderColor = CreateColorRGB(255, 0, 255),
         .viewport =
         {
-            .x = 170,
-            .y = 30,
-            .w = 300,
-            .h = 200
+            .x = settings->screenFormat.width * 0.2,
+            .y = settings->screenFormat.height * 0.05,
+            .w = settings->screenFormat.width * 0.6,
+            .h = settings->screenFormat.height * 0.45
         }
     };
 
@@ -222,6 +231,7 @@ void PopulateTestTiles(DisplayTile* const tiles)
     tiles[1] = staticPlayerTile;
     tiles[2] = firstPersonTile;
 }
+
 bool HandleUpdateState(
     InputState* const inputState,
     RaycastSettings* const settings)
@@ -257,10 +267,16 @@ bool HandleUpdateState(
 
 void Update(
     const InputState* const inputState,
+    double deltaMS,
     Scene* const scene,
     CycleProfile* const profile)
 {
-    UpdatePlayerPosition(scene, inputState, profile);
+    UpdatePlayerPosition(
+        scene, 
+        deltaMS,
+        inputState, 
+        profile
+    );
 }
 
 void Render(
@@ -279,8 +295,8 @@ void Render(
             (Frame2D){
                 .position =
                 {
-                    .x = CRAY_SCREEN_WIDTH / 2,
-                    .y = CRAY_SCREEN_HEIGHT / 2
+                    .x = screen->width / 2,
+                    .y = screen->height / 2
                 },
                 .theta = 0.0
         };
@@ -292,8 +308,8 @@ void Render(
             (Frame2D){
                 .position =
                 {
-                    .x = CRAY_SCREEN_WIDTH / 2,
-                    .y = CRAY_SCREEN_HEIGHT / 2
+                    .x = screen->width / 2,
+                    .y = screen->height / 2
                 },
                 .theta = 0.0
         };

@@ -6,7 +6,6 @@
 #include <float.h>
 #include <math.h>
 #include "crtypes.h"
-#include "crconsts.h"
 #include "crmath.h"
 #include "crtime.h"
 #include "crdraw.h"
@@ -335,8 +334,8 @@ void RenderSceneFirstPersonInternal(
     uint64_t firstStartTime = GetTicks();
 
     Vector2D worldForward = { .x = 0.0, .y = -1.0 };
-    double angleInterval = (scene->player.fov * 2.0) / ((double)(width - 1));
-    double startAngle = scene->player.frame.theta - scene->player.fov;
+    double angleInterval = (scene->player.settings.fov * 2.0) / ((double)(width - 1));
+    double startAngle = scene->player.frame.theta - scene->player.settings.fov;
 
     for (int i = 0; i < width; i++)
     {
@@ -436,8 +435,8 @@ void RenderVerticalWallStrip(
 
     if (distanceToWall > 0.0)
     {
-        double h = tan(ToRad(scene->player.fov)) * distanceToWall;
-        wallHeightPixels = WALL_HEIGHT / h;
+        double h = tan(ToRad(scene->player.settings.fov)) * distanceToWall;
+        wallHeightPixels = scene->wallHeight / h;
     }
     
     int wallStartY = (height >> 1) - (wallHeightPixels >> 1);
@@ -524,10 +523,12 @@ void RenderPlayerTopDown(
 {
     Rect rect =
     {
-        .x = (int)(scene->player.frame.position.x - (PLAYER_BASE_SIZE / 2.0)),
-        .y = (int)(scene->player.frame.position.y - (PLAYER_BASE_SIZE / 2.0)),
-        .w = (int)PLAYER_BASE_SIZE,
-        .h = (int)PLAYER_BASE_SIZE
+        .x = (int)(scene->player.frame.position.x - 
+                  (scene->player.settings.baseSize / 2.0)),
+        .y = (int)(scene->player.frame.position.y - 
+                  (scene->player.settings.baseSize / 2.0)),
+        .w = (int)scene->player.settings.baseSize,
+        .h = (int)scene->player.settings.baseSize
     };
 
     RenderCameraSpaceRectangle(
@@ -550,8 +551,8 @@ void RenderProjectionTopDown(
 {
     Vector2D worldForward = { .x = 0.0, .y = -1.0 };
     int widthIncrements = 9;
-    double angleInterval = (scene->player.fov * 2.0) / ((double)(widthIncrements - 1));
-    double startAngle = scene->player.frame.theta - scene->player.fov;
+    double angleInterval = (scene->player.settings.fov * 2.0) / ((double)(widthIncrements - 1));
+    double startAngle = scene->player.frame.theta - scene->player.settings.fov;
 
     for (int i = 0; i < widthIncrements; i++)
     {

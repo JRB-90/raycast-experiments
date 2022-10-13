@@ -3,7 +3,10 @@
 
 #include "crtypes.h"
 
-extern int InitDisplay(ScreenBuffer* const screen);
+extern int InitDisplay(
+	const ScreenFormat* const desiredFormat, 
+	ScreenBuffer* const screen
+);
 extern int DestroyDisplay(ScreenBuffer* const screen);
 extern int RenderDisplay(ScreenBuffer* const screen);
 

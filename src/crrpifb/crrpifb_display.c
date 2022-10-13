@@ -13,10 +13,6 @@ const static char* FB_PATH = "/dev/fb0";
 const static char* TTY_PATH = "/dev/tty1";
 const static char* MB_PATH = "/dev/vcio";
 
-const static unsigned int WIDTH = 640;
-const static unsigned int HEIGHT = 480;
-const static unsigned int BPP = 32;
-
 typedef struct fb_fix_screeninfo fb_fix_screeninfo;
 typedef struct fb_var_screeninfo fb_var_screeninfo;
 
@@ -43,7 +39,9 @@ void PrintScreenInfo(
 	const fb_var_screeninfo* const vinfo
 );
 
-int InitDisplay(ScreenBuffer* const screen)
+int InitDisplay(
+	const ScreenFormat* const desiredFormat,
+	ScreenBuffer* const screen)
 {
 	screen->pixels = NULL;
 	display.fbfd = NULL;
@@ -81,12 +79,28 @@ int InitDisplay(ScreenBuffer* const screen)
 	printf("Starting screen info\n");
 	PrintScreenInfo(&display.finfo, &display.vinfo);
 
-	display.vinfo.xres = WIDTH;
-	display.vinfo.xres_virtual = WIDTH;
-	display.vinfo.yres = HEIGHT;
-	display.vinfo.yres_virtual = HEIGHT * 2;
-	display.vinfo.bits_per_pixel = BPP;
+	display.vinfo.xres = desiredFormat->width;
+	display.vinfo.xres_virtual = desiredFormat->width;
+	display.vinfo.yres = desiredFormat->height;
+	display.vinfo.yres_virtual = desiredFormat->height * 2;
 	display.vinfo.yoffset = 0;
+
+	if (desiredFormat->format == CF_ARGB)
+	{
+		display.vinfo.bits_per_pixel = 32;
+	}
+	else if (desiredFormat->format == CF_ARGB)
+	{
+		display.vinfo.bits_per_pixel = 32;
+	}
+	else if (desiredFormat->format == CF_RGB565)
+	{
+		display.vinfo.bits_per_pixel = 16;
+	}
+	else
+	{
+		display.vinfo.bits_per_pixel = 32;
+	}
 
 	if (ioctl(display.fbfd, FBIOPUT_VSCREENINFO, &display.vinfo))
 	{
@@ -123,7 +137,7 @@ int InitDisplay(ScreenBuffer* const screen)
 	screen->bytesPP = display.vinfo.bits_per_pixel / 8;
 	screen->size = display.screenSizeBytes;
 	screen->stride = display.vinfo.xres * (display.vinfo.bits_per_pixel / 8);
-	screen->colorFormat = CF_ARGB;
+	screen->colorFormat = desiredFormat->format;
 
 	screen->pixels =
 		(uint8_t*)mmap(
@@ -147,6 +161,8 @@ int InitDisplay(ScreenBuffer* const screen)
 
 int DestroyDisplay(ScreenBuffer* const screen)
 {
+	printf("Destroying pi display..\n");
+
 	if (screen->pixels != NULL)
 	{
 		munmap(screen->pixels, display.vscreenSizeBytes);
@@ -154,8 +170,17 @@ int DestroyDisplay(ScreenBuffer* const screen)
 
 	display.fbReadPage = 1;
 	SwitchPage(screen);
-	ioctl(display.fbfd, FBIOPUT_VSCREENINFO, &display.originalVinfo);
-	ioctl(display.ttyfd, KDSETMODE, KD_TEXT);
+
+	if (ioctl(display.ttyfd, KDSETMODE, KD_TEXT))
+	{
+		fprintf(stderr, "Failed to reset console to text mode\n");
+	}
+
+	if (ioctl(display.fbfd, FBIOPUT_VSCREENINFO, &display.originalVinfo))
+	{
+		fprintf(stderr, "Failed to reset screen settings\n");
+	}
+
 	close(display.ttyfd);
 	close(display.fbfd);
 
