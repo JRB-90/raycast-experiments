@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include "raysettings.h"
-#include "crconsts.h"
 #include "crtypes.h"
 #include "crscene.h"
 #include "crrender.h"
@@ -93,7 +92,12 @@ int main(int argc, char* argv[])
 
     DisplayTile tiles[3];
     PopulateTestTiles(&settings, tiles);
-    scene = CreateTestScene(80.0);
+    scene = 
+        CreateTestScene(
+            &settings.playerSettings, 
+            settings.wallHeight, 
+            80.0
+        );
     
     printf("Scene initialised\n");
     printf("Starting main loop...\n");

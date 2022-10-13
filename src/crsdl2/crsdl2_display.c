@@ -2,7 +2,6 @@
 #include <inttypes.h>
 #include <string.h>
 #include <assert.h>
-#include "crconsts.h"
 #include "crtime.h"
 #include "SDL.h"
 

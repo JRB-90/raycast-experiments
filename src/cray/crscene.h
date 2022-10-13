@@ -7,9 +7,17 @@
 #include "crtypes.h"
 
 // Data types
+typedef struct PlayerSettings {
+	double transSpeed;
+	double rotSpeed;
+	double arrowSize;
+	double baseSize;
+	double fov;
+} PlayerSettings;
+
 typedef struct Player {
 	Frame2D frame;
-	double fov;
+	PlayerSettings settings;
 } Player;
 
 typedef struct SceneColors {
@@ -26,13 +34,16 @@ typedef struct Scene {
 	Player player;
 	Frame2D camera;
 	DLList walls;
+	double wallHeight;
 	SceneColors colors;
 } Scene;
 
 // Function defs
-extern Player CreateDefaultPlayer();
-extern Scene CreateDefaultScene();
-extern Scene* CreateTestScene(double size);
+extern Scene* CreateTestScene(
+	const PlayerSettings const* settings,
+	double wallHeight,
+	double size
+);
 extern void CleanupScene(Scene* scene);
 extern void UpdatePlayerPosition(
 	Scene* const scene,

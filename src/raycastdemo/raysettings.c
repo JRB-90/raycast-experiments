@@ -2,7 +2,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#include "crconsts.h"
+
+static const bool CRAY_DEFAULT_VERBOSE = false;
+static const RenderMode CRAY_DEFAULT_RM = Tiled;
+static const unsigned int CRAY_DEFAULT_WIDTH = 640;
+static const unsigned int CRAY_DEFAULT_HEIGHT = 480;
+static const ColorFormat CRAY_DEFAULT_CF = CF_ARGB;
+
+static const unsigned int CRAY_DEFAULT_FPS = 60;
+static const double CRAY_TRANS_SPEED = 2.0;
+static const double CRAY_ROT_SPEED = 2.0;
+
+static const double PLAYER_ARROW_SIZE = 25.0;
+static const double PLAYER_BASE_SIZE = 6.0;
+static const double CRAY_DEFAULT_FOV = 50;
+
+static const unsigned int WALL_HEIGHT = 4000.0;
 
 void PrintUsage();
 void PrintHelp();
@@ -13,15 +28,24 @@ RaycastSettings ParseCommandLine(
 {
     RaycastSettings settings =
     {
-        .printDebugInfo = false,
-        .renderMode = Tiled,
+        .printDebugInfo = CRAY_DEFAULT_VERBOSE,
+        .renderMode = CRAY_DEFAULT_RM,
         .screenFormat = (ScreenFormat)
         {
-            .width = 640,
-            .height = 480,
-            .format = CF_ARGB
+            .width = CRAY_DEFAULT_WIDTH,
+            .height = CRAY_DEFAULT_HEIGHT,
+            .format = CRAY_DEFAULT_CF
         },
-        .targetFps = CRAY_DEFAULT_FPS
+        .targetFps = CRAY_DEFAULT_FPS,
+        .wallHeight = WALL_HEIGHT,
+        .playerSettings = (PlayerSettings)
+        {
+            .arrowSize = PLAYER_ARROW_SIZE,
+            .baseSize = PLAYER_BASE_SIZE,
+            .transSpeed = CRAY_TRANS_SPEED,
+            .rotSpeed = CRAY_ROT_SPEED,
+            .fov = CRAY_DEFAULT_FOV / 2.0
+        }
     };
 
     int i = 1;

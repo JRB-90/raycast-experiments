@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 #include <crtypes.h>
+#include "crscene.h"
 
 typedef enum RenderMode {
 	FullStaticScene,
@@ -14,6 +15,8 @@ typedef struct RaycastSettings {
 	RenderMode renderMode;
 	ScreenFormat screenFormat;
 	unsigned int targetFps;
+	double wallHeight;
+	PlayerSettings playerSettings;
 } RaycastSettings;
 
 RaycastSettings ParseCommandLine(

@@ -2,52 +2,31 @@
 #include <assert.h>
 #include <stdlib.h>
 #include "crtime.h"
-#include "crconsts.h"
 
-Player CreateDefaultPlayer()
-{
-	Player player =
-	{
-		.frame = CreateFrame2D(0.0, 0.0, 0.0),
-		30.0
-	};
-
-	return player;
-}
-
-Scene CreateDefaultScene()
-{
-	Scene scene =
-	{
-		.player = CreateDefaultPlayer(),
-		.walls = CreateDoubleLinkedList(),
-		.colors =
-		{
-			.clearCol = CreateColorRGB(0, 0, 0),
-			.wallCol = CreateColorRGB(255, 255, 255),
-			.floorCol = CreateColorRGB(52, 52, 52),
-			.ceilingColor = CreateColorRGB(52, 52, 128),
-			.playerCol = CreateColorRGB(0, 0, 255),
-			.rayCol = CreateColorRGB(255, 0, 0),
-			.intersectCol = CreateColorRGB(0, 255, 0)
-		},
-		.camera =
-		{
-			.position = { .x = 0.0, .y = 0.0 },
-			.theta = 0.0
-		}
-	};
-
-	return scene;
-}
-
-Scene* CreateTestScene(double size)
+Scene* CreateTestScene(
+	const PlayerSettings const* settings,
+	double wallHeight,
+	double size)
 {
 	Scene* scene = malloc(sizeof(Scene));
 	assert(scene != NULL);
 
-	scene->player = CreateDefaultPlayer();
+	scene->player =
+	(Player){
+		.frame = CreateFrame2D(0.0, 0.0, 0.0),
+		.settings =
+		(PlayerSettings){
+			.arrowSize = settings->arrowSize,
+			.baseSize = settings->baseSize,
+			.transSpeed = settings->transSpeed,
+			.rotSpeed = settings->rotSpeed,
+			.fov = settings->fov
+		}
+	};
+
 	scene->walls = CreateDoubleLinkedList();
+	scene->wallHeight = wallHeight;
+
 	scene->colors =
 	(SceneColors){
 		.clearCol = CreateColorRGB(0, 0, 0),
@@ -168,7 +147,7 @@ void UpdatePlayerPosition(
 		scene->player.frame.position =
 			AddVec2DToPoint2D(
 				scene->player.frame.position,
-				Vec2DMul(lookDir, TRANS_SPEED)
+				Vec2DMul(lookDir, scene->player.settings.transSpeed)
 			);
 	}
 
@@ -186,7 +165,7 @@ void UpdatePlayerPosition(
 		scene->player.frame.position =
 			AddVec2DToPoint2D(
 				scene->player.frame.position,
-				Vec2DMul(lookDir, -TRANS_SPEED)
+				Vec2DMul(lookDir, -scene->player.settings.transSpeed)
 			);
 	}
 
@@ -204,7 +183,7 @@ void UpdatePlayerPosition(
 		scene->player.frame.position =
 			AddVec2DToPoint2D(
 				scene->player.frame.position,
-				Vec2DMul(lookDir, TRANS_SPEED)
+				Vec2DMul(lookDir, scene->player.settings.transSpeed)
 			);
 	}
 
@@ -222,18 +201,18 @@ void UpdatePlayerPosition(
 		scene->player.frame.position =
 			AddVec2DToPoint2D(
 				scene->player.frame.position,
-				Vec2DMul(lookDir, TRANS_SPEED)
+				Vec2DMul(lookDir, scene->player.settings.transSpeed)
 			);
 	}
 
 	if (inputState->rotRight)
 	{
-		scene->player.frame.theta += ROT_SPEED;
+		scene->player.frame.theta += scene->player.settings.rotSpeed;
 	}
 
 	if (inputState->rotLeft)
 	{
-		scene->player.frame.theta -= ROT_SPEED;
+		scene->player.frame.theta -= scene->player.settings.rotSpeed;
 	}
 
 	profile->updatePlayerTimeMS = GetTimeInMS(GetTicks() - updateStartTime);
