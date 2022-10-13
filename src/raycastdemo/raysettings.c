@@ -10,8 +10,8 @@ static const unsigned int CRAY_DEFAULT_HEIGHT = 480;
 static const ColorFormat CRAY_DEFAULT_CF = CF_ARGB;
 
 static const unsigned int CRAY_DEFAULT_FPS = 60;
-static const double CRAY_TRANS_SPEED = 0.2;
-static const double CRAY_ROT_SPEED = 0.2;
+static const double CRAY_TRANS_SPEED = 0.1;
+static const double CRAY_ROT_SPEED = 0.1;
 
 static const double PLAYER_ARROW_SIZE = 25.0;
 static const double PLAYER_BASE_SIZE = 6.0;
