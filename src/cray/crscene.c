@@ -126,6 +126,7 @@ void CleanupScene(Scene* scene)
 
 void UpdatePlayerPosition(
 	Scene* const scene,
+	double deltaMS,
 	const InputState* const inputState,
 	CycleProfile* const profile)
 {
@@ -147,7 +148,7 @@ void UpdatePlayerPosition(
 		scene->player.frame.position =
 			AddVec2DToPoint2D(
 				scene->player.frame.position,
-				Vec2DMul(lookDir, scene->player.settings.transSpeed)
+				Vec2DMul(lookDir, scene->player.settings.transSpeed * deltaMS)
 			);
 	}
 
@@ -165,7 +166,7 @@ void UpdatePlayerPosition(
 		scene->player.frame.position =
 			AddVec2DToPoint2D(
 				scene->player.frame.position,
-				Vec2DMul(lookDir, -scene->player.settings.transSpeed)
+				Vec2DMul(lookDir, -scene->player.settings.transSpeed * deltaMS)
 			);
 	}
 
@@ -183,7 +184,7 @@ void UpdatePlayerPosition(
 		scene->player.frame.position =
 			AddVec2DToPoint2D(
 				scene->player.frame.position,
-				Vec2DMul(lookDir, scene->player.settings.transSpeed)
+				Vec2DMul(lookDir, scene->player.settings.transSpeed * deltaMS)
 			);
 	}
 
@@ -201,18 +202,18 @@ void UpdatePlayerPosition(
 		scene->player.frame.position =
 			AddVec2DToPoint2D(
 				scene->player.frame.position,
-				Vec2DMul(lookDir, scene->player.settings.transSpeed)
+				Vec2DMul(lookDir, scene->player.settings.transSpeed * deltaMS)
 			);
 	}
 
 	if (inputState->rotRight)
 	{
-		scene->player.frame.theta += scene->player.settings.rotSpeed;
+		scene->player.frame.theta += scene->player.settings.rotSpeed * deltaMS;
 	}
 
 	if (inputState->rotLeft)
 	{
-		scene->player.frame.theta -= scene->player.settings.rotSpeed;
+		scene->player.frame.theta -= scene->player.settings.rotSpeed * deltaMS;
 	}
 
 	profile->updatePlayerTimeMS = GetTimeInMS(GetTicks() - updateStartTime);

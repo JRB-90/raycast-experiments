@@ -47,6 +47,7 @@ extern Scene* CreateTestScene(
 extern void CleanupScene(Scene* scene);
 extern void UpdatePlayerPosition(
 	Scene* const scene,
+	double deltaMS,
 	const InputState* const inputState,
 	CycleProfile* const profile
 );

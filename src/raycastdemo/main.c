@@ -35,6 +35,7 @@ bool HandleUpdateState(
 );
 void Update(
     const InputState* const inputState,
+    double deltaMS,
     Scene* const scene,
     CycleProfile* const profile
 );
@@ -127,6 +128,7 @@ int main(int argc, char* argv[])
         {
             Update(
                 &inputState, 
+                delta,
                 scene, 
                 &profile
             );
@@ -265,10 +267,16 @@ bool HandleUpdateState(
 
 void Update(
     const InputState* const inputState,
+    double deltaMS,
     Scene* const scene,
     CycleProfile* const profile)
 {
-    UpdatePlayerPosition(scene, inputState, profile);
+    UpdatePlayerPosition(
+        scene, 
+        deltaMS,
+        inputState, 
+        profile
+    );
 }
 
 void Render(
