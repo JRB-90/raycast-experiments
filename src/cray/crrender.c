@@ -43,6 +43,7 @@ void RenderVerticalWallStrip(
     const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
+    const Wall* const wall,
     const int xPosition,
     const int height,
     const double distanceToWall,
@@ -341,7 +342,7 @@ void RenderSceneFirstPersonInternal(
     {
         uint64_t vertStartTime = GetTicks();
 
-        LineSegment2D* nearestWall = NULL;
+        Wall* nearestWall = NULL;
         double distanceToWall = DBL_MAX;
         double theta = startAngle + ((double)i * angleInterval);
 
@@ -357,13 +358,13 @@ void RenderSceneFirstPersonInternal(
         {
             double distanceToLine;
             Point2D intersectionPoint;
-            LineSegment2D* line = (LineSegment2D*)current->data;
+            Wall* wall = (Wall*)current->data;
 
             bool doesIntersect =
                 DoesRayIntersectLine(
                     &scene->player.frame.position,
                     &lookDir,
-                    line,
+                    &wall->line,
                     &distanceToLine,
                     &intersectionPoint
                 );
@@ -372,7 +373,7 @@ void RenderSceneFirstPersonInternal(
             {
                 if (distanceToLine < distanceToWall)
                 {
-                    nearestWall = line;
+                    nearestWall = wall;
                     distanceToWall = distanceToLine;
                 }
             }
@@ -386,6 +387,7 @@ void RenderSceneFirstPersonInternal(
                 screen,
                 viewport,
                 scene,
+                nearestWall,
                 i,
                 height,
                 0.0,
@@ -399,7 +401,9 @@ void RenderSceneFirstPersonInternal(
         double angleWithWall = 
             Vec2DDot(
                 lookDir,
-                Vec2DNormalise(Vec2DBetween(nearestWall->p1, nearestWall->p2))
+                Vec2DNormalise(
+                    Vec2DBetween(nearestWall->line.p1, nearestWall->line.p2)
+                )
             );
 
         angleWithWall = 1.0 - (fabs(angleWithWall) / 2.0);
@@ -408,6 +412,7 @@ void RenderSceneFirstPersonInternal(
             screen,
             viewport,
             scene,
+            nearestWall,
             i,
             height,
             distanceToWall,
@@ -425,6 +430,7 @@ void RenderVerticalWallStrip(
     const ScreenBuffer* const screen,
     const Rect* const viewport,
     const Scene* const scene,
+    const Wall* const wall,
     const int xPosition,
     const int height,
     const double distanceToWall,
@@ -436,7 +442,7 @@ void RenderVerticalWallStrip(
     if (distanceToWall > 0.0)
     {
         double h = tan(ToRad(scene->player.settings.fov)) * distanceToWall;
-        wallHeightPixels = scene->wallHeight / h;
+        wallHeightPixels = wall->height / h;
     }
     
     int wallStartY = (height >> 1) - (wallHeightPixels >> 1);
@@ -455,9 +461,9 @@ void RenderVerticalWallStrip(
 
     Color wallColor =
     {
-        .r = (uint8_t)(scene->colors.wallCol.r * angleWithWall),
-        .g = (uint8_t)(scene->colors.wallCol.g * angleWithWall),
-        .b = (uint8_t)(scene->colors.wallCol.b * angleWithWall),
+        .r = (uint8_t)(wall->color.r * angleWithWall),
+        .g = (uint8_t)(wall->color.g * angleWithWall),
+        .b = (uint8_t)(wall->color.b * angleWithWall),
         .a = 255
     };
 
@@ -498,7 +504,7 @@ void RenderWallsTopDown(
 
     for (uint32_t i = 0; i < scene->walls.size; i++)
     {
-        LineSegment2D* line = DLLAt((DLList* const)&scene->walls, i);
+        Wall* wall = DLLAt((DLList* const)&scene->walls, i);
 
         RenderCameraSpaceLine(
             screen,
@@ -506,10 +512,10 @@ void RenderWallsTopDown(
             scene,
             cameraFrame,
             &scene->colors.wallCol,
-            line->p1.x,
-            line->p1.y,
-            line->p2.x,
-            line->p2.y
+            wall->line.p1.x,
+            wall->line.p1.y,
+            wall->line.p2.x,
+            wall->line.p2.y
         );
     }
 }
@@ -592,7 +598,7 @@ void RenderRayTopDown(
 
     while (current != NULL)
     {
-        const LineSegment2D* const line = (LineSegment2D*)current->data;
+        const Wall* const wall = (Wall*)current->data;
         Point2D intersectionPoint;
         double distanceToLine;
 
@@ -600,7 +606,7 @@ void RenderRayTopDown(
             DoesRayIntersectLine(
                 &scene->player.frame.position,
                 ray,
-                line,
+                &wall->line,
                 &distanceToLine,
                 &intersectionPoint
             );
@@ -609,7 +615,7 @@ void RenderRayTopDown(
         {
             if (distanceToLine < distanceToWall)
             {
-                nearestWall = line;
+                nearestWall = &wall->line;
                 distanceToWall = distanceToLine;
                 wallIntersection = intersectionPoint;
             }

@@ -96,7 +96,6 @@ int main(int argc, char* argv[])
     scene = 
         CreateTestScene(
             &settings.playerSettings, 
-            settings.wallHeight, 
             80.0
         );
     

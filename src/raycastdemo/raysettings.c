@@ -17,8 +17,6 @@ static const double PLAYER_ARROW_SIZE = 25.0;
 static const double PLAYER_BASE_SIZE = 6.0;
 static const double CRAY_DEFAULT_FOV = 50;
 
-static const unsigned int WALL_HEIGHT = 4000.0;
-
 void PrintUsage();
 void PrintHelp();
 
@@ -37,7 +35,6 @@ RaycastSettings ParseCommandLine(
             .format = CRAY_DEFAULT_CF
         },
         .targetFps = CRAY_DEFAULT_FPS,
-        .wallHeight = WALL_HEIGHT,
         .playerSettings = (PlayerSettings)
         {
             .arrowSize = PLAYER_ARROW_SIZE,

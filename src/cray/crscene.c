@@ -3,9 +3,22 @@
 #include <stdlib.h>
 #include "crtime.h"
 
+Wall* CreateWall(
+	LineSegment2D line, 
+	double height, 
+	Color color)
+{
+	Wall* wall = malloc(sizeof(Wall));
+	assert(wall != NULL);
+	wall->line = line;
+	wall->height = height;
+	wall->color = color;
+
+	return wall;
+}
+
 Scene* CreateTestScene(
 	const PlayerSettings const* settings,
-	double wallHeight,
 	double size)
 {
 	Scene* scene = malloc(sizeof(Scene));
@@ -25,7 +38,6 @@ Scene* CreateTestScene(
 	};
 
 	scene->walls = CreateDoubleLinkedList();
-	scene->wallHeight = wallHeight;
 
 	scene->colors =
 	(SceneColors){
@@ -55,49 +67,41 @@ Scene* CreateTestScene(
 	Point2D p7 = { .x = -hsize, .y = -size };
 	Point2D p8 = { .x = -hsize, .y = -hsize };
 
-	LineSegment2D* L1 = malloc(sizeof(LineSegment2D));
-	LineSegment2D* L2 = malloc(sizeof(LineSegment2D));
-	LineSegment2D* L3 = malloc(sizeof(LineSegment2D));
-	LineSegment2D* L4 = malloc(sizeof(LineSegment2D));
-	LineSegment2D* L5 = malloc(sizeof(LineSegment2D));
-	LineSegment2D* L6 = malloc(sizeof(LineSegment2D));
-	LineSegment2D* L7 = malloc(sizeof(LineSegment2D));
-	LineSegment2D* L8 = malloc(sizeof(LineSegment2D));
+	LineSegment2D l1 = { .p1 = p1, .p2 = p2 };
+	LineSegment2D l2 = { .p1 = p2, .p2 = p3 };
+	LineSegment2D l3 = { .p1 = p3, .p2 = p4 };
+	LineSegment2D l4 = { .p1 = p4, .p2 = p5 };
+	LineSegment2D l5 = { .p1 = p5, .p2 = p6 };
+	LineSegment2D l6 = { .p1 = p6, .p2 = p7 };
+	LineSegment2D l7 = { .p1 = p7, .p2 = p8 };
+	LineSegment2D l8 = { .p1 = p8, .p2 = p1 };
 
-	assert(L1 != NULL);
-	assert(L2 != NULL);
-	assert(L3 != NULL);
-	assert(L4 != NULL);
-	assert(L5 != NULL);
-	assert(L6 != NULL);
-	assert(L7 != NULL);
-	assert(L8 != NULL);
+	Wall* w1 = CreateWall(l1, 4000.0, CreateColorRGB(255, 0, 0));
+	Wall* w2 = CreateWall(l2, 4000.0, CreateColorRGB(0, 255, 0));
+	Wall* w3 = CreateWall(l3, 4000.0, CreateColorRGB(0, 0, 255));
+	Wall* w4 = CreateWall(l4, 4000.0, CreateColorRGB(255, 255, 255));
+	Wall* w5 = CreateWall(l5, 4000.0, CreateColorRGB(255, 0, 0));
+	Wall* w6 = CreateWall(l6, 4000.0, CreateColorRGB(0, 255, 0));
+	Wall* w7 = CreateWall(l7, 4000.0, CreateColorRGB(0, 0, 255));
+	Wall* w8 = CreateWall(l8, 4000.0, CreateColorRGB(255, 255, 255));
 
-	L1->p1 = p1;
-	L1->p2 = p2;
-	L2->p1 = p2;
-	L2->p2 = p3;
-	L3->p1 = p3;
-	L3->p2 = p4;
-	L4->p1 = p4;
-	L4->p2 = p5;
-	L5->p1 = p5;
-	L5->p2 = p6;
-	L6->p1 = p6;
-	L6->p2 = p7;
-	L7->p1 = p7;
-	L7->p2 = p8;
-	L8->p1 = p8;
-	L8->p2 = p1;
+	assert(w1 != NULL);
+	assert(w2 != NULL);
+	assert(w3 != NULL);
+	assert(w4 != NULL);
+	assert(w5 != NULL);
+	assert(w6 != NULL);
+	assert(w7 != NULL);
+	assert(w8 != NULL);
 
-	PushDLLNode(&scene->walls, L1);
-	PushDLLNode(&scene->walls, L2);
-	PushDLLNode(&scene->walls, L3);
-	PushDLLNode(&scene->walls, L4);
-	PushDLLNode(&scene->walls, L5);
-	PushDLLNode(&scene->walls, L6);
-	PushDLLNode(&scene->walls, L7);
-	PushDLLNode(&scene->walls, L8);
+	PushDLLNode(&scene->walls, w1);
+	PushDLLNode(&scene->walls, w2);
+	PushDLLNode(&scene->walls, w3);
+	PushDLLNode(&scene->walls, w4);
+	PushDLLNode(&scene->walls, w5);
+	PushDLLNode(&scene->walls, w6);
+	PushDLLNode(&scene->walls, w7);
+	PushDLLNode(&scene->walls, w8);
 
 	return scene;
 }
@@ -113,7 +117,7 @@ void CleanupScene(Scene* scene)
 
 	while (current != NULL)
 	{
-		LineSegment2D* data = (LineSegment2D*)current->data;
+		Wall* data = (Wall*)current->data;
 		free(data);
 		current = current->next;
 	}

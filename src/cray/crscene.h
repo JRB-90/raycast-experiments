@@ -20,6 +20,12 @@ typedef struct Player {
 	PlayerSettings settings;
 } Player;
 
+typedef struct Wall {
+	LineSegment2D line;
+	double height;
+	Color color;
+} Wall;
+
 typedef struct SceneColors {
 	Color clearCol;
 	Color wallCol;
@@ -34,17 +40,15 @@ typedef struct Scene {
 	Player player;
 	Frame2D camera;
 	DLList walls;
-	double wallHeight;
 	SceneColors colors;
 } Scene;
 
 // Function defs
 extern Scene* CreateTestScene(
 	const PlayerSettings const* settings,
-	double wallHeight,
-	double size
+	double size 
 );
-extern void CleanupScene(Scene* scene);
+extern void CleanupScene(Scene* scene); 
 extern void UpdatePlayerPosition(
 	Scene* const scene,
 	double deltaMS,
