@@ -10,10 +10,10 @@ typedef struct AveragedSample {
 } AveragedSample;
 
 typedef struct CycleProfile {
-	double updatePlayerTimeMS;
-	double totalRenderTimeMS;
-	double clearTimeMS;
-	double renderPresentTimeMS;
+	float updatePlayerTimeMS;
+	float totalRenderTimeMS;
+	float clearTimeMS;
+	float renderPresentTimeMS;
 	AveragedSample tileRender;
 	AveragedSample topRender;
 	AveragedSample firstRender;

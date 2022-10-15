@@ -8,11 +8,11 @@
 
 // Data types
 typedef struct PlayerSettings {
-	double transSpeed;
-	double rotSpeed;
-	double arrowSize;
-	double baseSize;
-	double fov;
+	float transSpeed;
+	float rotSpeed;
+	float arrowSize;
+	float baseSize;
+	float fov;
 } PlayerSettings;
 
 typedef struct Player {
@@ -34,20 +34,20 @@ typedef struct Scene {
 	Player player;
 	Frame2D camera;
 	DLList walls;
-	double wallHeight;
+	float wallHeight;
 	SceneColors colors;
 } Scene;
 
 // Function defs
 extern Scene* CreateTestScene(
 	const PlayerSettings const* settings,
-	double wallHeight,
-	double size
+	float wallHeight,
+	float size
 );
 extern void CleanupScene(Scene* scene);
 extern void UpdatePlayerPosition(
 	Scene* const scene,
-	double deltaMS,
+	float deltaMS,
 	const InputState* const inputState,
 	CycleProfile* const profile
 );

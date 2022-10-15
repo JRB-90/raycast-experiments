@@ -18,42 +18,42 @@ uint64_t GetTicks()
     }
 }
 
-double GetTimeInS(uint64_t elapsedTicks)
+float GetTimeInS(uint64_t elapsedTicks)
 {
     LARGE_INTEGER f;
     if (QueryPerformanceFrequency(&f))
     {
-        return (double)elapsedTicks / (double)f.QuadPart;
+        return (float)elapsedTicks / (float)f.QuadPart;
     }
     else
     {
-        return 0.0;
+        return 0.0f;
     }
 }
 
-double GetTimeInMS(uint64_t elapsedTicks)
+float GetTimeInMS(uint64_t elapsedTicks)
 {
     LARGE_INTEGER f;
     if (QueryPerformanceFrequency(&f))
     {
-        return (double)elapsedTicks / ((double)f.QuadPart / 1000.0);
+        return (float)elapsedTicks / ((float)f.QuadPart / 1000.0f);
     }
     else
     {
-        return 0.0;
+        return 0.0f;
     }
 }
 
-double GetTimeInUS(uint64_t elapsedTicks)
+float GetTimeInUS(uint64_t elapsedTicks)
 {
     LARGE_INTEGER f;
     if (QueryPerformanceFrequency(&f))
     {
-        return (double)elapsedTicks / ((double)f.QuadPart / 1000000.0);
+        return (float)elapsedTicks / ((float)f.QuadPart / 1000000.0f);
     }
     else
     {
-        return 0.0;
+        return 0.0f;
     }
 }
 #endif // _WIN32
@@ -69,18 +69,18 @@ uint64_t GetTicks()
     return t.tv_nsec;
 }
 
-double GetTimeInS(uint64_t elapsedTicks)
+float GetTimeInS(uint64_t elapsedTicks)
 {
-    return (double)((double)elapsedTicks / 1000000000.0);
+    return (float)((float)elapsedTicks / 1000000000.0f);
 }
 
-double GetTimeInMS(uint64_t elapsedTicks)
+float GetTimeInMS(uint64_t elapsedTicks)
 {
-    return (double)((double)elapsedTicks / 1000000.0);
+    return (float)((float)elapsedTicks / 1000000.0f);
 }
 
-double GetTimeInUS(uint64_t elapsedTicks)
+float GetTimeInUS(uint64_t elapsedTicks)
 {
-    return (double)((double)elapsedTicks / 1000.0);
+    return (float)((float)elapsedTicks / 1000.0f);
 }
 #endif // __unix

@@ -44,7 +44,7 @@ void RunWritePixelTests(const ScreenBuffer* const screen)
 		);
 	}
 
-	double delta = GetTimeInMS(GetTicks() - start);
+	float delta = GetTimeInMS(GetTicks() - start);
 
 	printf("%lld iterations took %f ms\n\n", WRITE_PIXEL_ITR, delta);
 }
@@ -75,7 +75,7 @@ void RunWritePixelViewportTests(const ScreenBuffer* const screen)
 		);
 	}
 
-	double delta = GetTimeInMS(GetTicks() - start);
+	float delta = GetTimeInMS(GetTicks() - start);
 
 	printf("%lld iterations took %f ms\n\n", WRITE_PIXEL_ITR, delta);
 }
@@ -96,7 +96,7 @@ void RunDrawClearTests(const ScreenBuffer* const screen)
 		);
 	}
 
-	double delta = GetTimeInMS(GetTicks() - start);
+	float delta = GetTimeInMS(GetTicks() - start);
 
 	printf("%i iterations took %f ms\n\n", DRAW_CLEAR_ITR, delta);
 }
@@ -128,7 +128,7 @@ void RunDrawLineTests(const ScreenBuffer* const screen)
 		DrawLine(screen, &v, &c, 100, 100, 200, 0);
 	}
 
-	double delta = GetTimeInMS(GetTicks() - start);
+	float delta = GetTimeInMS(GetTicks() - start);
 
 	printf("%i iterations took %f ms\n\n", DRAW_LINE_ITR, delta);
 }
@@ -154,7 +154,7 @@ void RunDrawRectTests(const ScreenBuffer* const screen)
 		DrawRect(screen, &v, &c, 0, 0, size, size);
 	}
 
-	double delta = GetTimeInMS(GetTicks() - start);
+	float delta = GetTimeInMS(GetTicks() - start);
 
 	printf("%i iterations took %f ms\n\n", DRAW_LINE_ITR, delta);
 }
@@ -180,7 +180,7 @@ void RunDrawRectFilledTests(const ScreenBuffer* const screen)
 		DrawRectFilled(screen, &v, &c, 0, 0, size, size);
 	}
 
-	double delta = GetTimeInMS(GetTicks() - start);
+	float delta = GetTimeInMS(GetTicks() - start);
 
 	printf("%i iterations took %f ms\n\n", DRAW_LINE_ITR, delta);
 }
@@ -229,7 +229,7 @@ void RunRenderRayTests(const ScreenBuffer* const screen, const Scene* const scen
 		);
 	}
 
-	double delta = GetTimeInMS(GetTicks() - start);
+	float delta = GetTimeInMS(GetTicks() - start);
 
 	printf("%i iterations took %f ms\n\n", REN_RAY_ITR, delta);
 }
@@ -277,7 +277,7 @@ void RunRenderProjTests(const ScreenBuffer* const screen, const Scene* const sce
 		);
 	}
 
-	double delta = GetTimeInMS(GetTicks() - start);
+	float delta = GetTimeInMS(GetTicks() - start);
 
 	printf("%i iterations took %f ms\n\n", REN_PROJ_ITR, delta);
 }
@@ -325,7 +325,7 @@ void RunRenderPlayerTests(const ScreenBuffer* const screen, const Scene* const s
 		);
 	}
 
-	double delta = GetTimeInMS(GetTicks() - start);
+	float delta = GetTimeInMS(GetTicks() - start);
 
 	printf("%i iterations took %f ms\n\n", REN_PLAY_ITR, delta);
 }
@@ -373,7 +373,7 @@ void RunRenderWallsTests(const ScreenBuffer* const screen, const Scene* const sc
 		);
 	}
 
-	double delta = GetTimeInMS(GetTicks() - start);
+	float delta = GetTimeInMS(GetTicks() - start);
 
 	printf("%i iterations took %f ms\n\n", REN_WALLS_ITR, delta);
 }
@@ -424,7 +424,7 @@ void RunRenderVertTests(const ScreenBuffer* const screen, const Scene* const sce
 		);
 	}
 
-	double delta = GetTimeInMS(GetTicks() - start);
+	float delta = GetTimeInMS(GetTicks() - start);
 
 	printf("%i iterations took %f ms\n\n", REN_VERT_ITR, delta);
 }
@@ -473,7 +473,7 @@ void RunRenderFirstTests(const ScreenBuffer* const screen, const Scene* const sc
 		);
 	}
 
-	double delta = GetTimeInMS(GetTicks() - start);
+	float delta = GetTimeInMS(GetTicks() - start);
 
 	printf("%i iterations took %f ms\n\n", REN_FIRST_ITR, delta);
 }
@@ -488,7 +488,7 @@ void RunMathDotTests()
 	Vector2D v4 = { .x = 0.0, .y = -1.0 };
 	Vector2D v5 = Vec2DNormalise((Vector2D){ .x = 1.0, .y = 1.0 });
 
-	double res = 0.0;
+	float res = 0.0;
 
 	uint64_t start = GetTicks();
 
@@ -501,7 +501,7 @@ void RunMathDotTests()
 		res += Vec2DDot(v1, v5);
 	}
 
-	double delta = GetTimeInMS(GetTicks() - start);
+	float delta = GetTimeInMS(GetTicks() - start);
 	printf("%i iterations took %f ms\n\n", MATH_DOT_ITR, delta);
 
 	// This stops compiler optimising away..
@@ -520,7 +520,16 @@ int main(int argc, char* argv[])
 		.pixels = malloc(SCRN_WIDTH * SCRN_HEIGHT * 4)
 	};
 
-	Scene* scene = CreateTestScene(80.0);
+	PlayerSettings playerSettings =
+	{
+		.arrowSize = 25.0,
+		.baseSize = 6.0,
+		.transSpeed = 0.2,
+		.rotSpeed = 0.2,
+		.fov = 50.0 / 2.0
+	};
+
+	Scene* scene = CreateTestScene(&playerSettings, 4000.0, 80.0);
 
 	printf("Begining profile tests..\n\n");
 
@@ -531,12 +540,12 @@ int main(int argc, char* argv[])
 	//RunDrawRectTests(&screen);
 	//RunDrawRectFilledTests(&screen);
 
-	//RunRenderRayTests(&screen, scene);
-	//RunRenderProjTests(&screen, scene);
-	//RunRenderPlayerTests(&screen, scene);
-	//RunRenderWallsTests(&screen, scene);
-	//RunRenderVertTests(&screen, scene);
-	//RunRenderFirstTests(&screen, scene);
+	RunRenderRayTests(&screen, scene);
+	RunRenderProjTests(&screen, scene);
+	RunRenderPlayerTests(&screen, scene);
+	RunRenderWallsTests(&screen, scene);
+	RunRenderVertTests(&screen, scene);
+	RunRenderFirstTests(&screen, scene);
 
 	//RunMathDotTests();
 

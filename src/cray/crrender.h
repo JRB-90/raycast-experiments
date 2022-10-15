@@ -51,8 +51,8 @@ extern void ClearScreen(
 //    const Scene* const scene,
 //    const int xPosition,
 //    const int height,
-//    const double distanceToWall,
-//    const double angleWithWall,
+//    const float distanceToWall,
+//    const float angleWithWall,
 //    CycleProfile* profile
 //);
 //extern void RenderWallsTopDown(

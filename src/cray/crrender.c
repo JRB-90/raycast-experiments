@@ -45,8 +45,8 @@ void RenderVerticalWallStrip(
     const Scene* const scene,
     const int xPosition,
     const int height,
-    const double distanceToWall,
-    const double angleWithWall,
+    const float distanceToWall,
+    const float angleWithWall,
     CycleProfile* profile
 );
 void RenderWallsTopDown(
@@ -81,8 +81,8 @@ void RenderRayTopDown(
 inline void ToScreenSpace(
     const Scene* const scene,
     const Frame2D* const cameraFrame,
-    const double x,
-    const double y,
+    const float x,
+    const float y,
     int* xRes,
     int* yRes
 );
@@ -92,10 +92,10 @@ inline void RenderCameraSpaceLine(
     const Scene* const scene,
     const Frame2D* const cameraFrame,
     const Color* const color,
-    const double x1,
-    const double y1,
-    const double x2,
-    const double y2
+    const float x1,
+    const float y1,
+    const float x2,
+    const float y2
 );
 inline void RenderCameraSpaceRectangle(
     const ScreenBuffer* const screen,
@@ -229,14 +229,14 @@ Frame2D CalculateTileCameraPosition(
                 .x = (tile->viewport.w / 2),
                 .y = (tile->viewport.h / 2)
             },
-            .theta = 0.0
+            .theta = 0.0f
         };
     }
     else if (tile->tileType == StaticPlayer)
     {
         // TODO - Need to somehow figure out how to make camera right?
-        double x = (tile->viewport.w / 2.0);
-        double y = (tile->viewport.h / 2.0);
+        float x = (tile->viewport.w / 2.0f);
+        float y = (tile->viewport.h / 2.0f);
 
         cameraFrame =
         (Frame2D){
@@ -257,7 +257,7 @@ Frame2D CalculateTileCameraPosition(
                     .x = (tile->viewport.w / 2),
                     .y = (tile->viewport.h / 2)
                 },
-                .theta = 0.0
+                .theta = 0.0f
         };
     }
 
@@ -333,17 +333,17 @@ void RenderSceneFirstPersonInternal(
 {
     uint64_t firstStartTime = GetTicks();
 
-    Vector2D worldForward = { .x = 0.0, .y = -1.0 };
-    double angleInterval = (scene->player.settings.fov * 2.0) / ((double)(width - 1));
-    double startAngle = scene->player.frame.theta - scene->player.settings.fov;
+    Vector2D worldForward = { .x = 0.0f, .y = -1.0f };
+    float angleInterval = (scene->player.settings.fov * 2.0f) / ((float)(width - 1));
+    float startAngle = scene->player.frame.theta - scene->player.settings.fov;
 
     for (int i = 0; i < width; i++)
     {
         uint64_t vertStartTime = GetTicks();
 
         LineSegment2D* nearestWall = NULL;
-        double distanceToWall = DBL_MAX;
-        double theta = startAngle + ((double)i * angleInterval);
+        float distanceToWall = DBL_MAX;
+        float theta = startAngle + ((float)i * angleInterval);
 
         Vector2D lookDir =
             FindLookVector(
@@ -355,7 +355,7 @@ void RenderSceneFirstPersonInternal(
 
         while (current != NULL)
         {
-            double distanceToLine;
+            float distanceToLine;
             Point2D intersectionPoint;
             LineSegment2D* line = (LineSegment2D*)current->data;
 
@@ -388,21 +388,21 @@ void RenderSceneFirstPersonInternal(
                 scene,
                 i,
                 height,
-                0.0,
-                0.0,
+                0.0f,
+                0.0f,
                 profile
             );
 
             continue;
         }
 
-        double angleWithWall = 
+        float angleWithWall = 
             Vec2DDot(
                 lookDir,
                 Vec2DNormalise(Vec2DBetween(nearestWall->p1, nearestWall->p2))
             );
 
-        angleWithWall = 1.0 - (fabs(angleWithWall) / 2.0);
+        angleWithWall = 1.0 - (fabs(angleWithWall) / 2.0f);
 
         RenderVerticalWallStrip(
             screen,
@@ -427,15 +427,15 @@ void RenderVerticalWallStrip(
     const Scene* const scene,
     const int xPosition,
     const int height,
-    const double distanceToWall,
-    const double angleWithWall,
+    const float distanceToWall,
+    const float angleWithWall,
     CycleProfile* profile)
 {
     int wallHeightPixels = 0;
 
-    if (distanceToWall > 0.0)
+    if (distanceToWall > 0.0f)
     {
-        double h = tan(ToRad(scene->player.settings.fov)) * distanceToWall;
+        float h = tan(ToRad(scene->player.settings.fov)) * distanceToWall;
         wallHeightPixels = scene->wallHeight / h;
     }
     
@@ -524,9 +524,9 @@ void RenderPlayerTopDown(
     Rect rect =
     {
         .x = (int)(scene->player.frame.position.x - 
-                  (scene->player.settings.baseSize / 2.0)),
+                  (scene->player.settings.baseSize / 2.0f)),
         .y = (int)(scene->player.frame.position.y - 
-                  (scene->player.settings.baseSize / 2.0)),
+                  (scene->player.settings.baseSize / 2.0f)),
         .w = (int)scene->player.settings.baseSize,
         .h = (int)scene->player.settings.baseSize
     };
@@ -549,14 +549,14 @@ void RenderProjectionTopDown(
     const Frame2D* const cameraFrame,
     CycleProfile* profile)
 {
-    Vector2D worldForward = { .x = 0.0, .y = -1.0 };
+    Vector2D worldForward = { .x = 0.0f, .y = -1.0f };
     int widthIncrements = 9;
-    double angleInterval = (scene->player.settings.fov * 2.0) / ((double)(widthIncrements - 1));
-    double startAngle = scene->player.frame.theta - scene->player.settings.fov;
+    float angleInterval = (scene->player.settings.fov * 2.0f) / ((float)(widthIncrements - 1));
+    float startAngle = scene->player.frame.theta - scene->player.settings.fov;
 
     for (int i = 0; i < widthIncrements; i++)
     {
-        double theta = startAngle + (i * angleInterval);
+        float theta = startAngle + (i * angleInterval);
         
         Vector2D lookDir =
             FindLookVector(
@@ -586,7 +586,7 @@ void RenderRayTopDown(
     CycleProfile* profile)//
 {
     const LineSegment2D* nearestWall = NULL;
-    double distanceToWall = DBL_MAX;
+    float distanceToWall = DBL_MAX;
     Point2D wallIntersection;
     DLLNode* current = scene->walls.head;
 
@@ -594,7 +594,7 @@ void RenderRayTopDown(
     {
         const LineSegment2D* const line = (LineSegment2D*)current->data;
         Point2D intersectionPoint;
-        double distanceToLine;
+        float distanceToLine;
 
         bool doesIntersect =
             DoesRayIntersectLine(
@@ -637,8 +637,8 @@ void RenderRayTopDown(
 
     Rect rect =
     {
-        .x = (int)(wallIntersection.x - 2.0),
-        .y = (int)(wallIntersection.y - 2.0),
+        .x = (int)(wallIntersection.x - 2.0f),
+        .y = (int)(wallIntersection.y - 2.0f),
         .w = 4,
         .h = 4
     };
@@ -657,14 +657,14 @@ void RenderRayTopDown(
 void ToScreenSpace(
     const Scene* const scene,
     const Frame2D* const cameraFrame,
-    const double x, 
-    const double y,
+    const float x, 
+    const float y,
     int* xRes, 
     int* yRes)
 {
-    double t = ToRad(-cameraFrame->theta);
-    double s = sin(t);
-    double c = cos(t);
+    float t = ToRad(-cameraFrame->theta);
+    float s = sin(t);
+    float c = cos(t);
 
     int xr = (int)((x * c) - (y * s) + cameraFrame->position.x);
     int yr = (int)((x * s) + (y * c) + cameraFrame->position.y);
@@ -679,10 +679,10 @@ void RenderCameraSpaceLine(
     const Scene* const scene,
     const Frame2D* const cameraFrame,
     const Color* const color, 
-    const double x1,
-    const double y1, 
-    const double x2, 
-    const double y2)
+    const float x1,
+    const float y1, 
+    const float x2, 
+    const float y2)
 {
     int x1Screen;
     int y1Screen;

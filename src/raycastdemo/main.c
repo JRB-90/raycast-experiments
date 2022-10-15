@@ -35,7 +35,7 @@ bool HandleUpdateState(
 );
 void Update(
     const InputState* const inputState,
-    double deltaMS,
+    float deltaMS,
     Scene* const scene,
     CycleProfile* const profile
 );
@@ -51,7 +51,7 @@ void PrintSummary(
     const RaycastSettings* const settings,
     const Scene* const scene,
     const CycleProfile* const profile,
-    double delta
+    float delta
 );
 
 #pragma endregion
@@ -97,16 +97,16 @@ int main(int argc, char* argv[])
         CreateTestScene(
             &settings.playerSettings, 
             settings.wallHeight, 
-            80.0
+            80.0f
         );
     
     printf("Scene initialised\n");
     printf("Starting main loop...\n");
     
     bool isRunning = true;
-    double delta;
-    double period = 1.0 / (double)settings.targetFps;
-    double targetInterval = period * 1000.0;
+    float delta;
+    float period = 1.0f / (float)settings.targetFps;
+    float targetInterval = period * 1000.0f;
     uint64_t currentTicks = GetTicks();
     uint64_t previousTicks = currentTicks;
 
@@ -267,7 +267,7 @@ bool HandleUpdateState(
 
 void Update(
     const InputState* const inputState,
-    double deltaMS,
+    float deltaMS,
     Scene* const scene,
     CycleProfile* const profile)
 {
@@ -298,7 +298,7 @@ void Render(
                     .x = screen->width / 2,
                     .y = screen->height / 2
                 },
-                .theta = 0.0
+                .theta = 0.0f
         };
         RenderSceneTopDown(screen, scene, profile);
     }
@@ -311,7 +311,7 @@ void Render(
                     .x = screen->width / 2,
                     .y = screen->height / 2
                 },
-                .theta = 0.0
+                .theta = 0.0f
         };
         RenderSceneFirstPerson(screen, scene, profile);
     }
@@ -330,7 +330,7 @@ void PrintSummary(
     const RaycastSettings* const settings,
     const Scene* const scene,
     const CycleProfile* const profile,
-    double delta)
+    float delta)
 {
     uint64_t printStartTime = GetTicks();
 

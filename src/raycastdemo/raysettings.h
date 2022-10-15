@@ -15,7 +15,7 @@ typedef struct RaycastSettings {
 	RenderMode renderMode;
 	ScreenFormat screenFormat;
 	unsigned int targetFps;
-	double wallHeight;
+	float wallHeight;
 	PlayerSettings playerSettings;
 } RaycastSettings;
 
