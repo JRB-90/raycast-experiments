@@ -5,8 +5,8 @@
 #include <float.h>
 
 extern uint64_t GetTicks();
-extern double GetTimeInS(uint64_t elapsedTicks);
-extern double GetTimeInMS(uint64_t elapsedTicks);
-extern double GetTimeInUS(uint64_t elapsedTicks);
+extern float GetTimeInS(uint64_t elapsedTicks);
+extern float GetTimeInMS(uint64_t elapsedTicks);
+extern float GetTimeInUS(uint64_t elapsedTicks);
 
 #endif // !_CR_TIME_H_

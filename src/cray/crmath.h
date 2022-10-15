@@ -9,13 +9,13 @@
 
 // Data types
 typedef struct Point2D {
-	double x;
-	double y;
+	float x;
+	float y;
 } Point2D;
 
 typedef struct Vector2D {
-	double x;
-	double y;
+	float x;
+	float y;
 } Vector2D;
 
 typedef struct LineSegment2D {
@@ -25,16 +25,16 @@ typedef struct LineSegment2D {
 
 typedef struct Frame2D {
 	Point2D position;
-	double theta;
+	float theta;
 } Frame2D;
 
 // Function defs
-extern Vector2D FindLookVector(const Vector2D* const worldForward, double theta);
+extern Vector2D FindLookVector(const Vector2D* const worldForward, float theta);
 extern bool DoesRayIntersectLine(
 	const Point2D* const rayOrigin,
 	const Vector2D* const rayDirection,
 	const LineSegment2D* const lineSegment,
-	double* const distanceToLine,
+	float* const distanceToLine,
 	Point2D* const intersectionPoint
 );
 
@@ -55,17 +55,17 @@ static inline int Sign(int value)
 	}
 }
 
-static inline double ToRad(double deg)
+static inline float ToRad(float deg)
 {
 	return (deg * M_PI) / 180.0;
 }
 
-static inline double ToDeg(double rad)
+static inline float ToDeg(float rad)
 {
 	return (rad * 180.0) / M_PI;
 }
 
-static inline double Point2DLength(const Point2D point)
+static inline float Point2DLength(const Point2D point)
 {
 	return sqrt((point.x * point.x) + (point.y * point.y));
 }
@@ -124,14 +124,14 @@ static inline Point2D SubVec2DFromPoint2D(const Point2D point, const Vector2D ve
 	return resultantPoint;
 }
 
-static inline double Vec2DLength(const Vector2D vector)
+static inline float Vec2DLength(const Vector2D vector)
 {
 	return sqrt((vector.x * vector.x) + (vector.y * vector.y));
 }
 
 static inline Vector2D Vec2DNormalise(const Vector2D vector)
 {
-	double length = Vec2DLength(vector);
+	float length = Vec2DLength(vector);
 
 	assert(length != 0.0);
 
@@ -166,7 +166,7 @@ static inline Vector2D Point2DToVec2D(const Point2D point)
 	return vector;
 }
 
-static inline Vector2D Vec2DMul(const Vector2D vector, double scalar)
+static inline Vector2D Vec2DMul(const Vector2D vector, float scalar)
 {
 	Vector2D resultantVector =
 	{
@@ -177,7 +177,7 @@ static inline Vector2D Vec2DMul(const Vector2D vector, double scalar)
 	return resultantVector;
 }
 
-static inline Vector2D Vec2DDiv(const Vector2D vector, double scalar)
+static inline Vector2D Vec2DDiv(const Vector2D vector, float scalar)
 {
 	Vector2D resultantVector =
 	{
@@ -188,17 +188,17 @@ static inline Vector2D Vec2DDiv(const Vector2D vector, double scalar)
 	return resultantVector;
 }
 
-static inline double Vec2DCross(const Vector2D v1, const Vector2D v2)
+static inline float Vec2DCross(const Vector2D v1, const Vector2D v2)
 {
 	return (v1.x * v2.y) - (v1.y * v2.x);
 }
 
-static inline double Vec2DDot(const Vector2D v1, const Vector2D v2)
+static inline float Vec2DDot(const Vector2D v1, const Vector2D v2)
 {
 	return (v1.x * v2.x) + (v1.y * v2.y);
 }
 
-static inline Frame2D CreateFrame2D(double x, double y, double theta)
+static inline Frame2D CreateFrame2D(float x, float y, float theta)
 {
 	Frame2D frame =
 	{

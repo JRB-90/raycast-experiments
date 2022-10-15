@@ -5,7 +5,7 @@
 
 const int NUM_ITERATIONS = 1000000000;
 
-double int32_test()
+float int32_test()
 {
 	uint64_t start = GetTicks();
 
@@ -17,58 +17,58 @@ double int32_test()
 		volatile int32_t div = 123 / 654;
 	}
 
-	double time = GetTimeInMS(GetTicks() - start);
+	float time = GetTimeInMS(GetTicks() - start);
 
 	return GetTimeInMS(GetTicks() - start);
 }
 
-double int64_test()
+float int64_test()
 {
 	uint64_t start = GetTicks();
 
 	for (int i = 0; i < NUM_ITERATIONS; i++)
 	{
-		volatile int32_t add = 123 + 654;
-		volatile int32_t sub = 123 - 654;
-		volatile int32_t mul = 123 * 654;
-		volatile int32_t div = 123 / 654;
+		volatile int64_t add = 123 + 654;
+		volatile int64_t sub = 123 - 654;
+		volatile int64_t mul = 123 * 654;
+		volatile int64_t div = 123 / 654;
 	}
 
-	double time = GetTimeInMS(GetTicks() - start);
+	float time = GetTimeInMS(GetTicks() - start);
 
 	return GetTimeInMS(GetTicks() - start);
 }
 
-double float_test()
+float float_test()
 {
 	uint64_t start = GetTicks();
 
 	for (int i = 0; i < NUM_ITERATIONS; i++)
 	{
-		volatile int32_t add = 123 + 654;
-		volatile int32_t sub = 123 - 654;
-		volatile int32_t mul = 123 * 654;
-		volatile int32_t div = 123 / 654;
+		volatile float add = 123 + 654;
+		volatile float sub = 123 - 654;
+		volatile float mul = 123 * 654;
+		volatile float div = 123 / 654;
 	}
 
-	double time = GetTimeInMS(GetTicks() - start);
+	float time = GetTimeInMS(GetTicks() - start);
 
 	return GetTimeInMS(GetTicks() - start);
 }
 
-double double_test()
+float double_test()
 {
 	uint64_t start = GetTicks();
 
 	for (int i = 0; i < NUM_ITERATIONS; i++)
 	{
-		volatile int32_t add = 123 + 654;
-		volatile int32_t sub = 123 - 654;
-		volatile int32_t mul = 123 * 654;
-		volatile int32_t div = 123 / 654;
+		volatile double add = 123 + 654;
+		volatile double sub = 123 - 654;
+		volatile double mul = 123 * 654;
+		volatile double div = 123 / 654;
 	}
 
-	double time = GetTimeInMS(GetTicks() - start);
+	float time = GetTimeInMS(GetTicks() - start);
 
 	return GetTimeInMS(GetTicks() - start);
 }

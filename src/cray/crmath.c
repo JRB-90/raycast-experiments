@@ -1,8 +1,8 @@
 #include "crmath.h"
 
-Vector2D FindLookVector(const Vector2D* const worldForward, double theta)
+Vector2D FindLookVector(const Vector2D* const worldForward, float theta)
 {
-	double radTheta = ToRad(theta);
+	float radTheta = ToRad(theta);
 
 	Vector2D lookVector =
 	{
@@ -17,7 +17,7 @@ bool DoesRayIntersectLine(
 	const Point2D* const rayOrigin, 
 	const Vector2D* const rayDirection,
 	const LineSegment2D* const lineSegment,
-	double* const distanceToLine,
+	float* const distanceToLine,
 	Point2D* const intersectionPoint)
 {
 	Vector2D dirNorm = Vec2DNormalise(*rayDirection);
@@ -25,18 +25,18 @@ bool DoesRayIntersectLine(
 	Vector2D v2 = Vec2DBetween(lineSegment->p1, lineSegment->p2);
 	Vector2D v3 = { .x = -dirNorm.y, .y = dirNorm.x };
 
-	double dot = Vec2DDot(v2, v3);
+	float dot = Vec2DDot(v2, v3);
 
 	if (fabs(dot) < 0.000001)
 	{
 		return false;
 	}
 
-	double t1 = Vec2DCross(v2, v1) / dot;
-	double t2 = Vec2DDot(v1, v3) / dot;
+	float t1 = Vec2DCross(v2, v1) / dot;
+	float t2 = Vec2DDot(v1, v3) / dot;
 
-	if (t1 >= 0.0 &&
-	   (t2 >= 0.0 && t2 <= 1.0))
+	if (t1 >= 0.0f &&
+	   (t2 >= 0.0f && t2 <= 1.0f))
 	{
 		*distanceToLine = t1;
 		Vector2D vecToIntersection = Vec2DMul(dirNorm, t1);

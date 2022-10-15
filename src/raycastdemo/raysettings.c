@@ -10,14 +10,14 @@ static const unsigned int CRAY_DEFAULT_HEIGHT = 480;
 static const ColorFormat CRAY_DEFAULT_CF = CF_ARGB;
 
 static const unsigned int CRAY_DEFAULT_FPS = 60;
-static const double CRAY_TRANS_SPEED = 0.2;
-static const double CRAY_ROT_SPEED = 0.2;
+static const float CRAY_TRANS_SPEED = 0.2f;
+static const float CRAY_ROT_SPEED = 0.2f;
 
-static const double PLAYER_ARROW_SIZE = 25.0;
-static const double PLAYER_BASE_SIZE = 6.0;
-static const double CRAY_DEFAULT_FOV = 50;
+static const float PLAYER_ARROW_SIZE = 25.0f;
+static const float PLAYER_BASE_SIZE = 6.0f;
+static const float CRAY_DEFAULT_FOV = 50.0f;
 
-static const unsigned int WALL_HEIGHT = 4000.0;
+static const float WALL_HEIGHT = 4000.0; 
 
 void PrintUsage();
 void PrintHelp();

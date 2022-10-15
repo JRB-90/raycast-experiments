@@ -18,10 +18,10 @@ CycleProfile DefaultCycleProfile()
 {
     CycleProfile profile =
     {
-        .updatePlayerTimeMS = 0.0,
-        .totalRenderTimeMS = 0.0,
-        .renderPresentTimeMS = 0.0,
-        .clearTimeMS = 0.0,
+        .updatePlayerTimeMS = 0.0f,
+        .totalRenderTimeMS = 0.0f,
+        .renderPresentTimeMS = 0.0f,
+        .clearTimeMS = 0.0f,
         .tileRender = DefaultSample(),
         .topRender = DefaultSample(),
         .firstRender = DefaultSample(),
@@ -39,10 +39,10 @@ void AddSample(AveragedSample* const sample, uint64_t ticks)
 
 void ResetProfile(CycleProfile* const profile)
 {
-    profile->updatePlayerTimeMS = 0.0;
-    profile->totalRenderTimeMS = 0.0;
-    profile->clearTimeMS = 0.0;
-    profile->renderPresentTimeMS = 0.0;
+    profile->updatePlayerTimeMS = 0.0f;
+    profile->totalRenderTimeMS = 0.0f;
+    profile->clearTimeMS = 0.0f;
+    profile->renderPresentTimeMS = 0.0f;
     profile->tileRender = DefaultSample();
     profile->topRender = DefaultSample();
     profile->firstRender = DefaultSample();
@@ -53,8 +53,8 @@ void PrintAveragedSample(const AveragedSample* const sample, const char* const n
 {
     if (sample->count > 0)
     {
-        double timeTotalMS = GetTimeInMS(sample->totalTicks);
-        double timeAverageMS = timeTotalMS / (double)sample->count;
+        float timeTotalMS = GetTimeInMS(sample->totalTicks);
+        float timeAverageMS = timeTotalMS / (float)sample->count;
 
         printf("%s count:\t%i\n", name, sample->count);
         printf("Tot %s time:\t%f ms\n", name, timeTotalMS);

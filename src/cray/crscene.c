@@ -5,15 +5,15 @@
 
 Scene* CreateTestScene(
 	const PlayerSettings const* settings,
-	double wallHeight,
-	double size)
+	float wallHeight,
+	float size)
 {
 	Scene* scene = malloc(sizeof(Scene));
 	assert(scene != NULL);
 
 	scene->player =
 	(Player){
-		.frame = CreateFrame2D(0.0, 0.0, 0.0),
+		.frame = CreateFrame2D(0.0f, 0.0f, 0.0f),
 		.settings =
 		(PlayerSettings){
 			.arrowSize = settings->arrowSize,
@@ -40,11 +40,11 @@ Scene* CreateTestScene(
 
 	scene->camera =
 	(Frame2D){
-		.position = {.x = 0.0, .y = 0.0 },
-		.theta = 0.0
+		.position = {.x = 0.0f, .y = 0.0f },
+		.theta = 0.0f
 	};
 
-	double hsize = size / 2.0;
+	float hsize = size / 2.0f;
 
 	Point2D p1 = { .x = -size, .y = -hsize };
 	Point2D p2 = { .x = -hsize, .y = hsize };
@@ -126,13 +126,13 @@ void CleanupScene(Scene* scene)
 
 void UpdatePlayerPosition(
 	Scene* const scene,
-	double deltaMS,
+	float deltaMS,
 	const InputState* const inputState,
 	CycleProfile* const profile)
 {
 	uint64_t updateStartTime = GetTicks();
 
-	const Vector2D worldForward = { .x = 0.0, .y = -1.0 };
+	const Vector2D worldForward = { .x = 0.0f, .y = -1.0f };
 
 	if (inputState->forwards)
 	{
@@ -154,7 +154,7 @@ void UpdatePlayerPosition(
 
 	if (inputState->backwards)
 	{
-		Vector2D worldForward = { .x = 0.0, .y = -1.0 };
+		Vector2D worldForward = { .x = 0.0f, .y = -1.0f };
 		Vector2D lookDir =
 			FindLookVector(
 				&worldForward,
@@ -172,11 +172,11 @@ void UpdatePlayerPosition(
 
 	if (inputState->right)
 	{
-		Vector2D worldForward = { .x = 0.0, .y = -1.0 };
+		Vector2D worldForward = { .x = 0.0f, .y = -1.0f };
 		Vector2D lookDir =
 			FindLookVector(
 				&worldForward,
-				scene->player.frame.theta + 90.0
+				scene->player.frame.theta + 90.0f
 			);
 
 		lookDir = Vec2DNormalise(lookDir);
@@ -190,11 +190,11 @@ void UpdatePlayerPosition(
 
 	if (inputState->left)
 	{
-		Vector2D worldForward = { .x = 0.0, .y = -1.0 };
+		Vector2D worldForward = { .x = 0.0f, .y = -1.0f };
 		Vector2D lookDir =
 			FindLookVector(
 				&worldForward,
-				scene->player.frame.theta - 90.0
+				scene->player.frame.theta - 90.0f
 			);
 
 		lookDir = Vec2DNormalise(lookDir);
